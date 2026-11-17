@@ -1,3 +1,9 @@
 {
-  "checkpoints/R0_native_seed42_100000.pth": "8fee6540281152bda36a04164e6c00b77d48b97af9d4448f036a159fe1e8656d"
+  "checkpoints/B2_seed0_1996800.pth": "3cc8f48f833a358afbaba7a05f47d48f80b28fe8c82c232b21ede287a97ae534",
+  "checkpoints/B1_seed0_4966400.pth": "ed24b6ac6ea6c1d2f66dfac510796b5c625fe97086fbc9f1e1e820af461082d1",
+  "checkpoints/R0_native_seed42_100000.pth": "8fee6540281152bda36a04164e6c00b77d48b97af9d4448f036a159fe1e8656d",
+  "checkpoints/B2_seed0_4966400.pth": "63c55d97ed4d9e09956d4d77d6bd4a9fbf07c077872857621d8dff3aa47e1cc2",
+  "checkpoints/B0_seed0_4966400.pth": "b44c2277fc80f631e05a55b3ef052a14290bfb049d248feb64e87cfc3e204bab",
+  "checkpoints/B0_seed0_1996800.pth": "47ac955970a8a08004643bec5cb03cbfea026a262d6e9841a72454a8bbb0c7c7",
+  "checkpoints/B1_seed0_1996800.pth": "abf4c7f9a56867a3399cdf7d67545e250f39c42a1205d5fbce6b7c31d91f0a73"
 }

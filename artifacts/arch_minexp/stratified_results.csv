@@ -1,0 +1,10 @@
+group,seed,stratum,successes,episodes
+B0,0,E2_translation,0,50
+B0,0,E2_yaw,0,50
+B0,0,E3_outside_training,0,100
+B1,0,E2_translation,0,50
+B1,0,E2_yaw,0,50
+B1,0,E3_outside_training,0,100
+B2,0,E2_translation,0,50
+B2,0,E2_yaw,0,50
+B2,0,E3_outside_training,0,100

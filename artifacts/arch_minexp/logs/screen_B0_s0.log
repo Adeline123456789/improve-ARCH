@@ -834,3 +834,124 @@ tool02026-11-17 10:31:04 [11,307ms] [Warning] [omni.physx.plugin] PhysicsUSD: Cr
 2026-11-17 10:31:04 [11,315ms] [Warning] [omni.physx.plugin] PhysicsUSD: CreateJoint - found a joint with disjointed body transforms, the simulation will most likely snap objects together: /World/envs/env_97/robot1/AssemblerFixedJoint
 2026-11-17 10:31:04 [11,315ms] [Warning] [omni.physx.plugin] PhysicsUSD: CreateJoint - found a joint with disjointed body transforms, the simulation will most likely snap objects together: /World/envs/env_98/robot1/AssemblerFixedJoint
 2026-11-17 10:31:04 [11,315ms] [Warning] [omni.physx.plugin] PhysicsUSD: CreateJoint - found a joint with disjointed body transforms, the simulation will most likely snap objects together: /World/envs/env_99/robot1/AssemblerFixedJoint
+AssetBaseCfg(class_type=<dataclasses._MISSING_TYPE object at 0x77c1a6149870>, prim_path='/World/envs/env_.*/extra7', spawn=UsdFileCfg(func=<function spawn_from_usd at 0x77c2881b6f80>, visible=True, semantic_tags=None, copy_from_source=True, mass_props=None, deformable_props=None, rigid_props=None, collision_props=None, activate_contact_sensors=False, scale=None, articulation_props=None, fixed_tendons_props=None, joint_drive_props=None, visual_material_path='material', visual_material=None, usd_path='/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_DoubleSquare_Purple_Updated.usd', variants=None), init_state=AssetBaseCfg.InitialStateCfg(pos=tensor([0.4000, 0.4000, 0.0500], device='cuda:0'), rot=tensor([0., 0., 1., 0.], device='cuda:0')), collision_group=0, debug_vis=False)
+asset_cfg:  AssetBaseCfg(class_type=<dataclasses._MISSING_TYPE object at 0x77c1a61499f0>, prim_path='/World/envs/env_.*/extra8', spawn=UsdFileCfg(func=<function spawn_from_usd at 0x77c2881b6f80>, visible=True, semantic_tags=None, copy_from_source=True, mass_props=None, deformable_props=None, rigid_props=None, collision_props=None, activate_contact_sensors=False, scale=None, articulation_props=None, fixed_tendons_props=None, joint_drive_props=None, visual_material_path='material', visual_material=None, usd_path='/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_Rectangle_JeansBlue_Updated.usd', variants=None), init_state=AssetBaseCfg.InitialStateCfg(pos=tensor([0.4000, 0.5500, 0.0500], device='cuda:0'), rot=tensor([0., 0., 0., 1.], device='cuda:0')), collision_group=0, debug_vis=False)
+[INFO]: Time taken for scene creation : 1.443908 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 512
+	Environment spacing   : 4
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : []
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+[INFO]: Time taken for simulation start : 1.274196 seconds
+[INFO]: Completed setting up the environment...
+[init] Closing gripper ...
+gripper_joint_pos_limits:  tensor([[[-6.2832e+00,  6.2832e+00],
+         [-6.2832e+00,  6.2832e+00],
+         [-3.1416e+00,  3.1416e+00],
+         ...,
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38]],
+
+        [[-6.2832e+00,  6.2832e+00],
+         [-6.2832e+00,  6.2832e+00],
+         [-3.1416e+00,  3.1416e+00],
+         ...,
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38]],
+
+        [[-6.2832e+00,  6.2832e+00],
+         [-6.2832e+00,  6.2832e+00],
+         [-3.1416e+00,  3.1416e+00],
+         ...,
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38]],
+
+        ...,
+
+        [[-6.2832e+00,  6.2832e+00],
+         [-6.2832e+00,  6.2832e+00],
+         [-3.1416e+00,  3.1416e+00],
+         ...,
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38]],
+
+        [[-6.2832e+00,  6.2832e+00],
+         [-6.2832e+00,  6.2832e+00],
+         [-3.1416e+00,  3.1416e+00],
+         ...,
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38]],
+
+        [[-6.2832e+00,  6.2832e+00],
+         [-6.2832e+00,  6.2832e+00],
+         [-3.1416e+00,  3.1416e+00],
+         ...,
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38],
+         [-3.4028e+38,  3.4028e+38]]], device='cuda:0') torch.Size([512, 14, 2])
+Setting seed: 0
+[INFO]: Parsing configuration from: /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/assembly_insert_env_cfg.yaml
+self.seed = 0
+Started to train
+Exact experiment name requested from command line: run
+seq_length: 4
+current training device: cuda:0
+input_shapes:  {'policy': (27,)}
+[my_network] input_shapes:  {'policy': (27,)}
+MLP Input shape: 0+27=27
+build mlp: 256
+RunningMeanStd:  (1,)
+RunningMeanStd:  (27,)
+fps step: 1628 fps step and policy inference: 1621 fps total: 1608 epoch: 1/39 frames: 0
+fps step: 1612 fps step and policy inference: 1606 fps total: 1596 epoch: 2/39 frames: 51200
+fps step: 1613 fps step and policy inference: 1607 fps total: 1597 epoch: 3/39 frames: 102400
+fps step: 1611 fps step and policy inference: 1605 fps total: 1595 epoch: 4/39 frames: 153600
+fps step: 1623 fps step and policy inference: 1617 fps total: 1607 epoch: 5/39 frames: 204800
+fps step: 1620 fps step and policy inference: 1614 fps total: 1604 epoch: 6/39 frames: 256000
+fps step: 1617 fps step and policy inference: 1611 fps total: 1601 epoch: 7/39 frames: 307200
+fps step: 1594 fps step and policy inference: 1588 fps total: 1579 epoch: 8/39 frames: 358400
+fps step: 1582 fps step and policy inference: 1577 fps total: 1567 epoch: 9/39 frames: 409600
+fps step: 1575 fps step and policy inference: 1569 fps total: 1560 epoch: 10/39 frames: 460800
+fps step: 1568 fps step and policy inference: 1563 fps total: 1553 epoch: 11/39 frames: 512000
+fps step: 1551 fps step and policy inference: 1546 fps total: 1537 epoch: 12/39 frames: 563200
+fps step: 1556 fps step and policy inference: 1551 fps total: 1542 epoch: 13/39 frames: 614400
+fps step: 1564 fps step and policy inference: 1559 fps total: 1549 epoch: 14/39 frames: 665600
+fps step: 1543 fps step and policy inference: 1538 fps total: 1529 epoch: 15/39 frames: 716800
+fps step: 1552 fps step and policy inference: 1547 fps total: 1537 epoch: 16/39 frames: 768000
+fps step: 1570 fps step and policy inference: 1565 fps total: 1555 epoch: 17/39 frames: 819200
+fps step: 1571 fps step and policy inference: 1565 fps total: 1556 epoch: 18/39 frames: 870400
+fps step: 1575 fps step and policy inference: 1570 fps total: 1560 epoch: 19/39 frames: 921600
+fps step: 1589 fps step and policy inference: 1583 fps total: 1573 epoch: 20/39 frames: 972800
+saving next best rewards:  [-5.5875754]
+=> saving checkpoint '/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/screen_B0_s0/runner/run/nn/apa_impedance.pth'
+fps step: 1406 fps step and policy inference: 1402 fps total: 1393 epoch: 21/39 frames: 1024000
+fps step: 1467 fps step and policy inference: 1462 fps total: 1453 epoch: 22/39 frames: 1075200
+fps step: 1482 fps step and policy inference: 1477 fps total: 1467 epoch: 23/39 frames: 1126400
+fps step: 1394 fps step and policy inference: 1390 fps total: 1382 epoch: 24/39 frames: 1177600
+fps step: 1524 fps step and policy inference: 1518 fps total: 1510 epoch: 25/39 frames: 1228800
+=> saving checkpoint '/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/screen_B0_s0/runner/run/nn/last_apa_impedance_ep_25_rew_-5.7901034.pth'
+fps step: 1578 fps step and policy inference: 1573 fps total: 1563 epoch: 26/39 frames: 1280000
+fps step: 1585 fps step and policy inference: 1580 fps total: 1570 epoch: 27/39 frames: 1331200
+fps step: 1600 fps step and policy inference: 1594 fps total: 1584 epoch: 28/39 frames: 1382400
+fps step: 1589 fps step and policy inference: 1584 fps total: 1574 epoch: 29/39 frames: 1433600
+fps step: 1599 fps step and policy inference: 1594 fps total: 1584 epoch: 30/39 frames: 1484800
+fps step: 1602 fps step and policy inference: 1596 fps total: 1586 epoch: 31/39 frames: 1536000
+fps step: 1616 fps step and policy inference: 1610 fps total: 1600 epoch: 32/39 frames: 1587200
+fps step: 1619 fps step and policy inference: 1613 fps total: 1603 epoch: 33/39 frames: 1638400
+fps step: 1607 fps step and policy inference: 1602 fps total: 1592 epoch: 34/39 frames: 1689600
+fps step: 1598 fps step and policy inference: 1593 fps total: 1583 epoch: 35/39 frames: 1740800
+fps step: 1600 fps step and policy inference: 1594 fps total: 1584 epoch: 36/39 frames: 1792000
+fps step: 1611 fps step and policy inference: 1605 fps total: 1595 epoch: 37/39 frames: 1843200
+fps step: 1591 fps step and policy inference: 1585 fps total: 1576 epoch: 38/39 frames: 1894400
+fps step: 1590 fps step and policy inference: 1584 fps total: 1575 epoch: 39/39 frames: 1945600
+=> saving checkpoint '/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/screen_B0_s0/runner/run/nn/last_apa_impedance_ep_39_rew__-6.224605_.pth'
+MAX EPOCHS NUM!
+MINEXP_COMPLETE train B0 /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/screen_B0_s0
+[1300.227s] Simulation App Shutting Down

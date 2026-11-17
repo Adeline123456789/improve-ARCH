@@ -4,6 +4,107 @@
     "seed": 0,
     "requested_transitions": 1996800,
     "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/screen_B0_s0",
-    "status": "starting"
+    "status": "completed",
+    "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B0_seed0_1996800.pth",
+    "checkpoint_sha256": "47ac955970a8a08004643bec5cb03cbfea026a262d6e9841a72454a8bbb0c7c7",
+    "actual_transitions": 1996800,
+    "epoch": 39,
+    "has_optimizer": true,
+    "normalization_keys": [
+      "running_mean_std.running_mean_std.policy.running_mean",
+      "running_mean_std.running_mean_std.policy.running_var",
+      "running_mean_std.running_mean_std.policy.count"
+    ],
+    "validation": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B0_s0_1996800"
+  },
+  {
+    "group": "B1",
+    "seed": 0,
+    "requested_transitions": 1996800,
+    "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/screen_B1_s0",
+    "status": "completed",
+    "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B1_seed0_1996800.pth",
+    "checkpoint_sha256": "abf4c7f9a56867a3399cdf7d67545e250f39c42a1205d5fbce6b7c31d91f0a73",
+    "actual_transitions": 1996800,
+    "epoch": 39,
+    "has_optimizer": true,
+    "normalization_keys": [
+      "running_mean_std.running_mean_std.policy.running_mean",
+      "running_mean_std.running_mean_std.policy.running_var",
+      "running_mean_std.running_mean_std.policy.count"
+    ],
+    "validation": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B1_s0_1996800"
+  },
+  {
+    "group": "B2",
+    "seed": 0,
+    "requested_transitions": 1996800,
+    "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/screen_B2_s0",
+    "status": "completed",
+    "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B2_seed0_1996800.pth",
+    "checkpoint_sha256": "3cc8f48f833a358afbaba7a05f47d48f80b28fe8c82c232b21ede287a97ae534",
+    "actual_transitions": 1996800,
+    "epoch": 39,
+    "has_optimizer": true,
+    "normalization_keys": [
+      "running_mean_std.running_mean_std.policy.running_mean",
+      "running_mean_std.running_mean_std.policy.running_var",
+      "running_mean_std.running_mean_std.policy.count"
+    ],
+    "validation": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B2_s0_1996800"
+  },
+  {
+    "group": "B0",
+    "seed": 0,
+    "requested_transitions": 4966400,
+    "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/extended_B0_s0",
+    "status": "completed",
+    "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B0_seed0_4966400.pth",
+    "checkpoint_sha256": "b44c2277fc80f631e05a55b3ef052a14290bfb049d248feb64e87cfc3e204bab",
+    "actual_transitions": 4966400,
+    "epoch": 97,
+    "has_optimizer": true,
+    "normalization_keys": [
+      "running_mean_std.running_mean_std.policy.running_mean",
+      "running_mean_std.running_mean_std.policy.running_var",
+      "running_mean_std.running_mean_std.policy.count"
+    ],
+    "validation": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B0_s0_4966400"
+  },
+  {
+    "group": "B1",
+    "seed": 0,
+    "requested_transitions": 4966400,
+    "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/extended_B1_s0",
+    "status": "completed",
+    "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B1_seed0_4966400.pth",
+    "checkpoint_sha256": "ed24b6ac6ea6c1d2f66dfac510796b5c625fe97086fbc9f1e1e820af461082d1",
+    "actual_transitions": 4966400,
+    "epoch": 97,
+    "has_optimizer": true,
+    "normalization_keys": [
+      "running_mean_std.running_mean_std.policy.running_mean",
+      "running_mean_std.running_mean_std.policy.running_var",
+      "running_mean_std.running_mean_std.policy.count"
+    ],
+    "validation": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B1_s0_4966400"
+  },
+  {
+    "group": "B2",
+    "seed": 0,
+    "requested_transitions": 4966400,
+    "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/extended_B2_s0",
+    "status": "completed",
+    "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B2_seed0_4966400.pth",
+    "checkpoint_sha256": "63c55d97ed4d9e09956d4d77d6bd4a9fbf07c077872857621d8dff3aa47e1cc2",
+    "actual_transitions": 4966400,
+    "epoch": 97,
+    "has_optimizer": true,
+    "normalization_keys": [
+      "running_mean_std.running_mean_std.policy.running_mean",
+      "running_mean_std.running_mean_std.policy.running_var",
+      "running_mean_std.running_mean_std.policy.count"
+    ],
+    "validation": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B2_s0_4966400"
   }
 ]

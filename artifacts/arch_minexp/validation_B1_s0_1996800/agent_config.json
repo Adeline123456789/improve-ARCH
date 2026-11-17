@@ -1,0 +1,134 @@
+{
+  "params": {
+    "seed": 0,
+    "env": {
+      "clip_observations": 5.0,
+      "clip_actions": 1.0
+    },
+    "algo": {
+      "name": "my_agent"
+    },
+    "model": {
+      "name": "my_actor_model"
+    },
+    "network": {
+      "name": "my_network",
+      "separate": false,
+      "align_modality_dim": true,
+      "space": {
+        "continuous": {
+          "mu_activation": "None",
+          "sigma_activation": "None",
+          "mu_init": {
+            "name": "default"
+          },
+          "sigma_init": {
+            "name": "const_initializer",
+            "val": 0
+          },
+          "fixed_sigma": true
+        }
+      },
+      "mlp": {
+        "units": [
+          256,
+          128,
+          64
+        ],
+        "activation": "elu",
+        "d2rl": false,
+        "initializer": {
+          "name": "default"
+        },
+        "regularizer": {
+          "name": "None"
+        }
+      },
+      "rnn": {
+        "name": "lstm",
+        "units": 256,
+        "layers": 2,
+        "before_mlp": true,
+        "concat_input": true,
+        "layer_norm": false
+      },
+      "cnn": {
+        "type": "conv2d",
+        "activation": "relu",
+        "initializer": {
+          "name": "glorot_uniform_initializer",
+          "gain": 1
+        },
+        "regularizer": {
+          "name": "None"
+        },
+        "convs": [
+          {
+            "filters": 64,
+            "kernel_size": 7,
+            "strides": 4,
+            "padding": 0
+          },
+          {
+            "filters": 128,
+            "kernel_size": 7,
+            "strides": 4,
+            "padding": 0
+          },
+          {
+            "filters": 256,
+            "kernel_size": 5,
+            "strides": 3,
+            "padding": 0
+          }
+        ]
+      }
+    },
+    "load_checkpoint": false,
+    "load_path": "",
+    "config": {
+      "name": "apa_impedance",
+      "env_name": "rlgpu",
+      "device": "cuda:0",
+      "device_name": "cuda:0",
+      "multi_gpu": false,
+      "ppo": true,
+      "mixed_precision": false,
+      "normalize_input": true,
+      "normalize_value": true,
+      "num_actors": 100,
+      "reward_shaper": {
+        "scale_value": 1.0
+      },
+      "normalize_advantage": true,
+      "gamma": 0.99,
+      "tau": 0.95,
+      "learning_rate": "3e-4",
+      "lr_schedule": "None",
+      "kl_threshold": 0.008,
+      "score_to_win": 20000,
+      "max_epochs": 199,
+      "save_best_after": 20,
+      "save_frequency": 25,
+      "grad_norm": 1.0,
+      "entropy_coef": 0.0,
+      "truncate_grads": true,
+      "e_clip": 0.2,
+      "horizon_length": 100,
+      "minibatch_size": 2500,
+      "mini_epochs": 8,
+      "critic_coef": 1,
+      "clip_value": true,
+      "seq_length": 4,
+      "bounds_loss_coef": 0.0001,
+      "player": {
+        "render": false,
+        "games_num": 1,
+        "deterministic": false
+      },
+      "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B1_s0_1996800/runner",
+      "full_experiment_name": "run",
+      "zero_rnn_on_done": true
+    }
+  }
+}

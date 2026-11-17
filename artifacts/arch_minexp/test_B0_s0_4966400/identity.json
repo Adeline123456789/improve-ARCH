@@ -1,0 +1,38 @@
+{
+  "group": "B0",
+  "seed": 0,
+  "mode": "eval",
+  "command": [
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run.py",
+    "--mode",
+    "eval",
+    "--group",
+    "B0",
+    "--seed",
+    "0",
+    "--num_envs",
+    "100",
+    "--checkpoint",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B0_seed0_4966400.pth",
+    "--manifest",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/evaluation_manifest.jsonl",
+    "--headless",
+    "--output",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/test_B0_s0_4966400"
+  ],
+  "started_unix": 1794924942.9890127,
+  "num_envs": 100,
+  "physics_dt": 0.008333333333333333,
+  "policy_dt": 0.041666666666666664,
+  "episode_steps": 96,
+  "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B0_seed0_4966400.pth",
+  "checkpoint_sha256": "b44c2277fc80f631e05a55b3ef052a14290bfb049d248feb64e87cfc3e204bab",
+  "protocol_sha256": "54a4f809ebba32078ffc66abacbbcf57db185e3600344dcf788e3f8110feee51",
+  "source_sha256": {
+    "run.py": "43ad4075218620fbd4a0ea30d2cce1437069503f5c537e062beb6d8111b81f86",
+    "min_env.py": "b45fd25d4f54bda5ec5f12bf4c33e60f8f668a3d9da38327ecbcdad5cb20a885",
+    "geometry.py": "a7004d3536b589c07443e06a27b928ede0a1600add084fb772f1cc86b3645c6e",
+    "scenarios.py": "66d3b8da9845f18b22a627db66221e4d91306d057f833a74e6c0eeedb138856b"
+  },
+  "manifest_sha256": "e74b9732cf515d3d3ecc32d380a2390a17d5a56301df622f8a1123de68a8505e"
+}

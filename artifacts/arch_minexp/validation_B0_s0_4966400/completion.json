@@ -1,0 +1,11 @@
+{
+  "status": "completed",
+  "transitions": 19200,
+  "num_complete_episodes": 200,
+  "successes": 0,
+  "wall_time_s": 33.69053147302475,
+  "observation_dim": 27,
+  "actor_force_fields": [],
+  "controller_uses_ft": false,
+  "finite": true
+}

@@ -1,0 +1,91 @@
+{
+  "status": "completed",
+  "pid": 1598647,
+  "phase": "extended",
+  "seeds": [
+    0
+  ],
+  "budget_s": 14763.093830347061,
+  "source_sha256": {
+    "run.py": "43ad4075218620fbd4a0ea30d2cce1437069503f5c537e062beb6d8111b81f86",
+    "min_env.py": "b45fd25d4f54bda5ec5f12bf4c33e60f8f668a3d9da38327ecbcdad5cb20a885",
+    "geometry.py": "a7004d3536b589c07443e06a27b928ede0a1600add084fb772f1cc86b3645c6e",
+    "scenarios.py": "66d3b8da9845f18b22a627db66221e4d91306d057f833a74e6c0eeedb138856b"
+  },
+  "runs": [
+    {
+      "group": "B0",
+      "seed": 0,
+      "requested_transitions": 4966400,
+      "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/extended_B0_s0",
+      "status": "completed",
+      "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B0_seed0_4966400.pth",
+      "checkpoint_sha256": "b44c2277fc80f631e05a55b3ef052a14290bfb049d248feb64e87cfc3e204bab",
+      "actual_transitions": 4966400,
+      "epoch": 97,
+      "has_optimizer": true,
+      "normalization_keys": [
+        "running_mean_std.running_mean_std.policy.running_mean",
+        "running_mean_std.running_mean_std.policy.running_var",
+        "running_mean_std.running_mean_std.policy.count"
+      ],
+      "validation": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B0_s0_4966400"
+    },
+    {
+      "group": "B1",
+      "seed": 0,
+      "requested_transitions": 4966400,
+      "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/extended_B1_s0",
+      "status": "completed",
+      "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B1_seed0_4966400.pth",
+      "checkpoint_sha256": "ed24b6ac6ea6c1d2f66dfac510796b5c625fe97086fbc9f1e1e820af461082d1",
+      "actual_transitions": 4966400,
+      "epoch": 97,
+      "has_optimizer": true,
+      "normalization_keys": [
+        "running_mean_std.running_mean_std.policy.running_mean",
+        "running_mean_std.running_mean_std.policy.running_var",
+        "running_mean_std.running_mean_std.policy.count"
+      ],
+      "validation": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B1_s0_4966400"
+    },
+    {
+      "group": "B2",
+      "seed": 0,
+      "requested_transitions": 4966400,
+      "train_dir": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/extended_B2_s0",
+      "status": "completed",
+      "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B2_seed0_4966400.pth",
+      "checkpoint_sha256": "63c55d97ed4d9e09956d4d77d6bd4a9fbf07c077872857621d8dff3aa47e1cc2",
+      "actual_transitions": 4966400,
+      "epoch": 97,
+      "has_optimizer": true,
+      "normalization_keys": [
+        "running_mean_std.running_mean_std.policy.running_mean",
+        "running_mean_std.running_mean_std.policy.running_var",
+        "running_mean_std.running_mean_std.policy.count"
+      ],
+      "validation": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B2_s0_4966400"
+    }
+  ],
+  "elapsed_s": 9589.513358001015,
+  "child_pid": 1624062,
+  "command": [
+    "bash",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run_eval.sh",
+    "--group",
+    "B2",
+    "--seed",
+    "0",
+    "--num_envs",
+    "100",
+    "--checkpoint",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/checkpoints/B2_seed0_4966400.pth",
+    "--manifest",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_manifest.jsonl",
+    "--headless",
+    "--output",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/validation_B2_s0_4966400"
+  ],
+  "log": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/logs/validation_B2_s0_4966400.log"
+}
