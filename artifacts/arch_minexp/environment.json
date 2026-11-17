@@ -1,0 +1,13 @@
+{
+  "python": "3.10.20 | packaged by conda-forge | (main, Mar  5 2026, 16:42:22) [GCC 14.3.0]",
+  "env_spec_sha256": "da783fc48273953c137d2ae0b939d69b12e1af600f58c49da8f5ea2583ecb902",
+  "packages": {
+    "torch": "2.3.0",
+    "numpy": "1.26.4",
+    "rl-games": "1.6.1",
+    "omni-isaac-lab": "0.20.0",
+    "isaacsim-app": "4.0.0.0"
+  },
+  "cuda": "12.1",
+  "device": "NVIDIA GeForce RTX 3090"
+}

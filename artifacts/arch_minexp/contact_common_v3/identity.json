@@ -1,0 +1,28 @@
+{
+  "group": "B2",
+  "seed": 0,
+  "mode": "fixtures",
+  "command": [
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run.py",
+    "--mode",
+    "fixtures",
+    "--contact_pair",
+    "--group",
+    "B2",
+    "--num_envs",
+    "4",
+    "--steps",
+    "96",
+    "--headless",
+    "--output",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/contact_common_v3"
+  ],
+  "started_unix": 1794911187.7876303,
+  "num_envs": 4,
+  "physics_dt": 0.008333333333333333,
+  "policy_dt": 0.041666666666666664,
+  "episode_steps": 96,
+  "checkpoint": null,
+  "checkpoint_sha256": null,
+  "manifest_sha256": null
+}

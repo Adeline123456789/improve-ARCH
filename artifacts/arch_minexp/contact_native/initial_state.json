@@ -1,0 +1,497 @@
+{
+  "config": {
+    "PEG_ASSET_NAME": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_Hexagon_Green_Updated.usd",
+    "PEG_TYPE": "part",
+    "PEG_ATTACHMENT_PRIM": "peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005",
+    "HOLE_ASSET_NAME": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Board_DarkBlue_Updated.usd",
+    "HOLE_TYPE": "peripheral",
+    "HOLE_ATTACHMENT_PRIM": null,
+    "EXTRA_PARTS": [
+      "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/fixture_Updated.usd",
+      "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_Star_DarkBlue_Updated.usd",
+      "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_SquareCircle_Red_Updated.usd",
+      "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_3Prong_JeansRed_Updated.usd",
+      "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_Circle_Brown_Updated.usd",
+      "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_Oval_JeansBlue_Updated.usd",
+      "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_Arch_Yellow_Updated.usd",
+      "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_DoubleSquare_Purple_Updated.usd",
+      "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/multi-robot-assembly/multi_arm_assembly/../taskboard/fmb_example/Medium_Short_Rectangle_JeansBlue_Updated.usd"
+    ],
+    "EXTRA_PARTS_STARTING_POSE": [
+      [
+        [
+          0.3,
+          0.2,
+          0.06
+        ],
+        [
+          0,
+          0,
+          0.7071068,
+          -0.7071068
+        ]
+      ],
+      [
+        [
+          0.8500000238418579,
+          0.25,
+          0.05000000074505806
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      [
+        [
+          0.8500000238418579,
+          0.09999999403953552,
+          0.05000000074505806
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        [
+          0.25,
+          0.550000011920929,
+          0.05000000074505806
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        [
+          0.7000000476837158,
+          0.25,
+          0.05000000074505806
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          0.7000000476837158,
+          0.09999999403953552,
+          0.05000000074505806
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          0.550000011920929,
+          0.4000000059604645,
+          0.05000000074505806
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      [
+        [
+          0.40000003576278687,
+          0.4000000059604645,
+          0.05000000074505806
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        [
+          0.40000003576278687,
+          0.550000011920929,
+          0.05000000074505806
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    ],
+    "EXTRA_ATTACHMENTS": [],
+    "HOLE_T_PEG_GOAL": null,
+    "PEG_GOAL": [
+      [
+        -0.06949999928474426,
+        -0.08950000256299973,
+        0.029999999329447746
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "HOLE_GOAL": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "PEG_T_ORIGIN_GOAL": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "HOLE_T_ORIGIN_GOAL": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1
+      ]
+    ],
+    "WORLD_T_PEG_START": [
+      [
+        0.06949999928474426,
+        0.2695000171661377,
+        0.11499999463558197
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "WORLD_T_HOLE_START": [
+      [
+        0.0,
+        0.18000000715255737,
+        0.02500000037252903
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ]
+    ],
+    "WORLD_T_FIXTURE_START": null,
+    "WORLD_T_ZIVID_HOME": [
+      [
+        0.2,
+        -0.5,
+        0.760453064
+      ],
+      [
+        -0.9110028,
+        0,
+        0,
+        0.4124002
+      ]
+    ],
+    "PEG_T_TIP": [
+      [
+        0,
+        0,
+        -0.01
+      ],
+      [
+        -1,
+        0,
+        0,
+        0
+      ]
+    ],
+    "HOLE_T_TIP": null,
+    "WORLD_T_PEG_PICK": null,
+    "WORLD_T_HOLE_PICK": null,
+    "relative_goal": true,
+    "num_robots": 1,
+    "relative_pose_obs": true,
+    "desired_tool_T_world": null,
+    "allow_peg_rotation": true,
+    "allow_hole_rotation": false,
+    "peg_goal_weights": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "hole_goal_weights": [
+      1,
+      1,
+      1,
+      0.1,
+      0.1,
+      0.1
+    ],
+    "PEG_IK_WORLD_T_TOOL": null,
+    "HOLE_IK_WORLD_T_TOOL": null,
+    "origin_regularization": 0,
+    "allow_gripper_status": false,
+    "relative_observations": false,
+    "force_sensing": false,
+    "USE_FIXED_RIGID_ATTACHMENT": true,
+    "FT_SENSOR_TYPE": "physx_view",
+    "USE_FT_SENSOR": true,
+    "JOINT_VELOCITY": 48,
+    "CAMERA_TYPE": "tiled",
+    "TASK_NAME": "AssemblyInsert-v0",
+    "SHOW_GOAL": false,
+    "WORLD_T_PEG_START_LIST": [
+      [
+        [
+          0.06949999928474426,
+          0.2695000171661377,
+          0.11499999463558197
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      [
+        [
+          0.3,
+          0.6,
+          0.28
+        ],
+        [
+          0.5,
+          -0.5,
+          0.5,
+          0.5
+        ]
+      ]
+    ],
+    "VELOCITY_OBS": false,
+    "GRIPPER_STATUS_OBS": false,
+    "DIFFICULTY_LEVEL": "easy",
+    "SUBTASK": null,
+    "USE_CAMERA": false,
+    "IMAGE_WIDTH": 128,
+    "IMAGE_HEIGHT": 128,
+    "IMAGE_WIDTH_RAW": 512,
+    "IMAGE_HEIGHT_RAW": 512,
+    "SAVE_IMG": false,
+    "better_tool_frame": false,
+    "RESET_POSITION_NOISE": 0.005,
+    "RESET_ROTATION_NOISE": 0.02,
+    "DEBUG_ACTION": false,
+    "selected_obj_id": 0,
+    "POSE_AFTER": [
+      [
+        0.06829987,
+        0.26839996,
+        0.5
+      ],
+      [
+        -7.54978864e-08,
+        -1.0,
+        -1.94707178e-07,
+        7.63183015e-08
+      ]
+    ]
+  },
+  "physics_dt": 0.008333333333333333,
+  "step_dt": 0.041666666666666664,
+  "max_episode_length": 96,
+  "num_actions": 7,
+  "observation_shapes": {
+    "policy": [
+      2,
+      15
+    ]
+  },
+  "robot_joint_pos": [
+    [
+      1.779289722442627,
+      -1.232879877090454,
+      1.7433912754058838,
+      -2.081045627593994,
+      -1.5708258152008057,
+      -1.3622716665267944,
+      0.19820208847522736,
+      0.19820208847522736,
+      0.0034102501813322306,
+      0.0034251450560986996,
+      0.190338596701622,
+      -0.19029493629932404,
+      -0.19115351140499115,
+      -0.1911080926656723
+    ],
+    [
+      1.779289722442627,
+      -1.232879877090454,
+      1.7433909177780151,
+      -2.0810458660125732,
+      -1.5708256959915161,
+      -1.3622716665267944,
+      0.19820205867290497,
+      0.1982020139694214,
+      0.003410249250009656,
+      0.0034249310847371817,
+      0.19033867120742798,
+      -0.19030354917049408,
+      -0.19115455448627472,
+      -0.19112198054790497
+    ]
+  ],
+  "robot_body_names": [
+    "base_link",
+    "base",
+    "base_link_inertia",
+    "shoulder_link",
+    "upper_arm_link",
+    "forearm_link",
+    "wrist_1_link",
+    "wrist_2_link",
+    "wrist_3_link",
+    "flange",
+    "tool0",
+    "tool_changer_and_realsense",
+    "base_link_gripper",
+    "right_outer_knuckle",
+    "left_outer_knuckle",
+    "right_outer_finger",
+    "left_outer_finger",
+    "right_inner_finger",
+    "left_inner_finger",
+    "right_inner_knuckle",
+    "left_inner_knuckle"
+  ],
+  "peg_root": [
+    [
+      2.0689892768859863,
+      0.2691832482814789,
+      0.11539565771818161,
+      1.5113801055122167e-05,
+      -0.00012615995365194976,
+      -4.1619678086135536e-05,
+      0.9999999403953552,
+      -1.166784295492107e-05,
+      -1.4825194512013695e-06,
+      -1.2056219020450953e-05,
+      -2.0176873931632144e-06,
+      2.4616045266157016e-05,
+      5.1610561058623716e-05
+    ],
+    [
+      -1.9310110807418823,
+      0.26918330788612366,
+      0.11539606750011444,
+      1.5135734429350123e-05,
+      -0.00012587150558829308,
+      -4.1591323679313064e-05,
+      0.9999999403953552,
+      -1.584555684530642e-05,
+      -2.395809588051634e-06,
+      -5.540661732084118e-06,
+      -4.1572102418285795e-06,
+      3.45205444318708e-05,
+      5.043612691224553e-05
+    ]
+  ],
+  "ee_pose": [
+    [
+      0.06892156600952148,
+      0.26916080713272095,
+      0.3853958249092102,
+      -0.00012536346912384033,
+      -1.531839370727539e-05,
+      -0.9999999403953552,
+      -4.155933856964111e-05
+    ],
+    [
+      0.06892132759094238,
+      0.2691608965396881,
+      0.38539618253707886,
+      -0.00012509524822235107,
+      -1.5363097190856934e-05,
+      -0.9999999403953552,
+      -4.151463508605957e-05
+    ]
+  ],
+  "goal": [
+    [
+      0.06949999928474426,
+      0.2695000171661377,
+      0.054999999701976776,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    [
+      0.06949999928474426,
+      0.2695000171661377,
+      0.054999999701976776,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "env_origins": [
+    [
+      2.0,
+      0.0,
+      0.0
+    ],
+    [
+      -2.0,
+      0.0,
+      0.0
+    ]
+  ],
+  "contact_paths": [
+    "/World/envs/env_0/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005",
+    "/World/envs/env_1/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+  ],
+  "checkpoint_sha256": null
+}

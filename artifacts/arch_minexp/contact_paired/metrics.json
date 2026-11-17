@@ -1,0 +1,9 @@
+{
+  "mode": "paired",
+  "num_episodes": 2,
+  "transitions": 190,
+  "wall_time_s": 11.63673429901246,
+  "provisional_pose_successes": 0,
+  "physical_successes": null,
+  "finite": true
+}

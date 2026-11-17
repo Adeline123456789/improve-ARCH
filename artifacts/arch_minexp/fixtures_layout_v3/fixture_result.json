@@ -1,0 +1,537 @@
+{
+  "cases": [
+    {
+      "case_id": "fixture-seated",
+      "split": "fixture",
+      "suite": "E2",
+      "seed": 20000,
+      "stratum": "yaw",
+      "board_true": [
+        0.0010715770792348207,
+        0.1960799419023549,
+        0.025,
+        -0.2186957638891557,
+        0.0,
+        0.0,
+        0.9757930942863546
+      ],
+      "socket_true": [
+        0.02494178544979213,
+        0.3052551346128347,
+        0.04936008,
+        -0.0,
+        -0.2186957638891557,
+        0.9757930942863546,
+        0.0
+      ],
+      "socket_estimated": [
+        0.02494178544979213,
+        0.3052551346128347,
+        0.04936008,
+        -0.0,
+        -0.2186957638891557,
+        0.9757930942863546,
+        0.0
+      ],
+      "X_true": [
+        0.0,
+        0.0,
+        0.32,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "X_hat": [
+        0.0,
+        0.0,
+        0.32,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "T_SP_star": [
+        0.0,
+        0.0,
+        0.044360079999999996,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "T_SP_pre": [
+        0.0,
+        0.0,
+        -0.01563992,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ee_start": [
+        0.024941785261034966,
+        0.30525514483451843,
+        0.32499998807907104,
+        -0.0,
+        -0.2186957597732544,
+        0.9757931232452393,
+        0.0
+      ],
+      "socket_bias": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "grasp_bias": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "approach_retreat_m": 0.06,
+      "physics": {
+        "dt": 0.008333333333333333,
+        "decimation": 5,
+        "stiffness": 400,
+        "damping": 800,
+        "effort_limit": 100,
+        "gravity_disabled_robot_peg": true
+      },
+      "success_version": "cad-hex-v1",
+      "error_outside_training": false,
+      "validity": {
+        "status": "pending_ik_and_initial_clearance"
+      }
+    },
+    {
+      "case_id": "fixture-edge",
+      "split": "fixture",
+      "suite": "E2",
+      "seed": 20001,
+      "stratum": "translation",
+      "board_true": [
+        -0.03137215061983607,
+        0.19178694012067568,
+        0.025,
+        -0.12021167362158651,
+        0.0,
+        0.0,
+        0.9927482830632834
+      ],
+      "socket_true": [
+        0.01370680640163044,
+        0.2940459112913314,
+        0.04936008,
+        -0.0,
+        -0.12021167362158651,
+        0.9927482830632834,
+        0.0
+      ],
+      "socket_estimated": [
+        0.01370680640163044,
+        0.2940459112913314,
+        0.04936008,
+        -0.0,
+        -0.12021167362158651,
+        0.9927482830632834,
+        0.0
+      ],
+      "X_true": [
+        0.0,
+        0.0,
+        0.32,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "X_hat": [
+        0.0,
+        0.0,
+        0.32,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "T_SP_star": [
+        0.0,
+        0.0,
+        0.044360079999999996,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "T_SP_pre": [
+        0.0,
+        0.0,
+        -0.01563992,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ee_start": [
+        0.0059380196034908295,
+        0.2921364903450012,
+        0.36966007947921753,
+        -0.0,
+        -0.12021167576313019,
+        0.9927482604980469,
+        0.0
+      ],
+      "socket_bias": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "grasp_bias": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "approach_retreat_m": 0.06,
+      "physics": {
+        "dt": 0.008333333333333333,
+        "decimation": 5,
+        "stiffness": 400,
+        "damping": 800,
+        "effort_limit": 100,
+        "gravity_disabled_robot_peg": true
+      },
+      "success_version": "cad-hex-v1",
+      "error_outside_training": false,
+      "validity": {
+        "status": "pending_ik_and_initial_clearance"
+      }
+    },
+    {
+      "case_id": "fixture-penetrating",
+      "split": "fixture",
+      "suite": "E2",
+      "seed": 20002,
+      "stratum": "yaw",
+      "board_true": [
+        0.011366461240598553,
+        0.16087196734168807,
+        0.025,
+        -0.14544080931794767,
+        0.0,
+        0.0,
+        0.989366954665932
+      ],
+      "socket_true": [
+        0.05118317211428795,
+        0.2652924590386019,
+        0.04936008,
+        -0.0,
+        -0.14544080931794767,
+        0.989366954665932,
+        0.0
+      ],
+      "socket_estimated": [
+        0.05118317211428795,
+        0.2652924590386019,
+        0.04936008,
+        -0.0,
+        -0.14544080931794767,
+        0.989366954665932,
+        0.0
+      ],
+      "X_true": [
+        0.0,
+        0.0,
+        0.32,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "X_hat": [
+        0.0,
+        0.0,
+        0.32,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "T_SP_star": [
+        0.0,
+        0.0,
+        0.044360079999999996,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "T_SP_pre": [
+        0.0,
+        0.0,
+        -0.01563992,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ee_start": [
+        0.051183171570301056,
+        0.2652924656867981,
+        0.3049999475479126,
+        -0.0,
+        -0.14544080197811127,
+        0.9893669486045837,
+        0.0
+      ],
+      "socket_bias": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "grasp_bias": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "approach_retreat_m": 0.06,
+      "physics": {
+        "dt": 0.008333333333333333,
+        "decimation": 5,
+        "stiffness": 400,
+        "damping": 800,
+        "effort_limit": 100,
+        "gravity_disabled_robot_peg": true
+      },
+      "success_version": "cad-hex-v1",
+      "error_outside_training": false,
+      "validity": {
+        "status": "pending_ik_and_initial_clearance"
+      }
+    },
+    {
+      "case_id": "fixture-free",
+      "split": "fixture",
+      "suite": "E2",
+      "seed": 20003,
+      "stratum": "translation",
+      "board_true": [
+        -0.02320967088814742,
+        0.1765244253565443,
+        0.025,
+        -0.09528937810205125,
+        0.0,
+        0.0,
+        0.9954496142050205
+      ],
+      "socket_true": [
+        0.02693753499543891,
+        0.2763956789438175,
+        0.04936008,
+        -0.0,
+        -0.09528937810205125,
+        0.9954496142050205,
+        0.0
+      ],
+      "socket_estimated": [
+        0.02693753499543891,
+        0.2763956789438175,
+        0.04936008,
+        -0.0,
+        -0.09528937810205125,
+        0.9954496142050205,
+        0.0
+      ],
+      "X_true": [
+        0.0,
+        0.0,
+        0.32,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "X_hat": [
+        0.0,
+        0.0,
+        0.32,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "T_SP_star": [
+        0.0,
+        0.0,
+        0.044360079999999996,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "T_SP_pre": [
+        0.0,
+        0.0,
+        -0.01563992,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ee_start": [
+        0.026937535032629967,
+        0.27639567852020264,
+        0.38499993085861206,
+        -0.0,
+        -0.09528937935829163,
+        0.9954496026039124,
+        0.0
+      ],
+      "socket_bias": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "grasp_bias": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "approach_retreat_m": 0.06,
+      "physics": {
+        "dt": 0.008333333333333333,
+        "decimation": 5,
+        "stiffness": 400,
+        "damping": 800,
+        "effort_limit": 100,
+        "gravity_disabled_robot_peg": true
+      },
+      "success_version": "cad-hex-v1",
+      "error_outside_training": false,
+      "validity": {
+        "status": "pending_ik_and_initial_clearance"
+      }
+    }
+  ],
+  "episodes": [
+    {
+      "group": "B2",
+      "policy_kind": "zero-action diagnostic",
+      "checkpoint_id": null,
+      "training_seed": 0,
+      "case_id": "fixture-seated",
+      "suite": "E2",
+      "num_steps": 96,
+      "success": true,
+      "termination_reason": "success",
+      "completion_time_s": 0.2083333432674408,
+      "final_depth_m": 0.04421858489513397,
+      "final_lateral_error_m": 0.001453764969483018,
+      "final_rotation_error_rad": 0.006018911022692919,
+      "peak_contact_measure": 5.446324348449707,
+      "contact_measure_type": "net force on peg, world, N; torque unavailable",
+      "tracking_residual_rms": 2.8800201107515022e-05,
+      "action_saturation_rate": 0.0,
+      "wall_time_s": 12.614125851076096,
+      "return": -0.41152268648147583,
+      "transitions": 384
+    },
+    {
+      "group": "B2",
+      "policy_kind": "zero-action diagnostic",
+      "checkpoint_id": null,
+      "training_seed": 0,
+      "case_id": "fixture-edge",
+      "suite": "E2",
+      "num_steps": 96,
+      "success": false,
+      "termination_reason": "timeout",
+      "completion_time_s": null,
+      "final_depth_m": -0.0013250596821308136,
+      "final_lateral_error_m": 0.012524900957942009,
+      "final_rotation_error_rad": 0.013162846677005291,
+      "peak_contact_measure": 1.5634604692459106,
+      "contact_measure_type": "net force on peg, world, N; torque unavailable",
+      "tracking_residual_rms": 4.956110933562741e-05,
+      "action_saturation_rate": 0.0,
+      "wall_time_s": 12.613398514920846,
+      "return": -4.5173821449279785,
+      "transitions": 384
+    },
+    {
+      "group": "B2",
+      "policy_kind": "zero-action diagnostic",
+      "checkpoint_id": null,
+      "training_seed": 0,
+      "case_id": "fixture-penetrating",
+      "suite": "E2",
+      "num_steps": 96,
+      "success": false,
+      "termination_reason": "abnormal_physics",
+      "completion_time_s": null,
+      "final_depth_m": 0.01531052216887474,
+      "final_lateral_error_m": 0.0014758547767996788,
+      "final_rotation_error_rad": 0.0422835573554039,
+      "peak_contact_measure": 117.72261810302734,
+      "contact_measure_type": "net force on peg, world, N; torque unavailable",
+      "tracking_residual_rms": 0.004408194683492184,
+      "action_saturation_rate": 0.0,
+      "wall_time_s": 12.612627494963817,
+      "return": -4.930953025817871,
+      "transitions": 384
+    },
+    {
+      "group": "B2",
+      "policy_kind": "zero-action diagnostic",
+      "checkpoint_id": null,
+      "training_seed": 0,
+      "case_id": "fixture-free",
+      "suite": "E2",
+      "num_steps": 96,
+      "success": false,
+      "termination_reason": "timeout",
+      "completion_time_s": null,
+      "final_depth_m": -0.01670612394809723,
+      "final_lateral_error_m": 0.004562589339911938,
+      "final_rotation_error_rad": 0.013232976198196411,
+      "peak_contact_measure": 1.564743995666504,
+      "contact_measure_type": "net force on peg, world, N; torque unavailable",
+      "tracking_residual_rms": 5.002919351682067e-05,
+      "action_saturation_rate": 0.0,
+      "wall_time_s": 12.611412619007751,
+      "return": -5.889405727386475,
+      "transitions": 384
+    }
+  ],
+  "expected": [
+    true,
+    false,
+    false,
+    false
+  ],
+  "warning": "physical validation requires inspecting traces for stable seating / collision response"
+}

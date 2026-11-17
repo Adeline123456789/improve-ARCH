@@ -1,0 +1,569 @@
+[
+  {
+    "path": "/World/envs/env_0/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_0/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_0/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_1/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_1/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_1/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_1/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_1/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_1/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_2/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_2/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_2/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_2/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_2/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_2/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_3/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_3/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_3/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_3/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_3/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_3/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_4/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_4/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_4/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_4/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_4/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_4/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_5/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_5/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_5/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_5/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_5/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_5/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_6/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_6/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_6/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_6/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_6/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_6/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_7/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_7/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_7/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_7/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_7/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_7/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_8/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_8/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_8/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_8/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_8/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_8/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_9/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_9/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_9/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_9/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_9/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_9/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_10/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_10/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_10/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_10/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_10/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_10/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_11/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_11/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_11/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_11/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_11/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_11/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_12/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_12/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_12/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_12/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_12/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_12/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_13/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_13/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_13/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_13/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_13/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_13/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_14/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_14/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_14/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_14/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_14/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_14/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_15/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_15/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_15/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_15/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_15/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_15/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_16/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_16/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_16/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_16/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_16/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_16/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_17/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_17/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_17/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_17/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_17/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_17/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_18/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_18/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_18/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_18/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_18/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_18/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_19/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_19/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_19/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_19/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_19/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_19/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_20/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_20/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_20/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_20/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_20/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_20/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_21/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_21/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_21/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_21/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_21/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_21/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_22/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_22/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_22/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_22/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_22/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_22/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_23/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_23/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_23/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_23/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_23/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_23/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_24/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_24/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_24/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_24/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_24/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_24/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_25/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_25/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_25/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_25/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_25/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_25/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_26/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_26/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_26/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_26/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_26/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_26/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_27/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_27/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_27/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_27/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_27/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_27/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_28/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_28/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_28/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_28/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_28/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_28/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_29/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_29/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_29/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_29/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_29/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_29/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_30/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_30/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_30/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_30/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_30/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_30/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_31/robot1/AssemblerFixedJoint",
+    "body0": [
+      "/World/envs/env_31/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_31/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  },
+  {
+    "path": "/World/envs/env_31/robot1/AssemblerFixedJoint_1",
+    "body0": [
+      "/World/envs/env_31/robot1/tool0"
+    ],
+    "body1": [
+      "/World/envs/env_31/peg/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005"
+    ]
+  }
+]

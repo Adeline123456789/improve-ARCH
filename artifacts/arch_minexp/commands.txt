@@ -1,0 +1,1 @@
+bash /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run_train.sh --group B0 --seed 0 --num_envs 512 --transitions 1996800 --headless --output /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/screen_B0_s0 > /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/logs/screen_B0_s0.log 2>&1

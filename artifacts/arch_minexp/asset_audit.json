@@ -1,0 +1,73 @@
+{
+  "Medium_Board_DarkBlue_Updated.usd": {
+    "meters_per_unit": 1.0,
+    "prims": [
+      {
+        "path": "/World/Medium_Board_DarkBlue/Medium_Board_DarkBlue/obj1_030",
+        "type": "Mesh",
+        "schemas": [
+          "PhysicsCollisionAPI",
+          "PhysxCollisionAPI",
+          "PhysxTriangleMeshCollisionAPI",
+          "PhysicsMeshCollisionAPI",
+          "MaterialBindingAPI",
+          "PhysxSDFMeshCollisionAPI"
+        ],
+        "bounds_min": [
+          -0.10989639282226563,
+          -0.1353985290527344,
+          -0.02563993263244629
+        ],
+        "bounds_max": [
+          0.12010360717773438,
+          0.09460147094726562,
+          0.02436008644104004
+        ],
+        "attrs": {
+          "physics:approximation": "sdf",
+          "physics:collisionEnabled": "True"
+        },
+        "vertices": 1007
+      }
+    ]
+  },
+  "Medium_Short_Hexagon_Green_Updated.usd": {
+    "meters_per_unit": 1.0,
+    "prims": [
+      {
+        "path": "/World/Medium_Short_Hexagon_Green/Medium_Short_Hexagon_Green/obj1_012_obj1_005",
+        "type": "Mesh",
+        "schemas": [
+          "PhysicsRigidBodyAPI",
+          "PhysxRigidBodyAPI",
+          "PhysicsCollisionAPI",
+          "PhysxCollisionAPI",
+          "PhysxConvexHullCollisionAPI",
+          "PhysicsMeshCollisionAPI",
+          "PhysxSDFMeshCollisionAPI",
+          "MaterialBindingAPI"
+        ],
+        "bounds_min": [
+          -0.01829046630859375,
+          -0.020630718231201172,
+          -0.05
+        ],
+        "bounds_max": [
+          0.01829046630859375,
+          0.02063070869445801,
+          0.05
+        ],
+        "attrs": {
+          "physics:angularVelocity": "(0, 0, 0)",
+          "physics:approximation": "sdf",
+          "physics:collisionEnabled": "True",
+          "physics:kinematicEnabled": "False",
+          "physics:rigidBodyEnabled": "True",
+          "physics:startsAsleep": "False",
+          "physics:velocity": "(0, 0, 0)"
+        },
+        "vertices": 48
+      }
+    ]
+  }
+}

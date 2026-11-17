@@ -1,0 +1,27 @@
+{
+  "group": "B2",
+  "seed": 0,
+  "mode": "smoke",
+  "command": [
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run.py",
+    "--mode",
+    "smoke",
+    "--group",
+    "B2",
+    "--num_envs",
+    "512",
+    "--steps",
+    "192",
+    "--headless",
+    "--output",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/smoke512_v3"
+  ],
+  "started_unix": 1794911022.933238,
+  "num_envs": 512,
+  "physics_dt": 0.008333333333333333,
+  "policy_dt": 0.041666666666666664,
+  "episode_steps": 96,
+  "checkpoint": null,
+  "checkpoint_sha256": null,
+  "manifest_sha256": null
+}

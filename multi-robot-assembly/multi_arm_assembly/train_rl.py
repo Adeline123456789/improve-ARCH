@@ -100,6 +100,8 @@ def main():
     print(f"[INFO] Logging experiment in directory: {log_root_path}")
     # specify directory for logging runs
     log_dir = agent_cfg["params"]["config"].get("full_experiment_name", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+    if args_cli.prefix:
+        log_dir += "_" + args_cli.prefix
     # set directory into agent config
     # logging directory path: <train_dir>/<full_experiment_name>
     agent_cfg["params"]["config"]["train_dir"] = log_root_path

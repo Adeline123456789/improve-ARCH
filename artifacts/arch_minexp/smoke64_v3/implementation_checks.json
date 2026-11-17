@@ -1,0 +1,6 @@
+{
+  "hidden_truth_does_not_change_actor_observations": true,
+  "asynchronous_reset_isolated_and_bias_resampled": true,
+  "residual_timestamp_alignment": true,
+  "reset_residual_mask": true
+}

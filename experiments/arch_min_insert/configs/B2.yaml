@@ -1,0 +1,6 @@
+group: B2
+geometry_action_frame: estimated_socket
+tracking_residual: true
+force_inputs: false
+observation_dim: 27
+common_protocol: artifacts/arch_minexp/frozen_protocol.yaml

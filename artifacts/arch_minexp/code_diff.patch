@@ -1,0 +1,1391 @@
+diff --git a/experiments/arch_min_insert/README.md b/experiments/arch_min_insert/README.md
+new file mode 100644
+index 0000000..b5f8345
+--- /dev/null
++++ b/experiments/arch_min_insert/README.md
+@@ -0,0 +1,39 @@
++# ARCH INSERT minimum experiment
++
++This is an isolated low-level PPO experiment. It reuses the installed Isaac Sim 4.0 / Isaac Lab 1.1 environment, original UR10e/Hexagon assets, native differential IK and joint drives. No high-level DiT is trained.
++
++**Execution status:** see [background_status.json](../../artifacts/arch_minexp/background_status.json), [screen_job.json](../../artifacts/arch_minexp/screen_job.json), and the generated [report](../../artifacts/arch_minexp/report.md). A running job is not a completed result.
++
++The pretraining audit is [repo_audit.md](../../artifacts/arch_minexp/repo_audit.md). The [protocol](../../artifacts/arch_minexp/frozen_protocol.yaml) and validation/test manifests were frozen before main training. B0 uses world geometry/actions, B1 local geometry/actions, B2 additionally uses aligned tracking residuals. All have the same 27D actor/shared critic, 6D tip actions and two-layer 256-unit LSTM. There is no force input in this simulator policy/control chain.
++
++Common corrections are limited to the new environment: one grasp constraint per environment; PhysX tensor updates for a kinematic board retaining its CAD/SDF; CAD-centered per-environment targets; isolated resets; a CAD-relative success evaluator. Old native R0 runs retain their identity. Recorded failures during preflight are excluded from main results.
++
++From the repository root, using the existing `.venv-arch` (do not reinstall Isaac):
++
++```bash
++.venv-arch/bin/python experiments/arch_min_insert/test_geometry.py
++bash experiments/arch_min_insert/run_smoke.sh --group B2 --num_envs 4 --steps 192 \
++  --headless --output "$PWD/artifacts/arch_minexp/manual_smoke_new"
++bash experiments/arch_min_insert/run_train.sh --group B0 --seed 0 --num_envs 512 \
++  --transitions 1996800 --headless --output "$PWD/artifacts/arch_minexp/manual_train_new"
++```
++
++Output directories must not exist; this preserves previous results. The launcher sets CWD/PYTHONPATH, eight CPU threads and disabled W&B. One complete rollout is 51,200 transitions at 512 environments. Native MyA2CAgent is the actual optimizer, with eight PPO mini-epochs, horizon 100, minibatch 12,800 and sequence length 4.
++
++After the corresponding checkpoint exists:
++
++```bash
++bash experiments/arch_min_insert/run_eval.sh --group B0 --seed 0 --num_envs 100 \
++  --checkpoint "$PWD/artifacts/arch_minexp/checkpoints/B0_seed0_1996800.pth" \
++  --manifest "$PWD/artifacts/arch_minexp/evaluation_manifest.jsonl" \
++  --headless --output "$PWD/artifacts/arch_minexp/manual_eval_new"
++.venv-arch/bin/python experiments/arch_min_insert/summarize_results.py
++```
++
++Evaluation uses deterministic mean actions, frozen normalization, identical manifest cases and per-episode RNN resets. All test trajectories remain local in each test run; fixed cases and the first up to five successes/failures per suite are exported under `artifacts/arch_minexp/traces/`. `actor_observation` is deployed input; `diagnostic_*` arrays are logging-only truth. Quaternions are wxyz; distances m, angles rad, times s, net forces N. Torque is unavailable. The NPZ contains explicit command/measurement times and case IDs.
++
++The background driver runs equal seed-0 screening, validation, a budget-gated continuation, fixed final tests, result plots/tables and GitHub publication. If basic learning exists but full 45M confirmation cannot fit the six-hour wall deadline, it can add seeds 1/2 at the same 1,996,800 snapshot. If all nominal validation policies fail, it can instead perform a common longer screening from scratch, with separate identities. These are explicitly reported as budget-limited, not full 5M-per-seed confirmation.
++
++Native checkpoints contain model, optimizer and normalization, but not complete live PhysX/contact and recurrent rollout state. `--checkpoint` can restore those stored training components; it restarts episodes and is not bitwise full-state continuation. The automatic experiment does not silently treat it as such.
++
++`publish.py` stages only explicit experiment/evidence paths in a temporary Git index and pushes a new snapshot to the requested `improve-ARCH` repository. It leaves the user's staging area, existing modifications, original remote and checkout HEAD intact. The three preexisting logging changes are included in the published source snapshot for provenance; their original diff is preserved. It refuses to overwrite unexpected remote changes.
+diff --git a/experiments/arch_min_insert/audit_assets.py b/experiments/arch_min_insert/audit_assets.py
+new file mode 100644
+index 0000000..1f56c3a
+--- /dev/null
++++ b/experiments/arch_min_insert/audit_assets.py
+@@ -0,0 +1,24 @@
++"""Read authored CAD and collision properties with the installed USD runtime."""
++import argparse,json
++from pathlib import Path
++from omni.isaac.lab.app import AppLauncher
++p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);AppLauncher.add_app_launcher_args(p);a=p.parse_args();app=AppLauncher(a).app
++from pxr import Usd,UsdGeom,UsdPhysics,PhysxSchema
++import numpy as np
++root=Path('../../taskboard/fmb_example')
++root=Path('../taskboard/fmb_example')
++results={}
++for filename in ['Medium_Board_DarkBlue_Updated.usd','Medium_Short_Hexagon_Green_Updated.usd']:
++    stage=Usd.Stage.Open(str(root/filename));cache=UsdGeom.BBoxCache(Usd.TimeCode.Default(),['default','render','proxy'])
++    rows=[]
++    for prim in stage.Traverse():
++        if prim.IsA(UsdGeom.Mesh) or prim.HasAPI(UsdPhysics.RigidBodyAPI) or prim.HasAPI(UsdPhysics.CollisionAPI):
++            bounds=cache.ComputeWorldBound(prim).ComputeAlignedRange()
++            row={'path':str(prim.GetPath()),'type':prim.GetTypeName(),'schemas':list(prim.GetAppliedSchemas()),'bounds_min':list(bounds.GetMin()),'bounds_max':list(bounds.GetMax()),'attrs':{attr.GetName():str(attr.Get()) for attr in prim.GetAttributes() if any(k in attr.GetName().lower() for k in ['physics','approximation'])}}
++            if prim.IsA(UsdGeom.Mesh):
++                mesh=UsdGeom.Mesh(prim);x=UsdGeom.XformCache().GetLocalToWorldTransform(prim)
++                pts=np.array([list(x.Transform(v)) for v in mesh.GetPointsAttr().Get()]);row['vertices']=len(pts)
++                np.savez_compressed(a.output.parent/(filename+'.mesh.npz'),points=pts,counts=np.array(mesh.GetFaceVertexCountsAttr().Get()),indices=np.array(mesh.GetFaceVertexIndicesAttr().Get()))
++            rows.append(row)
++    results[filename]={'meters_per_unit':UsdGeom.GetStageMetersPerUnit(stage),'prims':rows}
++a.output.write_text(json.dumps(results,indent=2)+'\n');print('CAD_AUDIT_COMPLETE',a.output);app.close()
+diff --git a/experiments/arch_min_insert/background_entry.py b/experiments/arch_min_insert/background_entry.py
+new file mode 100644
+index 0000000..77e5366
+--- /dev/null
++++ b/experiments/arch_min_insert/background_entry.py
+@@ -0,0 +1,10 @@
++"""Detached bootstrap: initial publication must not prevent experiment supervision."""
++import os,subprocess,traceback
++from pathlib import Path
++ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'artifacts/arch_minexp';PY=str(ROOT/'.venv-arch/bin/python')
++try:
++    subprocess.run([PY,str(Path(__file__).with_name('summarize_results.py'))],cwd=ROOT,check=True)
++    subprocess.run([PY,str(Path(__file__).with_name('publish.py')),'--include_code','--message','Add bounded ARCH INSERT experiment and pretraining evidence'],cwd=ROOT,check=True)
++except BaseException:
++    (OUT/'logs/initial_publication_error.txt').write_text(traceback.format_exc())
++os.execv(PY,[PY,str(Path(__file__).with_name('finish_background.py'))])
+diff --git a/experiments/arch_min_insert/batch.py b/experiments/arch_min_insert/batch.py
+new file mode 100644
+index 0000000..55db15f
+--- /dev/null
++++ b/experiments/arch_min_insert/batch.py
+@@ -0,0 +1,60 @@
++"""Sequential bounded runs; persists status, exact commands and verified checkpoints.
++This driver never chooses a checkpoint using validation/test success.
++"""
++import argparse,hashlib,json,os,shlex,shutil,subprocess,time
++from pathlib import Path
++p=argparse.ArgumentParser();p.add_argument('--seeds',nargs='+',type=int,default=[0]);p.add_argument('--phase',default='screen')
++p.add_argument('--transitions',type=int,default=1996800);p.add_argument('--num_envs',type=int,default=512)
++p.add_argument('--wall_budget_s',type=float,default=19800);p.add_argument('--evaluate_test',action='store_true');a=p.parse_args()
++ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'artifacts/arch_minexp'
++status_path=OUT/f'{a.phase}_job.json';start=time.monotonic()
++source_hash={name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest() for name in ['run.py','min_env.py','geometry.py','scenarios.py']}
++status={'status':'starting','pid':os.getpid(),'phase':a.phase,'seeds':a.seeds,'budget_s':a.wall_budget_s,'source_sha256':source_hash,'runs':[]}
++def save():
++    status['elapsed_s']=time.monotonic()-start;tmp=status_path.with_suffix('.tmp');tmp.write_text(json.dumps(status,indent=2)+'\n');tmp.replace(status_path)
++def run(cmd,log):
++    for name,expected in source_hash.items():assert hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()==expected,'Source changed mid-comparison'
++    with (OUT/'commands.txt').open('a') as f:f.write(shlex.join(cmd)+' > '+str(log)+' 2>&1\n')
++    with log.open('w') as f:
++        child=subprocess.Popen(cmd,cwd=ROOT,stdout=f,stderr=subprocess.STDOUT,stdin=subprocess.DEVNULL)
++        status.update(status='running',child_pid=child.pid,command=cmd,log=str(log));save()
++        remaining=a.wall_budget_s-(time.monotonic()-start)
++        try:code=child.wait(timeout=max(1,remaining))
++        except subprocess.TimeoutExpired:
++            child.terminate()
++            try:child.wait(timeout=30)
++            except subprocess.TimeoutExpired:child.kill();child.wait()
++            raise RuntimeError('Wall budget reached; preserve latest periodic checkpoint, do not label complete')
++        if code:raise RuntimeError(f'Child exited {code}; see {log}')
++try:
++    import torch
++    for seed in a.seeds:
++        for group in ['B0','B1','B2']:
++            name=f'{a.phase}_{group}_s{seed}';directory=OUT/name
++            record={'group':group,'seed':seed,'requested_transitions':a.transitions,'train_dir':str(directory),'status':'starting'}
++            status['runs'].append(record);save()
++            cmd=['bash',str(ROOT/'experiments/arch_min_insert/run_train.sh'),'--group',group,'--seed',str(seed),'--num_envs',str(a.num_envs),
++                 '--transitions',str(a.transitions),'--headless','--output',str(directory)]
++            run(cmd,OUT/'logs'/f'{name}.log')
++            candidates=list((directory/'runner/run/nn').glob(f'*_ep_{a.transitions//(a.num_envs*100)}_*.pth'))
++            assert len(candidates)==1,candidates
++            checkpoint=candidates[0];state=torch.load(checkpoint,map_location='cpu')
++            assert state['frame']==a.transitions,(state['frame'],a.transitions)
++            assert all(torch.isfinite(v).all() for v in state['model'].values() if torch.is_tensor(v))
++            copied=OUT/'checkpoints'/f'{group}_seed{seed}_{a.transitions}.pth';assert not copied.exists(),copied
++            shutil.copy2(checkpoint,copied)
++            record.update(status='trained',checkpoint=str(copied),checkpoint_sha256=hashlib.sha256(copied.read_bytes()).hexdigest(),
++                          actual_transitions=state['frame'],epoch=state['epoch'],has_optimizer='optimizer' in state,
++                          normalization_keys=[k for k in state['model'] if 'running_mean_std' in k])
++            save()
++            for split in (['validation','test'] if a.evaluate_test else ['validation']):
++                manifest=OUT/('evaluation_manifest.jsonl' if split=='test' else 'validation_manifest.jsonl')
++                evalname=f'{split}_{group}_s{seed}_{a.transitions}'
++                cmd=['bash',str(ROOT/'experiments/arch_min_insert/run_eval.sh'),'--group',group,'--seed',str(seed),'--num_envs','100',
++                     '--checkpoint',str(copied),'--manifest',str(manifest),'--headless','--output',str(OUT/evalname)]
++                run(cmd,OUT/'logs'/f'{evalname}.log')
++                record[split]=str(OUT/evalname);save()
++            record['status']='completed';save()
++    status.update(status='completed');save()
++except BaseException as exc:
++    status.update(status='failed',error=repr(exc));save();raise
+diff --git a/experiments/arch_min_insert/configs/B0.yaml b/experiments/arch_min_insert/configs/B0.yaml
+new file mode 100644
+index 0000000..caaff11
+--- /dev/null
++++ b/experiments/arch_min_insert/configs/B0.yaml
+@@ -0,0 +1,6 @@
++group: B0
++geometry_action_frame: world
++tracking_residual: false
++force_inputs: false
++observation_dim: 27
++common_protocol: artifacts/arch_minexp/frozen_protocol.yaml
+diff --git a/experiments/arch_min_insert/configs/B1.yaml b/experiments/arch_min_insert/configs/B1.yaml
+new file mode 100644
+index 0000000..58048e6
+--- /dev/null
++++ b/experiments/arch_min_insert/configs/B1.yaml
+@@ -0,0 +1,6 @@
++group: B1
++geometry_action_frame: estimated_socket
++tracking_residual: false
++force_inputs: false
++observation_dim: 27
++common_protocol: artifacts/arch_minexp/frozen_protocol.yaml
+diff --git a/experiments/arch_min_insert/configs/B2.yaml b/experiments/arch_min_insert/configs/B2.yaml
+new file mode 100644
+index 0000000..ccb4d1b
+--- /dev/null
++++ b/experiments/arch_min_insert/configs/B2.yaml
+@@ -0,0 +1,6 @@
++group: B2
++geometry_action_frame: estimated_socket
++tracking_residual: true
++force_inputs: false
++observation_dim: 27
++common_protocol: artifacts/arch_minexp/frozen_protocol.yaml
+diff --git a/experiments/arch_min_insert/finish_background.py b/experiments/arch_min_insert/finish_background.py
+new file mode 100644
+index 0000000..d224208
+--- /dev/null
++++ b/experiments/arch_min_insert/finish_background.py
+@@ -0,0 +1,85 @@
++"""Finish the authorized experiment after screening, under a single wall budget."""
++import hashlib,json,os,shlex,subprocess,time,traceback
++from pathlib import Path
++from datetime import datetime
++from zoneinfo import ZoneInfo
++ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'artifacts/arch_minexp';PYTHON=str(ROOT/'.venv-arch/bin/python')
++state_path=OUT/'background_status.json'
++# Conservative wall deadline includes preflight: six hours from first native probe.
++started=(OUT/'logs/r0_native.log').stat().st_mtime
++DEADLINE=started+6*3600
++state={'status':'waiting_for_screen','pid':os.getpid(),'deadline_unix':DEADLINE,'deadline_local':datetime.fromtimestamp(DEADLINE,ZoneInfo('Asia/Shanghai')).isoformat(),'decision':'单种子筛查正在后台运行；最终测试尚未开始','completed_commands':[]}
++def save():
++    state['updated_at']=datetime.now(ZoneInfo('Asia/Shanghai')).isoformat();tmp=state_path.with_suffix('.tmp');tmp.write_text(json.dumps(state,indent=2,ensure_ascii=False)+'\n');tmp.replace(state_path)
++def run(command,name,reserve=0):
++    remaining=DEADLINE-time.time()-reserve
++    if remaining<=0:raise TimeoutError('Six-hour wall budget exhausted')
++    log=OUT/'logs'/name
++    with (OUT/'commands.txt').open('a') as f:f.write(shlex.join(command)+' > '+str(log)+' 2>&1\n')
++    with log.open('w') as f:
++        child=subprocess.Popen(command,cwd=ROOT,stdout=f,stderr=subprocess.STDOUT,stdin=subprocess.DEVNULL)
++        state.update(status='running',child_pid=child.pid,command=command,log=str(log));save()
++        try:code=child.wait(timeout=remaining)
++        except subprocess.TimeoutExpired:
++            child.terminate()
++            try:child.wait(timeout=30)
++            except subprocess.TimeoutExpired:child.kill();child.wait()
++            raise TimeoutError('Wall budget reached; periodic checkpoints preserved')
++        if code:raise RuntimeError(f'{name} exited {code}; inspect log')
++    state['completed_commands'].append(command);save()
++def records(job):return json.loads((OUT/(job+'_job.json')).read_text())['runs']
++def val_successes(rec):
++    return sum(json.loads(l)['success'] for l in (Path(rec['validation'])/'episodes.jsonl').read_text().splitlines() if json.loads(l)['suite']=='E0')
++def run_batch(phase,seeds,frames):
++    command=[PYTHON,str(ROOT/'experiments/arch_min_insert/batch.py'),'--phase',phase,'--seeds',*[str(s) for s in seeds],
++             '--transitions',str(frames),'--num_envs','512','--wall_budget_s',str(max(1,DEADLINE-time.time()-1200))]
++    run(command,phase+'_driver.log',reserve=1000)
++try:
++    save()
++    while True:
++        screen=json.loads((OUT/'screen_job.json').read_text())
++        if screen['status']=='completed':break
++        if screen['status']=='failed':raise RuntimeError('Screening failed: '+screen.get('error',''))
++        if time.time()>DEADLINE:raise TimeoutError('Screening exceeded total wall budget')
++        time.sleep(20)
++    selected=records('screen')
++    speed=min(r['actual_transitions']/json.loads((Path(r['train_dir'])/'completion.json').read_text())['wall_time_s'] for r in selected)
++    remaining=DEADLINE-time.time();state['measured_training_transitions_per_s']=speed
++    if any(val_successes(r)>0 for r in selected):
++        # Full 45M confirmation does not fit measured budget. Predeclared common snapshot.
++        estimate=6*1996800/speed*1.15+1200
++        if remaining>estimate:
++            state['decision']='基础学习信号存在；在预算内新增 seeds 1、2，各组仍为 1,996,800 transitions。未达到建议每种子 500 万步，按缩短预算确认报告。';save()
++            run_batch('confirm',[1,2],1996800);selected+=records('confirm')
++        else:state['decision']='单种子已完成；剩余预算不足以完成六个等预算新增种子，保留共同快照并做最终测试。';save()
++    else:
++        # No learner has basic ability. Avoid claiming a negative algorithm result;
++        # retry equal longer budgets from scratch, because native checkpoints omit live simulator/RNN state.
++        estimate=3*4966400/speed*1.15+600
++        if remaining>estimate:
++            state['decision']='三组名义验证均未成功；各组从头执行共同 4,966,400 transitions 的有限延长筛查。保留旧 run，未冒称恢复完整仿真状态。';save()
++            run_batch('extended',[0],4966400);selected=records('extended')
++        else:state['decision']='三组名义验证未学会，且剩余预算不足以公平延长；结论标记未完成有效检验。';save()
++    final=[]
++    for rec in selected:
++        target=OUT/f"test_{rec['group']}_s{rec['seed']}_{rec['actual_transitions']}"
++        item={'group':rec['group'],'seed':rec['seed'],'transitions':rec['actual_transitions'],'checkpoint':rec['checkpoint'],
++              'checkpoint_sha256':rec['checkpoint_sha256'],'test_dir':str(target),'train_dir':rec['train_dir']}
++        final.append(item);(OUT/'final_selection.json').write_text(json.dumps(final,indent=2)+'\n')
++        command=['bash',str(ROOT/'experiments/arch_min_insert/run_eval.sh'),'--group',rec['group'],'--seed',str(rec['seed']),
++           '--num_envs','100','--checkpoint',rec['checkpoint'],'--manifest',str(OUT/'evaluation_manifest.jsonl'),'--headless','--output',str(target)]
++        run(command,target.name+'.log')
++    state['status']='experiments_completed';save()
++except BaseException:
++    state['status']='incomplete';state['error']=traceback.format_exc();save()
++finally:
++    # Report partial truth even after a failure; never synthesize missing metrics.
++    try:
++        with (OUT/'logs/summarize.log').open('w') as f:
++            subprocess.run([PYTHON,str(ROOT/'experiments/arch_min_insert/summarize_results.py')],cwd=ROOT,stdout=f,stderr=subprocess.STDOUT,check=True)
++        with (OUT/'logs/publish_final.log').open('w') as f:
++            subprocess.run([PYTHON,str(ROOT/'experiments/arch_min_insert/publish.py'),*(['--include_code'] if not (OUT/'publication.json').exists() else []),'--message','Record ARCH INSERT experiment outcomes and evidence'],cwd=ROOT,stdout=f,stderr=subprocess.STDOUT,check=True)
++        state['publication']=json.loads((OUT/'publication.json').read_text());state['publication_status']='uploaded'
++        if state['status']=='experiments_completed':state['status']='completed'
++    except BaseException:state['publication_status']='failed';state['finalization_error']=traceback.format_exc()
++    save()
+diff --git a/experiments/arch_min_insert/geometry.py b/experiments/arch_min_insert/geometry.py
+new file mode 100644
+index 0000000..a81403f
+--- /dev/null
++++ b/experiments/arch_min_insert/geometry.py
+@@ -0,0 +1,68 @@
++"""Pure torch SE(3) interface. P is the CAD bottom tip, S has +Z into hole.
++Quaternions are wxyz; translations in m, rotation vectors in rad.
++Only explicit deployed arguments enter actor_features (no simulator object).
++"""
++import torch
++
++def qmul(a,b):
++    aw,av=a[...,:1],a[...,1:];bw,bv=b[...,:1],b[...,1:]
++    return torch.cat((aw*bw-(av*bv).sum(-1,keepdim=True),aw*bv+bw*av+torch.cross(av,bv,dim=-1)),-1)
++def qinv(q): return torch.cat((q[...,:1],-q[...,1:]),-1)
++def rotate(q,v):
++    t=2*torch.cross(q[...,1:],v,dim=-1)
++    return v+q[...,:1]*t+torch.cross(q[...,1:],t,dim=-1)
++def exp(v):
++    angle=v.norm(dim=-1,keepdim=True)
++    return torch.cat((torch.cos(angle/2),.5*torch.sinc(angle/(2*torch.pi))*v),-1)
++def log(q):
++    q=q/q.norm(dim=-1,keepdim=True).clamp_min(1e-12)
++    q=torch.where(q[...,:1]<0,-q,q)
++    n=q[...,1:].norm(dim=-1,keepdim=True)
++    return q[...,1:]*(2*torch.atan2(n,q[...,:1])/n.clamp_min(1e-9))
++def compose(a,b):return torch.cat((a[...,:3]+rotate(a[...,3:],b[...,:3]),qmul(a[...,3:],b[...,3:])),-1)
++def inverse(a):
++    qi=qinv(a[...,3:]);return torch.cat((rotate(qi,-a[...,:3]),qi),-1)
++def delta(v):return torch.cat((v[...,:3],exp(v[...,3:])),-1)
++def normclip(x,limit):return x*(limit/x.norm(dim=-1,keepdim=True).clamp_min(limit))
++def tip_command(ee,xhat,socket,action,local,translation_limit=.05,rotation_limit=.1):
++    tip=compose(ee,xhat);dp=normclip(action[...,:3],1)*translation_limit
++    dr=normclip(action[...,3:6],1)*rotation_limit
++    if local:dp=rotate(socket[...,3:],dp);dr=rotate(socket[...,3:],dr)
++    cmd=torch.cat((tip[...,:3]+dp,qmul(exp(dr),tip[...,3:])),dim=-1)
++    return compose(cmd,inverse(xhat)),cmd
++
++def actor_features(ee,ee_velocity,xhat,socket,star,previous_ee_command,valid,local,residual):
++    tip=compose(ee,xhat);goal=compose(socket,star)
++    pos=goal[...,:3]-tip[...,:3]
++    rot=log(qmul(goal[...,3:],qinv(tip[...,3:])))
++    omega=ee_velocity[...,3:]
++    vel=ee_velocity[...,:3]+torch.cross(omega,rotate(ee[...,3:],xhat[...,:3]),dim=-1)
++    grav=torch.zeros_like(pos);grav[...,2]=-1
++    cmd=compose(previous_ee_command,xhat)
++    ep=cmd[...,:3]-tip[...,:3];er=log(qmul(cmd[...,3:],qinv(tip[...,3:])))
++    if local:
++        qi=qinv(socket[...,3:]);pos=rotate(qi,pos);rot=rotate(qi,rot);vel=rotate(qi,vel)
++        omega=rotate(qi,omega);grav=rotate(qi,grav);ep=rotate(qi,ep);er=rotate(qi,er)
++    # Global orientation kept identical in all groups. Rotation matrix columns.
++    ex=torch.zeros_like(pos);ex[...,0]=1;ey=torch.zeros_like(pos);ey[...,1]=1
++    orientation=torch.cat((rotate(socket[...,3:],ex),rotate(socket[...,3:],ey)),-1)
++    res=torch.cat((ep,er),-1)*valid[...,None]
++    if not residual:res=torch.zeros_like(res)
++    return torch.cat((pos,rot,vel,omega,orientation,grav,res),-1)
++
++def true_metrics(peg_root,root_tip,socket,star):
++    relative=compose(inverse(socket),compose(peg_root,root_tip))
++    error=relative[...,:3]-star[...,:3]
++    # Hexagon permits 6 in-plane rotations, evaluated in the socket frame.
++    angles=[]
++    for k in range(6):
++        v=torch.zeros_like(error);v[...,2]=k*torch.pi/3
++        angles.append(log(qmul(relative[...,3:],qinv(qmul(star[...,3:],exp(v))))).norm(dim=-1))
++    angle=torch.stack(angles,-1).min(-1).values
++    lateral=error[...,:2].norm(dim=-1);depth=relative[...,2]
++    finite=torch.isfinite(relative).all(-1)
++    # Conservative tolerances: 0.75 mm < half the ~1.49 mm CAD side clearance.
++    candidate=(lateral<=.00075)&(error[...,2].abs()<=.001)&(angle<=torch.pi/90)&finite
++    invalid=(depth>star[...,2]+.003)|(~finite)
++    candidate &= ~invalid
++    return {'depth':depth,'lateral':lateral,'rotation':angle,'candidate':candidate,'invalid':invalid}
+diff --git a/experiments/arch_min_insert/launch.sh b/experiments/arch_min_insert/launch.sh
+new file mode 100644
+index 0000000..59e1c82
+--- /dev/null
++++ b/experiments/arch_min_insert/launch.sh
+@@ -0,0 +1,9 @@
++#!/usr/bin/env bash
++set -euo pipefail
++ARCH_ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
++export OMNI_KIT_ACCEPT_EULA=YES
++export OMP_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 MKL_NUM_THREADS=8
++export WANDB_MODE=disabled PYTHONUNBUFFERED=1
++export PYTHONPATH="$ARCH_ROOT/multi-robot-assembly/multi_arm_assembly:$ARCH_ROOT/diffusion_policy_v1${PYTHONPATH:+:$PYTHONPATH}"
++cd "$ARCH_ROOT/multi-robot-assembly/multi_arm_assembly"
++exec "$ARCH_ROOT/.venv-arch/bin/python" "$ARCH_ROOT/experiments/arch_min_insert/run.py" "$@"
+diff --git a/experiments/arch_min_insert/min_env.py b/experiments/arch_min_insert/min_env.py
+new file mode 100644
+index 0000000..d5df200
+--- /dev/null
++++ b/experiments/arch_min_insert/min_env.py
+@@ -0,0 +1,220 @@
++"""Isolated INSERT research environment; reuses native PhysX assets, IK and actuators.
++Never calls native global-stepping reset or puts simulator truth in actor_features.
++"""
++import json,time
++from pathlib import Path
++import numpy as np
++import torch
++from pxr import UsdGeom,UsdPhysics,PhysxSchema,Gf
++import omni.isaac.lab.utils.math as m
++from omni.isaac.lab.envs import DirectRLEnv
++from omni.isaac.lab.sensors import ContactSensor,ContactSensorCfg
++import multi_arm_assembly.direct_isaac_lab_position as native
++from geometry import *
++from scenarios import make_case,IK
++from omni.isaac.lab.assets import RigidObjectCfg
++import omni.isaac.lab.sim as sim_utils
++
++def spawn_kinematic_board(prim_path,cfg,translation=None,orientation=None):
++    prim=sim_utils.spawn_from_usd(prim_path,cfg,translation=translation,orientation=orientation)
++    for body in sim_utils.find_matching_prims(prim_path):
++        api=UsdPhysics.RigidBodyAPI.Apply(body)
++        api.CreateRigidBodyEnabledAttr(True);api.CreateKinematicEnabledAttr(True)
++        PhysxSchema.PhysxRigidBodyAPI.Apply(body).CreateDisableGravityAttr(True)
++    return prim
++
++def configure_board(cfg):
++    board=next(x for x in cfg.peripherals if x.prim_path.endswith('/hole'))
++    cfg.peripherals=[x for x in cfg.peripherals if x is not board]
++    spawn=board.spawn.copy();spawn.func=spawn_kinematic_board
++    cfg.parts.append(RigidObjectCfg(prim_path=board.prim_path,spawn=spawn,
++        init_state=RigidObjectCfg.InitialStateCfg(pos=board.init_state.pos,rot=board.init_state.rot)))
++
++
++class MinInsertEnv(native.InsertEnv):
++    def __init__(self,cfg,group='B0',seed=0,output=None,cases=None,**kw):
++        self.group=group;self.training_seed=seed;self.output=Path(output) if output else None
++        self.cases=cases;self.cursor=0;self.scene_rng=np.random.default_rng(seed);self.total_transitions=0
++        self.completed=[];self.last_step=None;self.episode_records=[];self.record_trace=False;self.sampled_trace=[];self.sampled_episodes=0
++        super().__init__(cfg,**kw)
++        n=self.num_envs;d=self.device
++        self.ik=IK('ur_description/urdf/ur10e.urdf',cfg.robot1.init_state.pos,cfg.robot1.init_state.rot,cfg.joint_angles_list['robot1'])
++        self.ident=torch.tensor([0,0,0,1,0,0,0.],device=d).repeat(n,1)
++        for name in ['socket_true','socket_estimated','xtrue','xhat','star','command','reset_ee']:
++            setattr(self,name,self.ident.clone())
++        self.root_tip=self.ident.clone();self.root_tip[:,2]=-.05;self.root_tip[:,3:]=torch.tensor([0,1,0,0.],device=d)
++        self.valid=torch.zeros(n,device=d,dtype=torch.bool);self.just_reset=~self.valid.clone()
++        self.first_substep=self.just_reset.clone();self.hold=torch.zeros(n,device=d,dtype=torch.long)
++        self.ever_success=self.valid.clone();self.bad=self.valid.clone();self.case_info=[None]*n
++        self.board_peak=torch.zeros(n,device=d);self.depth_history=torch.zeros(n,24,device=d);self.peak=torch.zeros(n,device=d);self.residual_sq=torch.zeros(n,device=d);self.saturation=torch.zeros(n,device=d)
++        self.first_success=torch.full((n,),float("nan"),device=d);self.returns=torch.zeros(n,device=d);self.started=np.zeros(n);self.episode_serial=0
++        if self.output:self.output.mkdir(parents=True,exist_ok=True)
++
++    def create_rigid_attachments(self,attachment_path,robot_path,extra_attachments=[]):
++        # clone_environments(copy_from_source=False) inherits env_0's new joint.
++        # Define/override that same prim in every env rather than adding _1 joints.
++        assert not extra_attachments, 'This experiment is scoped to one Hexagon grasp'
++        stage=native.stage_utils.get_current_stage();joints=[]
++        xr=native.IPose.from_pose(self.cfg.initial_cfg.PEG_T_TOOL).invert().to_vec()[0]
++        for i in range(self.num_envs):
++            prefix=f'/World/envs/env_{i}'
++            joint=UsdPhysics.FixedJoint.Define(stage,prefix+'/'+robot_path+'/AssemblerFixedJoint')
++            joint.GetBody0Rel().SetTargets([prefix+'/'+robot_path+'/tool0'])
++            joint.GetBody1Rel().SetTargets([prefix+'/'+attachment_path])
++            joint.GetLocalPos0Attr().Set(Gf.Vec3f(*xr[:3].cpu().tolist()))
++            joint.GetLocalRot0Attr().Set(Gf.Quatf(*xr[3:].cpu().tolist()))
++            joint.GetLocalPos1Attr().Set(Gf.Vec3f(0,0,0));joint.GetLocalRot1Attr().Set(Gf.Quatf(1,0,0,0))
++            joints.append(joint)
++        return joints
++
++    def _setup_scene(self):
++        super()._setup_scene()
++        self.scene.sensors['peg_contact']=ContactSensor(ContactSensorCfg(
++            prim_path='/World/envs/env_.*/'+self.cfg.initial_cfg.PEG_ATTACHMENT_PRIM,
++            update_period=0.,history_length=1, filter_prim_paths_expr=['/World/envs/env_.*/hole']))
++
++    def _reset_idx(self,env_ids):
++        DirectRLEnv._reset_idx(self,env_ids)
++        if not hasattr(self,'ik'):return
++        ids=torch.as_tensor(env_ids,device=self.device,dtype=torch.long)
++        if len(ids)==0:return
++        robot=self.robots['robot1'];qs=robot.data.default_joint_pos[ids].clone()
++        roots=self.scene['peg'].data.default_root_state[ids].clone();roots[:,7:]=0
++        manifests=[];boards=torch.zeros(len(ids),13,device=self.device)
++        for row,idx in enumerate(ids.cpu().tolist()):
++            if self.cases is None:
++                case=make_case(int(self.scene_rng.integers(1000000,2**31)), 'E1')
++            else:
++                # Padding repeats are explicitly excluded by evaluation driver.
++                case=dict(self.cases[self.cursor%len(self.cases)]);self.cursor+=1
++            sol,actual,check=self.ik.solve(case['ee_start'])
++            case['robot_arm_joint_pos']=sol;case['ee_start_fk']=actual;case['validity']=check
++            if check['status']!='valid':raise RuntimeError('Invalid pre-rollout scene: '+json.dumps(case))
++            # Conservative CAD tip clearance at reset; evaluated before policy.
++            initial_tip=compose(torch.tensor(actual),torch.tensor(case['X_true']))
++            in_socket=compose(inverse(torch.tensor(case['socket_true'])),initial_tip)
++            tilt=float(log(in_socket[3:]).norm())
++            clearance=-float(in_socket[2])-.021*np.sin(min(tilt,np.pi/2))
++            check['peg_clearance_lower_bound_m']=clearance
++            check['full_robot_collision_check']='not exhaustive; IK limits and local work volume only'
++            if case['split']!='fixture' and clearance<.005:
++                raise RuntimeError('Invalid initial peg clearance before rollout: '+json.dumps(case))
++            self.case_info[idx]=case
++            for name,key in [('socket_true','socket_true'),('socket_estimated','socket_estimated'),('xtrue','X_true'),('xhat','X_hat'),('star','T_SP_star')]:
++                getattr(self,name)[idx]=torch.tensor(case[key],device=self.device)
++            self.reset_ee[idx]=torch.tensor(actual,device=self.device)
++            # True grasp never replaces xhat; physical fixed joint is E -> peg root.
++            xr=compose(self.xtrue[idx],inverse(self.root_tip[idx]))
++            fixed=self.robot1_fixed_joints[idx]
++            fixed.GetLocalPos0Attr().Set(Gf.Vec3f(*xr[:3].cpu().tolist()))
++            fixed.GetLocalRot0Attr().Set(Gf.Quatf(*xr[3:].cpu().tolist()))
++            fixed.GetLocalPos1Attr().Set(Gf.Vec3f(0,0,0));fixed.GetLocalRot1Attr().Set(Gf.Quatf(1,0,0,0))
++            boards[row,:7]=torch.tensor(case['board_true'],device=self.device)
++            boards[row,:3]+=self.scene.env_origins[idx]
++            qs[row,self._joint_ids['robot1']]=torch.tensor(sol,device=self.device)
++            case['robot_joint_pos']=qs[row].cpu().tolist();case['robot_joint_vel']=[0.]*len(case['robot_joint_pos'])
++            roots[row,:7]=compose(self.reset_ee[idx],xr)
++            roots[row,:3]+=self.scene.env_origins[idx]
++            self.started[idx]=time.monotonic();manifests.append(case)
++        robot.write_joint_state_to_sim(qs,torch.zeros_like(qs),env_ids=ids)
++        robot.set_joint_position_target(qs,env_ids=ids)
++        self.scene['peg'].write_root_state_to_sim(roots,env_ids=ids)
++        self.scene['hole'].write_root_state_to_sim(boards,env_ids=ids)
++        self.command[ids]=self.reset_ee[ids];self.valid[ids]=False;self.just_reset[ids]=True;self.first_substep[ids]=True
++        self.hold[ids]=0;self.ever_success[ids]=False;self.first_success[ids]=float('nan')
++        initroot=roots[:,:7].clone();initroot[:,:3]-=self.scene.env_origins[ids]
++        self.bad[ids]=true_metrics(initroot,self.root_tip[ids],self.socket_true[ids],self.star[ids])['invalid']
++        for x in [self.peak,self.board_peak,self.residual_sq,self.saturation,self.returns]:x[ids]=0
++        self._ik_controllers['robot1'].reset(ids)
++        if self.output and (self.cases is not None or self.sampled_episodes<3):
++            with (self.output/('realized_manifest.jsonl' if self.cases is not None else 'reset_manifest_sample.jsonl')).open('a') as f:
++                for case in manifests:f.write(json.dumps(case)+'\n')
++
++    def ee(self):
++        r=self.robots['robot1'];pose=torch.cat(self._compute_frame_pose('robot1',r),-1)
++        pose[self.just_reset]=self.reset_ee[self.just_reset]
++        return pose
++    def velocity(self):
++        v=self.robots['robot1'].data.body_state_w[:,self._body_idx['robot1'],7:13].clone()
++        v[self.just_reset]=0;return v
++    def _get_observations(self):
++        if not hasattr(self,'xhat'):return super()._get_observations()
++        obs=actor_features(self.ee(),self.velocity(),self.xhat,self.socket_estimated,self.star,self.command,self.valid,self.group!='B0',self.group=='B2')
++        assert torch.isfinite(obs).all()
++        return {'policy':obs}
++    def _pre_physics_step(self,actions):
++        self.actions=actions.clamp(-1,1).clone()
++        self.actor_before=self._get_observations()['policy'].clone()
++        ee=self.ee();self.command,self.tip_cmd=tip_command(ee,self.xhat,self.socket_estimated,self.actions,self.group!='B0')
++        self.saturation+=(self.actions[:,:3].norm(dim=-1)>1)|(self.actions[:,3:].norm(dim=-1)>1)
++        self._ik_controllers['robot1'].set_command(self.command,ee[:,:3],ee[:,3:])
++        self.valid[:]=True
++    def _apply_action(self):
++        # Initial FK/Jacobian after tensor reset is stale until the first physics
++        # substep. Hold the reset joint target for that substep, then use native IK.
++        r=self.robots['robot1'];p,q=self._compute_frame_pose('robot1',r)
++        joint=r.data.joint_pos[:,self._joint_ids['robot1']]
++        des=self._ik_controllers['robot1'].compute(p,q,self._compute_frame_jacobian('robot1',r),joint)
++        des[self.first_substep]=joint[self.first_substep]
++        r.set_joint_position_target(des,joint_ids=self._joint_ids['robot1'])
++        self.first_substep[:]=False
++        self.just_reset[:]=False
++    def peg_root(self):
++        pose=self.scene['peg'].data.root_state_w[:,:7].clone();pose[:,:3]-=self.scene.env_origins;return pose
++    def physical_socket(self):
++        board=self.scene['hole'].data.root_state_w[:,:7].clone();board[:,:3]-=self.scene.env_origins
++        from scenarios import CENTER,TOP
++        offset=torch.tensor([*CENTER,TOP,0,1,0,0.],device=self.device).expand_as(board)
++        return compose(board,offset)
++    def _get_dones(self):
++        self.socket_true[:]=self.physical_socket()
++        metrics=true_metrics(self.peg_root(),self.root_tip,self.socket_true,self.star)
++        self.hold=torch.where(metrics['candidate'],self.hold+1,0)
++        newly=(self.hold>=5)&~self.ever_success
++        self.first_success[newly]=self.episode_length_buf[newly]*self.step_dt
++        self.ever_success|=self.hold>=5;self.bad|=metrics['invalid']
++        # Fixed duration preserves synchronous transitions; success still requires hold.
++        timeout=self.episode_length_buf>=self.max_episode_length
++        return torch.zeros_like(timeout),timeout
++    def _get_rewards(self):
++        peg=self.peg_root();target=compose(compose(self.socket_true,self.star),inverse(self.root_tip))
++        # Preserve native reward structure, changing only target to actual board.
++        difference=compose(target,inverse(peg))
++        reward=-torch.cat((difference[:,:3],log(difference[:,3:])),dim=-1).norm(dim=-1).clamp(max=2)
++        self.returns+=reward;self.total_transitions+=self.num_envs
++        measured=self.ee();tip=compose(measured,self.xhat);cmd=compose(self.command,self.xhat)
++        residual=torch.cat((cmd[:,:3]-tip[:,:3],log(qmul(cmd[:,3:],qinv(tip[:,3:])))),-1)
++        force=self.scene.sensors['peg_contact'].data.net_forces_w[:,0].clone()
++        self.peak=torch.maximum(self.peak,force.norm(dim=-1));self.residual_sq+=(residual[:,:3]**2).sum(-1)
++        met=true_metrics(peg,self.root_tip,self.socket_true,self.star)
++        board_force=self.scene.sensors['peg_contact'].data.force_matrix_w[:,0].sum(dim=1).clone()
++        self.board_peak=torch.maximum(self.board_peak,board_force.norm(dim=-1))
++        self.depth_history[:,(self.common_step_counter-1)%24]=met['depth']
++        self.last_step={'actor_observation':self.actor_before.clone(),'action':self.actions.clone(),'commanded_ee':self.command.clone(),
++          'measured_ee':measured.clone(),'tracking_residual_world':residual,'diagnostic_peg_root':peg,'diagnostic_socket_true':self.socket_true.clone(),'diagnostic_X_true':self.xtrue.clone(),'diagnostic_X_measured':compose(inverse(measured),compose(peg,self.root_tip)),'diagnostic_contact_force_world_N':force,'diagnostic_board_contact_force_world_N':board_force,
++          'reward':reward.clone(),'done':self.reset_buf.clone(),'episode_step':self.episode_length_buf.clone(),
++          'time_s':self.episode_length_buf*self.step_dt,'command_time_s':(self.episode_length_buf-1)*self.step_dt}
++        if self.cases is None and self.output and self.sampled_episodes<3:
++            self.sampled_trace.append({k:v[0].detach().cpu().numpy() for k,v in self.last_step.items()})
++            if self.reset_buf[0]:
++                np.savez_compressed(self.output/f'training_trace_{self.sampled_episodes}.npz',
++                    **{k:np.stack([r[k] for r in self.sampled_trace]) for k in self.sampled_trace[0]})
++                self.sampled_trace=[];self.sampled_episodes+=1
++        for i in self.reset_buf.nonzero(as_tuple=False).flatten().cpu().tolist():
++            n=int(self.episode_length_buf[i]);case=self.case_info[i]
++            success=bool(self.ever_success[i]) and not bool(self.bad[i])
++            reason='success' if success else 'abnormal_physics' if self.bad[i] else 'timeout'
++            if not success and not self.bad[i]:
++                if met['lateral'][i]>.15 or met['depth'][i]<-.15:reason='out_of_workspace'
++                elif n>=24 and self.board_peak[i]>.5 and self.depth_history[i].max()-self.depth_history[i].min()<.001:
++                    reason='contact_no_progress'
++            row={'group':getattr(self,'report_group',self.group),'policy_kind':getattr(self,'policy_kind','diagnostic'),'checkpoint_id':getattr(self,'checkpoint_id',None),'training_seed':self.training_seed,'case_id':case['case_id'],'suite':case['suite'],'num_steps':n,
++             'success':success,'termination_reason':reason,'completion_time_s':float(self.first_success[i]) if success else None,'final_depth_m':float(met['depth'][i]),
++             'final_lateral_error_m':float(met['lateral'][i]),'final_rotation_error_rad':float(met['rotation'][i]),
++             'peak_contact_measure':float(self.peak[i]),'peak_board_contact_force_N':float(self.board_peak[i]),'contact_measure_type':'net force on peg, world, N; torque unavailable',
++             'tracking_residual_rms':float((self.residual_sq[i]/n).sqrt()),'action_saturation_rate':float(self.saturation[i]/n),
++             'wall_time_s':time.monotonic()-self.started[i],'return':float(self.returns[i]),'transitions':self.total_transitions}
++            self.completed.append(row)
++            if self.output:
++                with (self.output/'episodes.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
++        return reward
+diff --git a/experiments/arch_min_insert/probe.py b/experiments/arch_min_insert/probe.py
+new file mode 100644
+index 0000000..7b6d86c
+--- /dev/null
++++ b/experiments/arch_min_insert/probe.py
+@@ -0,0 +1,174 @@
++"""Native INSERT reference and controller/contact diagnostic; no training changes."""
++import argparse
++import hashlib
++import json
++import time
++from pathlib import Path
++import types
++import numpy as np
++from omni.isaac.lab.app import AppLauncher
++p = argparse.ArgumentParser()
++p.add_argument('--mode', choices=['reference', 'contact', 'paired'], default='reference')
++p.add_argument('--num_envs', type=int, default=20)
++p.add_argument('--seed', type=int, default=20000)
++p.add_argument('--checkpoint', type=Path)
++p.add_argument('--output', type=Path, required=True)
++AppLauncher.add_app_launcher_args(p)
++a = p.parse_args()
++a.output.mkdir(parents=True, exist_ok=False)
++app = AppLauncher(a).app
++import torch
++import gymnasium as gym
++import omni.isaac.lab_tasks
++from omni.isaac.lab_tasks.utils import parse_env_cfg, load_cfg_from_registry
++import multi_arm_assembly.direct_isaac_lab_position as native
++from omni.isaac.lab.sensors import ContactSensor, ContactSensorCfg
++from omni.isaac.lab.utils import math as m
++
++def serial(x):
++    if torch.is_tensor(x): return x.detach().cpu().tolist()
++    if isinstance(x, Path): return str(x)
++    if isinstance(x, np.ndarray): return x.tolist()
++    return str(x)
++
++def dump(name, x):
++    (a.output/name).write_text(json.dumps(x, default=serial, indent=2)+'\n')
++
++env = None
++try:
++    cfg = parse_env_cfg('AssemblyInsert-v0', use_gpu=True, num_envs=a.num_envs)
++    cfg.parts[0].spawn.activate_contact_sensors = True
++    original_setup = native.MyEnv._setup_scene
++    def setup(self):
++        original_setup(self)
++        self.scene.sensors['peg_contact'] = ContactSensor(ContactSensorCfg(
++            prim_path='/World/envs/env_.*/'+self.cfg.initial_cfg.PEG_ATTACHMENT_PRIM,
++            update_period=0.0, history_length=1))
++    native.MyEnv._setup_scene = setup
++    env = gym.make('AssemblyInsert-v0', cfg=cfg)
++    e = env.unwrapped
++    env.seed(a.seed)
++    torch.manual_seed(a.seed)
++    obs, _ = env.reset()
++    if a.mode == 'paired':
++        assert a.num_envs == 2
++        # Reset-only placement: free at native height, blocked 0.3 mm above
++        # the CAD board top, 8 mm laterally offset from the nominal hole.
++        rp = e.scene['peg'].data.default_root_state.clone()
++        rp[:, :3] = torch.tensor([[.0695,.2695,.115],[.0775,.2695,.09966008]],device=e.device)
++        rp[:, 3:7] = torch.tensor([0.,0.,0.,1.],device=e.device)
++        goal_root = native.IPose(rp[:,:3],rp[:,3:7])
++        goal_ee = goal_root.multiply(native.IPose.from_pose(cfg.initial_cfg.PEG_T_TOOL).repeat(2))
++        q = e.robots['robot1'].data.joint_pos.clone()
++        for i in range(2):
++            sol = native.solve_ik(cfg.robot1.init_state.pos, native.wxyz_to_xyzw(cfg.robot1.init_state.rot),
++                                 goal_ee.pos[i].cpu(),native.wxyz_to_xyzw(goal_ee.quat[i].cpu()))
++            q[i,e._joint_ids['robot1']] = torch.tensor(sol,device=e.device)
++        e.robots['robot1'].write_joint_state_to_sim(q,torch.zeros_like(q))
++        e.robots['robot1'].set_joint_position_target(q)
++        rp[:,:3] += e.scene.env_origins
++        rp[:,7:]=0
++        e.scene['peg'].write_root_state_to_sim(rp)
++        e.scene.write_data_to_sim()
++        for _ in range(20):
++            e.sim.step(render=False);e.scene.update(e.physics_dt)
++        e.episode_length_buf[:]=0
++        obs=e._get_observations()
++    contact = e.scene.sensors['peg_contact']
++    c = e._ik_controllers['robot1']
++    peg_goal = native.IPose.from_pose(cfg.initial_cfg.WORLD_T_HOLE_START).multiply(native.IPose.from_pose(cfg.initial_cfg.PEG_GOAL)).repeat(a.num_envs)
++    robot = e.robots['robot1']
++    start = {'config': vars(cfg.initial_cfg), 'physics_dt': e.physics_dt, 'step_dt': e.step_dt,
++             'max_episode_length': e.max_episode_length, 'num_actions': e.num_actions,
++             'observation_shapes': {k:list(v.shape) for k,v in obs.items()},
++             'robot_joint_pos': robot.data.joint_pos.clone(), 'robot_body_names': robot.body_names,
++             'peg_root': e.scene['peg'].data.root_state_w.clone(),
++             'ee_pose': torch.cat(e._compute_frame_pose('robot1',robot), dim=1),
++             'goal': peg_goal.to_vec(), 'env_origins':e.scene.env_origins.clone(),
++             'contact_paths': contact.body_physx_view.prim_paths,
++             'checkpoint_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest() if a.checkpoint else None}
++    dump('initial_state.json', start)
++    player = None
++    if a.checkpoint:
++        from rl_games.algos_torch import model_builder
++        from multi_arm_assembly.rl_components.isaac_rlgames_wrapper import MyRlGamesVecEnvWrapper
++        from multi_arm_assembly.rl_components.my_network import MyNetworkBuilder
++        from multi_arm_assembly.rl_components.my_a2c_model import MyA2CContinuousLogStd
++        from multi_arm_assembly.rl_components.my_player import MyPpoPlayerContinuous
++        model_builder.register_network('my_network', MyNetworkBuilder)
++        model_builder.register_model('my_actor_model', lambda network, **kw: MyA2CContinuousLogStd(network))
++        params = load_cfg_from_registry('AssemblyInsert-v0','rl_games_cfg_entry_point')['params']
++        params['config']['env_info'] = MyRlGamesVecEnvWrapper(env,e.device,5.,1.).get_env_info()
++        player = MyPpoPlayerContinuous(params)
++        player.restore(str(a.checkpoint))
++        player.has_batch_dimension, player.batch_size = True,a.num_envs
++        player.init_rnn()
++    records=[]
++    original_done=e._get_dones
++    def snapshot(self):
++        pos,quat=self._compute_frame_pose('robot1',robot)
++        peg=self.scene['peg'].data.root_state_w.clone()
++        peg[:,:3]-=self.scene.env_origins
++        command=torch.cat([c.ee_pos_des,c.ee_quat_des],-1).clone()
++        ep=command[:,:3]-pos
++        er=m.axis_angle_from_quat(m.quat_mul(command[:,3:],m.quat_conjugate(quat)))
++        force=contact.data.net_forces_w[:, 0].clone()
++        records.append({'measured_ee':torch.cat([pos,quat],-1),'commanded_ee':command,
++          'tracking_residual':torch.cat([ep,er],-1),'diagnostic_peg':peg,
++          'diagnostic_net_contact_force_world_N':force,'joint_pos':robot.data.joint_pos.clone(),
++          'joint_vel':robot.data.joint_vel.clone(), 'joint_target':robot.data.joint_pos_target.clone()})
++        return original_done()
++    e._get_dones=types.MethodType(snapshot,e)
++    actions_hist=[];obs_hist=[];reward_hist=[];done_hist=[]
++    start_wall=time.monotonic()
++    with torch.inference_mode():
++        for step in range(e.max_episode_length-1):
++            actions=torch.zeros((a.num_envs,e.num_actions),device=e.device)
++            if player:
++                actions=player.get_action(player.obs_to_torch(obs),is_deterministic=True).clamp(-1,1)
++            elif a.mode in ['contact','paired']:
++                actions[:,2]=-0.04  # same 2 mm world -Z command each control interval
++            obs_hist.append(obs['policy'].clone())
++            actions_hist.append(actions.clone())
++            obs,reward,term,trunc,_=env.step(actions)
++            reward_hist.append(reward.clone());done_hist.append((term|trunc).clone())
++            if player and player.is_rnn:
++                for s in player.states:s[:,term|trunc,:]=0
++            assert torch.isfinite(obs['policy']).all() and torch.isfinite(reward).all()
++    arrays={k:torch.stack([r[k] for r in records]).cpu().numpy() for k in records[0]}
++    arrays.update(actor_observation=torch.stack(obs_hist).cpu().numpy(),action=torch.stack(actions_hist).cpu().numpy(),
++      reward=torch.stack(reward_hist).cpu().numpy(),done=torch.stack(done_hist).cpu().numpy(),
++      time_s=(np.arange(len(records))+1)*e.step_dt,command_time_s=np.arange(len(records))*e.step_dt)
++    np.savez_compressed(a.output/'trajectories.npz',**arrays)
++    goal=peg_goal.to_vec().cpu().numpy()
++    delta=arrays['diagnostic_peg'][:,:,:3]-goal[None,:,:3]
++    rot=torch.stack([m.axis_angle_from_quat(m.quat_mul(peg_goal.quat,m.quat_conjugate(r['diagnostic_peg'][:,3:7]))) for r in records]).norm(dim=-1).cpu().numpy()
++    # Provisional diagnostics, NOT a validated physical success detector.
++    candidate=(np.linalg.norm(delta[:,:,:2],axis=-1)<.001)&(np.abs(delta[:,:,2])<.001)&(rot<np.deg2rad(2))
++    held=np.zeros(a.num_envs,dtype=int);success=np.zeros(a.num_envs,dtype=bool)
++    for row in candidate:
++        held=np.where(row,held+1,0);success|=held>=5
++    manifest=[];episodes=[]
++    for i in range(a.num_envs):
++        case=f'R0-native-{i:03d}'
++        manifest.append({'case_id':case,'split':'reference','suite':'native','seed':a.seed,'env_index':i,
++          'robot_joint_pos':start['robot_joint_pos'][i], 'peg_root_world':start['peg_root'][i],
++          'hole_pose_config_xyzw':cfg.initial_cfg.WORLD_T_HOLE_START,'env_origin':start['env_origins'][i],
++          'validity':'native reset; physical seating detector not validated'})
++        episodes.append({'group':'R0','training_seed':42 if player else None,'checkpoint_id':start['checkpoint_sha256'],
++          'case_id':case,'suite':'native','num_steps':len(records),'success':None,
++          'provisional_pose_success':bool(success[i]),'termination_reason':'timeout' if done_hist[-1][i] else 'bounded_probe',
++          'final_depth_offset_m':float(-delta[-1,i,2]),'final_lateral_error_m':float(np.linalg.norm(delta[-1,i,:2])),
++          'final_rotation_error_rad':float(rot[-1,i]),'peak_contact_measure':float(np.linalg.norm(arrays['diagnostic_net_contact_force_world_N'][:,i],axis=-1).max()),
++          'contact_measure_type':'3D net contact force on peg, world frame, N; moment unavailable',
++          'tracking_residual_position_rms_m':float(np.sqrt(np.mean(np.sum(arrays['tracking_residual'][:,i,:3]**2,axis=-1)))),
++          'wall_time_s':time.monotonic()-start_wall})
++    for name,rows in [('manifest.jsonl',manifest),('episodes.jsonl',episodes)]:
++        (a.output/name).write_text(''.join(json.dumps(r,default=serial)+'\n' for r in rows))
++    dump('metrics.json',{'mode':a.mode,'num_episodes':a.num_envs,'transitions':len(records)*a.num_envs,
++      'wall_time_s':time.monotonic()-start_wall,'provisional_pose_successes':int(success.sum()),
++      'physical_successes':None,'finite':True})
++    print('MINEXP_PROBE_COMPLETE',a.output,flush=True)
++finally:
++    if env:env.close()
++    app.close()
+diff --git a/experiments/arch_min_insert/publish.py b/experiments/arch_min_insert/publish.py
+new file mode 100644
+index 0000000..8639fd5
+--- /dev/null
++++ b/experiments/arch_min_insert/publish.py
+@@ -0,0 +1,41 @@
++"""Publish an explicit snapshot using a temporary Git index; leave user staging alone."""
++import argparse,json,os,subprocess,tempfile
++from pathlib import Path
++from datetime import datetime
++from zoneinfo import ZoneInfo
++p=argparse.ArgumentParser();p.add_argument('--include_code',action='store_true');p.add_argument('--message',default='Update ARCH INSERT experiment evidence');a=p.parse_args()
++ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'artifacts/arch_minexp';STATE=OUT/'publication.json'
++REMOTE='https://github.com/Adeline123456789/improve-ARCH.git'
++def git(args,env=None):return subprocess.check_output(['git',*args],cwd=ROOT,env=env,text=True).strip()
++old=json.loads(STATE.read_text()) if STATE.exists() else None
++parent=old['commit'] if old else 'a6a224b79f57e0b6c149e5b0f9d51a9b56ca131e'
++remote=git(['ls-remote',REMOTE,'refs/heads/main']);remote_commit=remote.split()[0] if remote else None
++assert remote_commit==(old['commit'] if old else None),'Remote main changed; refusing to overwrite external work'
++paths=[]
++for path in OUT.rglob('*'):
++    if not path.is_file() or 'runner' in path.parts or '__pycache__' in path.parts:continue
++    rel=path.relative_to(ROOT)
++    if path.name in ['publication.json'] or path.suffix in ['.tmp']:continue
++    if path.suffix=='.pth' and path.parent.name!='checkpoints':continue
++    if path.name=='trajectories.npz' and path.parent.name.startswith(('validation_','test_','screen_','confirm_','extended_','smoke')):continue
++    if path.name=='reset_manifest_sample.jsonl':continue
++    if path.suffix not in ['.md','.patch','.json','.jsonl','.yaml','.txt','.csv','.log','.npz','.pth','.png','.pdf','.mp4']:continue
++    assert path.stat().st_size<90_000_000,(path,'Unexpected large artifact')
++    paths.append(str(rel))
++if a.include_code:
++    paths.extend(str(x.relative_to(ROOT)) for x in (ROOT/'experiments/arch_min_insert').rglob('*') if x.is_file() and '__pycache__' not in x.parts and x.suffix in ['.py','.sh','.md','.yaml'])
++    for name in ['multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py','multi-robot-assembly/multi_arm_assembly/train_rl.py','environment/env-spec.json','environment/installed-versions.json','environment/isaaclab-replicator.patch']:
++        if (ROOT/name).exists():paths.append(name)
++with tempfile.TemporaryDirectory(prefix='arch-minexp-index-') as tmp:
++    env=dict(os.environ,GIT_INDEX_FILE=str(Path(tmp)/'index'))
++    git(['read-tree',parent],env)
++    for start in range(0,len(paths),100):git(['add','-f','--',*paths[start:start+100]],env)
++    if a.include_code:
++        diff=git(['diff','--cached',parent,'--','experiments/arch_min_insert','multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py','multi-robot-assembly/multi_arm_assembly/train_rl.py'],env)
++        (OUT/'code_diff.patch').write_text(diff+'\n');git(['add','-f','artifacts/arch_minexp/code_diff.patch'],env)
++    tree=git(['write-tree'],env)
++    if tree==git(['rev-parse',parent+'^{tree}']):print('No changes to publish');raise SystemExit(0)
++    commit=git(['commit-tree',tree,'-p',parent,'-m',a.message],env)
++    subprocess.run(['git','push',REMOTE,commit+':refs/heads/main'],cwd=ROOT,check=True)
++STATE.write_text(json.dumps({'remote':REMOTE,'branch':'main','commit':commit,'updated_at':datetime.now(ZoneInfo('Asia/Shanghai')).isoformat(),'user_index_untouched':True},indent=2)+'\n')
++print('PUBLISHED',commit,REMOTE)
+diff --git a/experiments/arch_min_insert/run.py b/experiments/arch_min_insert/run.py
+new file mode 100644
+index 0000000..9397544
+--- /dev/null
++++ b/experiments/arch_min_insert/run.py
+@@ -0,0 +1,216 @@
++"""Actual rl-games/MyA2CAgent training and deterministic fixed-case evaluation."""
++import argparse,json,hashlib,time,sys
++from pathlib import Path
++from omni.isaac.lab.app import AppLauncher
++p=argparse.ArgumentParser()
++p.add_argument('--mode',choices=['smoke','train','eval','fixtures','manifest'],required=True)
++p.add_argument('--group',choices=['B0','B1','B2'],default='B0')
++p.add_argument('--seed',type=int,default=0);p.add_argument('--num_envs',type=int,default=4)
++p.add_argument('--transitions',type=int,default=1996800);p.add_argument('--steps',type=int,default=192)
++p.add_argument('--contact_pair',action='store_true');p.add_argument('--scripted',action='store_true');p.add_argument('--with_camera',action='store_true');p.add_argument('--layout_fixture',action='store_true')
++p.add_argument('--checkpoint',type=Path);p.add_argument('--manifest',type=Path)
++p.add_argument('--output',type=Path,required=True)
++AppLauncher.add_app_launcher_args(p);a=p.parse_args()
++a.output.mkdir(parents=True,exist_ok=False)
++app=AppLauncher(a).app
++import torch,numpy as np
++import gymnasium as gym
++import omni.isaac.lab_tasks
++import multi_arm_assembly.direct_isaac_lab_position as native
++from omni.isaac.lab_tasks.utils import parse_env_cfg,load_cfg_from_registry
++from min_env import MinInsertEnv,configure_board
++from scenarios import make_case,IK
++from geometry import compose,inverse,true_metrics
++from rl_games.algos_torch import model_builder
++from rl_games.common import env_configurations,vecenv
++from rl_games.common.algo_observer import IsaacAlgoObserver
++from rl_games.torch_runner import Runner
++from omni.isaac.lab_tasks.utils.wrappers.rl_games import RlGamesGpuEnv
++from multi_arm_assembly.rl_components.isaac_rlgames_wrapper import MyRlGamesVecEnvWrapper
++from multi_arm_assembly.rl_components.my_network import MyNetworkBuilder
++from multi_arm_assembly.rl_components.my_a2c_model import MyA2CContinuousLogStd
++from multi_arm_assembly.rl_components.my_agent import MyA2CAgent
++from multi_arm_assembly.rl_components.my_player import MyPpoPlayerContinuous
++
++def save(name,obj):
++    (a.output/name).write_text(json.dumps(obj,indent=2,default=str)+'\n')
++def tolist(t):return t.cpu().tolist()
++env=None
++try:
++    cfg=parse_env_cfg('AssemblyInsert-v0',use_gpu=True,num_envs=a.num_envs)
++    if a.with_camera:
++        from dataclasses import replace
++        cfg=cfg.replace(initial_cfg=replace(cfg.initial_cfg,USE_CAMERA=True))
++    cfg.initial_cfg.USE_FT_SENSOR=False;cfg.num_observations=27;cfg.num_actions=6
++    cfg.parts[0].spawn.activate_contact_sensors=True
++    configure_board(cfg)
++    # Native rendering assets/controller gains and physics dt remain unchanged.
++    cases=None
++    if a.manifest:
++        cases=[json.loads(l) for l in a.manifest.read_text().splitlines()]
++    if a.mode=='manifest':
++        ik=IK('ur_description/urdf/ur10e.urdf',cfg.robot1.init_state.pos,cfg.robot1.init_state.rot,cfg.joint_angles_list['robot1'])
++        for split,base,count in [('validation',10000,50),('test',20000,100)]:
++            rows=[]
++            for si,suite in enumerate(['E0','E1','E2','E3']):
++                for i in range(count):
++                    c=make_case(base+si*1000+i,suite,split)
++                    q,fk,check=ik.solve(c['ee_start']);c.update(robot_arm_joint_pos=q,ee_start_fk=fk,validity=check)
++                    assert check['status']=='valid',c
++                    rows.append(c)
++            path=a.output/(split+'_manifest.jsonl');path.write_text(''.join(json.dumps(c)+'\n' for c in rows))
++        save('summary.json',{'validation_cases':200,'test_cases':400,'rejected':0,'status':'IK valid; physical contact fixtures pending'})
++    else:
++        if a.mode=='fixtures':
++            assert a.num_envs==4
++            cases=[]
++            for i,kind in enumerate(['seated','edge','penetrating','free']):
++                c=make_case(20000+i,'E2' if a.layout_fixture else 'E0','fixture')
++                if a.layout_fixture:
++                    c['socket_estimated']=c['socket_true'];c['X_true']=c['X_hat'];c['socket_bias']=[0]*6;c['grasp_bias']=[0]*6
++                star=torch.tensor(c['T_SP_star']);pre=star.clone()
++                if kind=='edge':pre[0]=.008;pre[2]=-.0003
++                if kind=='penetrating':pre[2]+=.02
++                if kind=='free':pre[2]-=.06
++                if a.contact_pair:
++                    kind='edge' if i%2 else 'free'
++                    pre=star.clone();pre[2]=-.0003 if i%2 else star[2]-.06
++                    if i%2:pre[0]=.008
++                c['ee_start']=compose(compose(torch.tensor(c['socket_estimated']),pre),inverse(torch.tensor(c['X_hat']))).tolist()
++                c['case_id']='fixture-'+kind+'-'+str(i);cases.append(c)
++        env=MinInsertEnv(cfg,group=a.group,seed=a.seed,output=a.output,cases=cases)
++        from pxr import UsdPhysics
++        stage=native.stage_utils.get_current_stage()
++        save('fixed_joints.json',[{'path':str(prim.GetPath()),'body0':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody0Rel().GetTargets()], 'body1':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody1Rel().GetTargets()]} for prim in stage.Traverse() if prim.IsA(UsdPhysics.FixedJoint) and 'Assembler' in str(prim.GetPath())])
++        env.report_group='scripted-'+a.group if a.scripted else a.group
++        env.policy_kind='scripted feedback' if a.scripted else 'trained PPO' if a.checkpoint else 'PPO training' if a.mode=='train' else 'zero-action diagnostic'
++        env.checkpoint_id=hashlib.sha256(a.checkpoint.read_bytes()).hexdigest() if a.checkpoint else None
++        torch.manual_seed(a.seed);env.seed(a.seed)
++        model_builder.register_network('my_network',MyNetworkBuilder)
++        model_builder.register_model('my_actor_model',lambda network,**kw:MyA2CContinuousLogStd(network))
++        params=load_cfg_from_registry('AssemblyInsert-v0','rl_games_cfg_entry_point')
++        params['params']['seed']=a.seed
++        pc=params['params']['config'];pc.update(num_actors=a.num_envs,minibatch_size=a.num_envs*25,
++            train_dir=str(a.output/'runner'),full_experiment_name='run',max_epochs=a.transitions//(a.num_envs*100),
++            save_frequency=25,zero_rnn_on_done=True)
++        save('agent_config.json',params)
++        identity={'group':a.group,'seed':a.seed,'mode':a.mode,'command':sys.argv,'started_unix':time.time(),
++          'num_envs':a.num_envs,'physics_dt':env.physics_dt,'policy_dt':env.step_dt,'episode_steps':env.max_episode_length,
++          'checkpoint':str(a.checkpoint) if a.checkpoint else None,
++          'checkpoint_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest() if a.checkpoint else None,
++          'protocol_sha256':hashlib.sha256((Path(__file__).resolve().parents[2]/'artifacts/arch_minexp/frozen_protocol.yaml').read_bytes()).hexdigest(),
++          'source_sha256':{name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest() for name in ['run.py','min_env.py','geometry.py','scenarios.py']},
++          'manifest_sha256':hashlib.sha256(a.manifest.read_bytes()).hexdigest() if a.manifest else None}
++        save('identity.json',identity)
++        save('physics_snapshot.json',{'peg_mass_kg':tolist(env.scene['peg'].root_physx_view.get_masses()[0]),
++            'peg_materials_static_dynamic_friction_restitution':tolist(env.scene['peg'].root_physx_view.get_material_properties()[0]),
++            'board_materials_static_dynamic_friction_restitution':tolist(env.scene['hole'].root_physx_view.get_material_properties()[0]),
++            'robot_joint_stiffness':tolist(env.robots['robot1'].data.joint_stiffness[0]),
++            'robot_joint_damping':tolist(env.robots['robot1'].data.joint_damping[0]),
++            'board_type':'kinematic rigid body with original CAD SDF collision','physics_dt':env.physics_dt})
++        # Diagnostic RGB is not an actor modality.
++        env.cnn=False
++        wrapped=MyRlGamesVecEnvWrapper(env,env.device,5.,1.)
++        if a.mode=='train':
++            assert a.transitions%(a.num_envs*100)==0,'Use equal complete PPO rollout budgets'
++            vecenv.register('IsaacRlgWrapper',lambda config_name,num_actors,**kw:RlGamesGpuEnv(config_name,num_actors,**kw))
++            env_configurations.register('rlgpu',{'vecenv_type':'IsaacRlgWrapper','env_creator':lambda **kw:wrapped})
++            runner=Runner(IsaacAlgoObserver())
++            runner.algo_factory.register_builder('my_agent',lambda **kw:MyA2CAgent(**kw))
++            runner.player_factory.register_builder('my_agent',lambda **kw:MyPpoPlayerContinuous(**kw))
++            runner.load(params);runner.reset()
++            start=time.monotonic();runner.run({'train':True,'play':False,'sigma':None,'checkpoint':str(a.checkpoint) if a.checkpoint else None})
++            save('completion.json',{'status':'completed','actual_env_transitions':env.total_transitions,'wall_time_s':time.monotonic()-start})
++        else:
++            obs,_=env.reset();player=None
++            checks={}
++            if a.mode=='smoke':
++                # Truth and diagnostic contact do not enter actor construction.
++                before=env._get_observations()['policy'].clone()
++                st=env.socket_true.clone();xt=env.xtrue.clone()
++                env.socket_true[:,:3]+=.2;env.xtrue[:,:3]+=.1
++                assert torch.equal(before,env._get_observations()['policy'])
++                env.socket_true[:]=st;env.xtrue[:]=xt
++                checks['hidden_truth_does_not_change_actor_observations']=True
++                # Reset one env without simulation advance or other env history edits.
++                if a.num_envs>1:
++                    other=env.socket_estimated[1:].clone();old=env.socket_estimated[0].clone()
++                    simstep=env._sim_step_counter
++                    env._reset_idx(torch.tensor([0],device=env.device))
++                    assert env._sim_step_counter==simstep
++                    assert torch.equal(other,env.socket_estimated[1:])
++                    assert not torch.equal(old,env.socket_estimated[0])
++                    assert not env.valid[0] and torch.equal(env.xhat[0],env.xhat[1])
++                    checks['asynchronous_reset_isolated_and_bias_resampled']=True
++                obs=env._get_observations()
++                save('implementation_checks.json',checks)
++            if a.checkpoint:
++                params['params']['config']['env_info']=wrapped.get_env_info()
++                player=MyPpoPlayerContinuous(params['params']);player.restore(str(a.checkpoint))
++                player.has_batch_dimension=True;player.batch_size=a.num_envs;player.init_rnn()
++                testobs=player.obs_to_torch({'policy':obs['policy'].clamp(-5,5)})
++                norm_before={k:v.clone() for k,v in player.model.state_dict().items() if 'running_mean_std' in k}
++                act1=player.get_action(testobs,is_deterministic=True)
++                player.restore(str(a.checkpoint));player.init_rnn()
++                act2=player.get_action(testobs,is_deterministic=True)
++                assert torch.equal(act1,act2)
++                assert all(torch.equal(v,player.model.state_dict()[k]) for k,v in norm_before.items())
++                player.init_rnn()
++                save('checkpoint_checks.json',{'reload_mean_actions_identical':True,'normalizers_frozen':True,'policy_dimension':27,'action_dimension':6})
++            rows=[];steps=a.steps if a.mode!='eval' else env.max_episode_length*((len(cases)+a.num_envs-1)//a.num_envs)
++            start=time.monotonic();obs0=obs['policy'].clone();x0=env.xhat.clone();s0=env.socket_estimated.clone()
++            camera_frames=[]
++            with torch.inference_mode():
++                for step in range(steps):
++                    actions=torch.zeros(a.num_envs,6,device=env.device)
++                    if a.scripted:
++                        from geometry import log,qmul,qinv,rotate
++                        tip=compose(env.ee(),env.xhat);goal=compose(env.socket_estimated,env.star)
++                        dp=(goal[:,:3]-tip[:,:3])*20/.05
++                        dr=log(qmul(goal[:,3:],qinv(tip[:,3:])))*10/.1
++                        if a.group!='B0':
++                            dp=rotate(qinv(env.socket_estimated[:,3:]),dp);dr=rotate(qinv(env.socket_estimated[:,3:]),dr)
++                        actions=torch.cat((dp,dr),-1)
++                    if a.contact_pair:
++                        actions[:]=0;actions[:,2]=-.04 if a.group=='B0' else .04
++                    if player:actions=player.get_action(player.obs_to_torch({'policy':obs['policy'].clamp(-5,5)}),is_deterministic=True)
++                    case_ids=[c['case_id'] for c in env.case_info]
++                    obs,reward,term,trunc,_=env.step(actions)
++                    if player and player.is_rnn:
++                        for state in player.states:state[:,term|trunc,:]=0
++                    assert torch.isfinite(obs['policy']).all() and torch.isfinite(reward).all()
++                    # Save all smoke/fixture trajectories; fixed small selection for evaluation.
++                    if a.with_camera:
++                        rgb=env.scene.sensors['camera'].data.output['rgb'][0,:,:,:3]
++                        if rgb.dtype.is_floating_point and rgb.max()<=1:rgb=rgb*255
++                        camera_frames.append(rgb.clamp(0,255).to(torch.uint8).cpu().numpy())
++                    keep=range(a.num_envs if a.mode=='eval' else min(a.num_envs,8))
++                    rows.append({k:v[list(keep)].cpu().numpy() for k,v in env.last_step.items()})
++                    rows[-1]['case_id']=np.array([case_ids[i] for i in keep])
++            if camera_frames:
++                import cv2
++                h,w=camera_frames[0].shape[:2]
++                writer=cv2.VideoWriter(str(a.output/'fixed_case.mp4'),cv2.VideoWriter_fourcc(*'mp4v'),24,(w,h))
++                assert writer.isOpened()
++                for rgb in camera_frames:writer.write(cv2.cvtColor(rgb,cv2.COLOR_RGB2BGR))
++                writer.release();cv2.imwrite(str(a.output/'fixed_case.png'),cv2.cvtColor(camera_frames[-1],cv2.COLOR_RGB2BGR))
++            np.savez_compressed(a.output/'trajectories.npz',**{k:np.stack([row[k] for row in rows]) for k in rows[0]})
++            if a.mode=='smoke':
++                # Every stored command is from the immediately preceding interval.
++                assert np.allclose(np.stack([r['time_s']-r['command_time_s'] for r in rows]),env.step_dt,atol=1e-6)
++                checks['residual_timestamp_alignment']=True
++                checks['reset_residual_mask']=bool((obs['policy'][:,21:]==0).all()) if not env.valid.any() else 'checked at reset'
++                save('implementation_checks.json',checks)
++            save('completion.json',{'status':'completed','transitions':env.total_transitions,'num_complete_episodes':len(env.completed),
++              'successes':sum(r['success'] for r in env.completed),'wall_time_s':time.monotonic()-start,'observation_dim':obs['policy'].shape[-1],
++              'actor_force_fields':[],'controller_uses_ft':False,'finite':True})
++            if a.mode=='fixtures':
++                save('fixture_result.json',{'cases':cases,'episodes':env.completed,'expected':[True,False,False,False],
++                   'warning':'physical validation requires inspecting traces for stable seating / collision response'})
++    print('MINEXP_COMPLETE',a.mode,a.group,a.output,flush=True)
++except Exception:
++    import traceback
++    (a.output/'error.txt').write_text(traceback.format_exc());raise
++finally:
++    if env:env.close()
++    app.close()
+diff --git a/experiments/arch_min_insert/run_eval.sh b/experiments/arch_min_insert/run_eval.sh
+new file mode 100644
+index 0000000..f7f2d94
+--- /dev/null
++++ b/experiments/arch_min_insert/run_eval.sh
+@@ -0,0 +1,3 @@
++#!/usr/bin/env bash
++set -euo pipefail
++exec bash "$(dirname -- "${BASH_SOURCE[0]}")/launch.sh" --mode eval "$@"
+diff --git a/experiments/arch_min_insert/run_smoke.sh b/experiments/arch_min_insert/run_smoke.sh
+new file mode 100644
+index 0000000..b240d67
+--- /dev/null
++++ b/experiments/arch_min_insert/run_smoke.sh
+@@ -0,0 +1,3 @@
++#!/usr/bin/env bash
++set -euo pipefail
++exec bash "$(dirname -- "${BASH_SOURCE[0]}")/launch.sh" --mode smoke "$@"
+diff --git a/experiments/arch_min_insert/run_train.sh b/experiments/arch_min_insert/run_train.sh
+new file mode 100644
+index 0000000..a1da246
+--- /dev/null
++++ b/experiments/arch_min_insert/run_train.sh
+@@ -0,0 +1,3 @@
++#!/usr/bin/env bash
++set -euo pipefail
++exec bash "$(dirname -- "${BASH_SOURCE[0]}")/launch.sh" --mode train "$@"
+diff --git a/experiments/arch_min_insert/scenarios.py b/experiments/arch_min_insert/scenarios.py
+new file mode 100644
+index 0000000..d5bfb24
+--- /dev/null
++++ b/experiments/arch_min_insert/scenarios.py
+@@ -0,0 +1,63 @@
++"""Independent RNG domains; save actual transforms, not just seeds."""
++import numpy as np
++import torch
++from geometry import compose,delta,inverse
++
++# CAD center of the 48-vertex rounded hexagonal aperture, expressed in board frame.
++CENTER=(-.0681832563,-.0885440744)
++TOP=.02436008
++
++def tensor(x):return torch.as_tensor(x,dtype=torch.float64)
++def make_case(seed,suite,split='train'):
++    r=np.random.default_rng(seed)
++    layout=r.uniform(-.02,.02,2);yaw=r.uniform(-15,15)*np.pi/180
++    if suite=='E0':layout[:]=0;yaw=0
++    stratum='id'
++    if suite=='E2':
++        if seed%2:
++            layout[0]=r.choice([-1,1])*r.uniform(.020001,.04);stratum='translation'
++        else:yaw=r.choice([-1,1])*r.uniform(15.0001,30)*np.pi/180;stratum='yaw'
++    scale=2 if suite=='E3' else 1
++    bs=r.uniform(-1,1,6)*[.001*scale,.001*scale,0,*([np.deg2rad(.5)*scale]*3)]
++    bg=r.uniform(-1,1,6)*([.0005*scale]*3+[np.deg2rad(.5)*scale]*3)
++    if suite=='E0':bs[:]=0;bg[:]=0
++    board=compose(tensor([layout[0],.18+layout[1],.025,0,0,0,1]),delta(tensor([0,0,0,0,0,yaw])))
++    board_socket=tensor([*CENTER,TOP,0,1,0,0])
++    socket=compose(board,board_socket)
++    estimated=compose(socket,delta(tensor(bs)))
++    # E=tool0, CAD bottom tip P: +0.32 m along E's Z, same orientation.
++    xhat=tensor([0,0,.32,1,0,0,0]);xtrue=compose(xhat,delta(tensor(bg)))
++    star=tensor([0,0,TOP+.02,1,0,0,0])
++    pre=star.clone();pre[2]-=.06
++    start=compose(compose(estimated,pre),inverse(xhat))
++    out={'case_id':f'{split}-{suite}-{seed:08d}','split':split,'suite':suite,'seed':int(seed),'stratum':stratum,
++         'board_true':board.tolist(),'socket_true':socket.tolist(),'socket_estimated':estimated.tolist(),
++         'X_true':xtrue.tolist(),'X_hat':xhat.tolist(),'T_SP_star':star.tolist(),'T_SP_pre':pre.tolist(),
++         'ee_start':start.tolist(),'socket_bias':bs.tolist(),'grasp_bias':bg.tolist(),
++         'approach_retreat_m':.06,'physics':{'dt':1/120,'decimation':5,'stiffness':400,'damping':800,'effort_limit':100,'gravity_disabled_robot_peg':True},
++         'success_version':'cad-hex-v1','error_outside_training':bool(np.any(np.abs(bs)>[.001,.001,0,*([np.deg2rad(.5)]*3)]) or np.any(np.abs(bg)>[.0005]*3+[np.deg2rad(.5)]*3)),
++         'validity':{'status':'pending_ik_and_initial_clearance'}}
++    return out
++
++class IK:
++    """Reusable existing UR10e URDF, avoids native solve_ik's connection leak/reseeding."""
++    def __init__(self,urdf,base_pos,base_quat,seed_joints):
++        import pybullet as p
++        self.p=p;self.cid=p.connect(p.DIRECT)
++        self.robot=p.loadURDF(urdf,base_pos,[base_quat[1],base_quat[2],base_quat[3],base_quat[0]],useFixedBase=True,physicsClientId=self.cid)
++        self.joints=[i for i in range(p.getNumJoints(self.robot,physicsClientId=self.cid)) if p.getJointInfo(self.robot,i,physicsClientId=self.cid)[2]!=p.JOINT_FIXED]
++        self.link=next(i for i in range(p.getNumJoints(self.robot,physicsClientId=self.cid)) if p.getJointInfo(self.robot,i,physicsClientId=self.cid)[12]==b'tool0')
++        self.seed=seed_joints
++    def solve(self,pose):
++        p=self.p
++        for j,q in zip(self.joints,self.seed):p.resetJointState(self.robot,j,float(q),physicsClientId=self.cid)
++        q=p.calculateInverseKinematics(self.robot,self.link,pose[:3],[*pose[4:],pose[3]],maxNumIterations=1000,residualThreshold=1e-7,physicsClientId=self.cid)
++        for j,v in zip(self.joints,q):p.resetJointState(self.robot,j,v,physicsClientId=self.cid)
++        fk=p.getLinkState(self.robot,self.link,computeForwardKinematics=True,physicsClientId=self.cid)
++        actual=[*fk[4],fk[5][3],*fk[5][:3]]
++        error=float(np.linalg.norm(np.array(actual[:3])-pose[:3]))
++        # Numerical IK + conservative preinsertion gap; no silent rejection after rollout.
++        from geometry import log,qmul,qinv
++        angular=float(log(qmul(tensor(actual[3:]),qinv(tensor(pose[3:])))).norm())
++        limits=all(p.getJointInfo(self.robot,j,physicsClientId=self.cid)[8]-1e-5<=v<=p.getJointInfo(self.robot,j,physicsClientId=self.cid)[9]+1e-5 for j,v in zip(self.joints,q))
++        return list(q),actual,{'status':'valid' if error<.0001 and angular<.001 and limits else 'invalid_ik','position_error_m':error,'rotation_error_rad':angular,'joint_limits':limits}
+diff --git a/experiments/arch_min_insert/summarize_results.py b/experiments/arch_min_insert/summarize_results.py
+new file mode 100644
+index 0000000..f20e278
+--- /dev/null
++++ b/experiments/arch_min_insert/summarize_results.py
+@@ -0,0 +1,175 @@
++"""Generate tables/figures from completed runs only. No inferred successes."""
++import csv,json,math,hashlib,statistics
++from pathlib import Path
++from collections import Counter,defaultdict
++from datetime import datetime
++from zoneinfo import ZoneInfo
++import numpy as np
++import matplotlib
++matplotlib.use('Agg')
++import matplotlib.pyplot as plt
++ROOT=Path(__file__).resolve().parents[2];OUT=ROOT/'artifacts/arch_minexp';PLOTS=OUT/'plots';PLOTS.mkdir(exist_ok=True)
++
++def write_csv(path,rows,fields=None):
++    if not rows:return
++    with path.open('w') as f:
++        w=csv.DictWriter(f,fieldnames=fields or list(rows[0]));w.writeheader();w.writerows(rows)
++def load_rows(path):
++    if not path.exists():return []
++    content=path.read_text();lines=content.splitlines()
++    if content and not content.endswith('\n'):lines=lines[:-1]  # append in progress
++    return [json.loads(x) for x in lines]
++def summarize():
++    selection=json.loads((OUT/'final_selection.json').read_text()) if (OUT/'final_selection.json').exists() else []
++    episodes=[];table=[];failures=[];by_policy={};manifest={x['case_id']:x for x in load_rows(OUT/'evaluation_manifest.jsonl')}
++    traces_dir=OUT/'traces';traces_dir.mkdir(exist_ok=True)
++    for item in selection:
++        directory=Path(item['test_dir']);rows=load_rows(directory/'episodes.jsonl')
++        if not (directory/'completion.json').exists():continue
++        # Fixed manifest is the denominator. Duplicates/padding must never count.
++        ids=[r['case_id'] for r in rows];assert len(ids)==len(set(ids))==400,(directory,len(ids))
++        assert set(ids)==set(manifest)
++        by_policy[(item['group'],item['seed'])]={r['case_id']:r for r in rows}
++        episodes.extend(rows)
++        for suite in ['E0','E1','E2','E3']:
++            rs=[r for r in rows if r['suite']==suite];n=len(rs);k=sum(r['success'] for r in rs)
++            table.append({'group':item['group'],'training_seed':item['seed'],'training_transitions':item['transitions'],
++              'suite':suite,'successes':k,'episodes':n,'success_rate':k/n,'checkpoint_sha256':item['checkpoint_sha256'],
++              'success_completion_time_s':statistics.mean(r['completion_time_s'] for r in rs if r['success']) if k else None})
++            for reason,count in Counter(r['termination_reason'] for r in rs).items():
++                failures.append({'group':item['group'],'training_seed':item['seed'],'suite':suite,'reason':reason,'count':count})
++        # All evaluations are retained locally. Publish fixed + first five per outcome/suite.
++        chosen=[]
++        for suite in ['E0','E1','E2','E3']:
++            sr=[r for r in rows if r['suite']==suite]
++            chosen.append(sr[0]['case_id'])
++            for success in [True,False]:chosen.extend(r['case_id'] for r in [x for x in sr if x['success']==success][:5])
++        chosen=list(dict.fromkeys(chosen))
++        raw=np.load(directory/'trajectories.npz');sample={}
++        for key in raw.files:
++            if key=='case_id':continue
++            per=[]
++            for case in chosen:
++                mask=raw['case_id']==case;arr=raw[key][mask];assert len(arr)==96,(case,key,arr.shape);per.append(arr)
++            sample[key]=np.stack(per)
++        sample['case_id']=np.array(chosen)
++        np.savez_compressed(traces_dir/f'{item["group"]}_seed{item["seed"]}_representative.npz',**sample)
++    (OUT/'episodes.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in episodes))
++    write_csv(OUT/'results.csv',table);write_csv(OUT/'failure_counts.csv',failures)
++    stratified=[]
++    for (group,seed),data in by_policy.items():
++        for label,predicate in [('E2_translation',lambda c:c['suite']=='E2' and c['stratum']=='translation'),('E2_yaw',lambda c:c['suite']=='E2' and c['stratum']=='yaw'),('E3_outside_training',lambda c:c['suite']=='E3' and c['error_outside_training'])]:
++            rr=[row for case,row in data.items() if predicate(manifest[case])]
++            stratified.append({'group':group,'seed':seed,'stratum':label,'successes':sum(r['success'] for r in rr),'episodes':len(rr)})
++    write_csv(OUT/'stratified_results.csv',stratified)
++    paired=[]
++    for label,left,right,suites in [('H1','B1','B0',['E2']),('H2','B2','B1',['E3']),('overall','B2','B0',['E1','E2','E3']),('E0_change','B2','B0',['E0'])]:
++        seeds=sorted({s for g,s in by_policy if g==left}&{s for g,s in by_policy if g==right})
++        for seed in seeds:
++            x=by_policy[(left,seed)];y=by_policy[(right,seed)];assert set(x)==set(y)
++            diffs=[int(x[k]['success'])-int(y[k]['success']) for k in x if x[k]['suite'] in suites]
++            paired.append({'contrast':label,'seed':seed,'delta_percentage_points':100*statistics.mean(diffs),'paired_cases':len(diffs)})
++    write_csv(OUT/'paired_deltas.csv',paired)
++    # Training data are separate from evaluation. Plot actual produced transitions.
++    curves=[]
++    for directory in sorted(OUT.iterdir()):
++        if not directory.is_dir() or not any(directory.name.startswith(x) for x in ['screen_B','confirm_B','extended_B']):continue
++        rs=load_rows(directory/'episodes.jsonl');bins=defaultdict(list)
++        for r in rs:bins[(r['transitions']-1)//51200].append(r)
++        for bucket,rr in bins.items():curves.append({'run':directory.name,'group':rr[0]['group'],'seed':rr[0]['training_seed'],
++             'transitions':max(r['transitions'] for r in rr),'mean_return':statistics.mean(r['return'] for r in rr),
++             'train_success_rate':statistics.mean(int(r['success']) for r in rr),'episodes':len(rr)})
++    write_csv(OUT/'learning_curves.csv',curves)
++    colors={'B0':'#536878','B1':'#247ba0','B2':'#d1495b'}
++    if curves:
++        fig,axes=plt.subplots(1,2,figsize=(10,3.4))
++        for run in sorted({r['run'] for r in curves}):
++            rr=[r for r in curves if r['run']==run];g=rr[0]['group'];x=np.array([r['transitions'] for r in rr])/1e6
++            axes[0].plot(x,[r['mean_return'] for r in rr],color=colors[g],label=run,alpha=.8)
++            axes[1].plot(x,[100*r['train_success_rate'] for r in rr],color=colors[g],alpha=.8)
++        for ax in axes:ax.set_xlabel('Training transitions (million)');ax.grid(alpha=.2)
++        axes[0].set_ylabel('Mean episode return');axes[1].set_ylabel('Training success (%)');axes[0].legend(fontsize=7)
++        fig.tight_layout();fig.savefig(PLOTS/'learning_curves.png',dpi=180);fig.savefig(PLOTS/'learning_curves.pdf');plt.close(fig)
++    if table:
++        fig,ax=plt.subplots(figsize=(7.5,4));xs=np.arange(4)
++        for gi,g in enumerate(['B0','B1','B2']):
++            means=[];std=[]
++            for suite in ['E0','E1','E2','E3']:
++                values=[100*r['success_rate'] for r in table if r['group']==g and r['suite']==suite]
++                means.append(statistics.mean(values) if values else np.nan);std.append(statistics.stdev(values) if len(values)>1 else 0.)
++            ax.bar(xs+(gi-1)*.25,means,width=.24,yerr=std,color=colors[g],label=g,capsize=3)
++        ax.set_xticks(xs,['E0','E1','E2','E3']);ax.set_ylabel('Success (%)');ax.set_ylim(0,105);ax.legend();ax.grid(axis='y',alpha=.2)
++        ax.set_title('Mean across training seeds; error bars = sample SD')
++        fig.tight_layout();fig.savefig(PLOTS/'success_rates.png',dpi=180);fig.savefig(PLOTS/'success_rates.pdf');plt.close(fig)
++    # Contact signal diagnostic: two free/blocked pairs, not independent training seeds.
++    path=OUT/'contact_common_v3/trajectories.npz'
++    if path.exists():
++        z=np.load(path);fig,axes=plt.subplots(1,3,figsize=(11,3.3));t=z['time_s'][:,0]
++        for name,indices,color in [('free',[0,2],'#247ba0'),('blocked',[1,3],'#d1495b')]:
++            axes[0].plot(t,1000*np.linalg.norm(z['tracking_residual_world'][:,indices,:3],axis=-1).mean(1),label=name,color=color)
++            axes[1].plot(t,np.linalg.norm(z['diagnostic_board_contact_force_world_N'][:,indices],axis=-1).mean(1),color=color)
++            zz=z['diagnostic_peg_root'][:,indices,2];axes[2].plot(t,1000*(zz[0]-zz).mean(1),color=color)
++        for ax in axes:ax.set_xlabel('Time (s)');ax.grid(alpha=.2)
++        axes[0].set_ylabel('Position tracking residual (mm)');axes[1].set_ylabel('Peg-board net contact force (N)');axes[2].set_ylabel('Downward displacement (mm)');axes[0].legend()
++        fig.tight_layout();fig.savefig(PLOTS/'contact_probe.png',dpi=180);fig.savefig(PLOTS/'contact_probe.pdf');plt.close(fig)
++    # Evidence-focused Chinese report. Missing evaluations are explicitly unrun.
++    training_records=[]
++    for job in ['screen','confirm','extended']:
++        path=OUT/(job+'_job.json')
++        if path.exists():training_records.extend(json.loads(path.read_text()).get('runs',[]))
++    (OUT/'training_inventory.json').write_text(json.dumps(training_records,indent=2)+'\n')
++    rows=['| 模型 | 训练种子数 | 每种子 transitions | E0 SR | E1 SR | E2 SR | E3 SR | E1/E2/E3 均值 | 主要失败 | 执行器 FT |',
++          '|---|---:|---|---|---|---|---|---|---|---|']
++    for g in ['B0','B1','B2']:
++        gt=[r for r in table if r['group']==g];seeds=sorted({r['training_seed'] for r in gt});rates=[]
++        for suite in ['E0','E1','E2','E3']:
++            rr=[r for r in gt if r['suite']==suite];values=[r['success_rate']*100 for r in rr]
++            rates.append(('；'.join(f"s{r['training_seed']}: {r['successes']}/{r['episodes']}" for r in rr)+f"；均值 {statistics.mean(values):.1f}%"+(f" ± {statistics.stdev(values):.1f}" if len(values)>1 else '（无种子方差估计）')) if rr else '未运行')
++        pressure=[r['success_rate']*100 for r in gt if r['suite']!='E0']
++        reasons=Counter(r['termination_reason'] for r in episodes if r['group']==g and not r['success'])
++        count=', '.join(str(x) for x in sorted({r['training_transitions'] for r in gt})) or '未完成'
++        rows.append(f"| {g} | {len(seeds)} | {count} | "+' | '.join(rates)+f" | {statistics.mean(pressure):.1f}% | {dict(reasons)} | 否（仅本仿真链） |" if pressure else f"| {g} | {len({r['seed'] for r in training_records if r['group']==g and 'actual_transitions' in r})} | {sorted({r['actual_transitions'] for r in training_records if r['group']==g and 'actual_transitions' in r}) or '训练尚未完成'} | 未运行 | 未运行 | 未运行 | 未运行 | 未运行 | 未运行 | 否（仅本仿真链） |")
++    findings=[]
++    for label in ['H1','H2','overall','E0_change']:
++        rr=[r for r in paired if r['contrast']==label];v=[r['delta_percentage_points'] for r in rr]
++        if v:findings.append(f"- {label}：各种子差值 {v} 个百分点；均值 {statistics.mean(v):.2f}"+(f"，样本标准差 {statistics.stdev(v):.2f}。" if len(v)>1 else '；只有一个训练种子。'))
++        else:findings.append(f'- {label}：尚无完整成对测试，不能给出收益结论。')
++    overall=[r['delta_percentage_points'] for r in paired if r['contrast']=='overall'];e0=[r['delta_percentage_points'] for r in paired if r['contrast']=='E0_change']
++    qualifies=len(overall)==3 and statistics.mean(overall)>=10 and all(v>0 for v in overall) and statistics.mean(e0)>=-5
++    basic=any(r['suite']=='E0' and r['successes']>0 for r in table)
++    conclusion='达到预先设定的工程筛查门槛，值得进入下一阶段；仍是有限预算证据。' if qualifies else '当前配置下尚无明确收益；未达到完整工程筛查门槛。' if basic else '未完成有效检验：尚未获得学会基础插入的学习策略证据，不能据此宣布算法无效。'
++    state=json.loads((OUT/'background_status.json').read_text()) if (OUT/'background_status.json').exists() else {}
++    report=f'''# ARCH INSERT 最小实验报告
++
++更新时间：{datetime.now(ZoneInfo('Asia/Shanghai')).isoformat()}。
++
++**{conclusion}**
++
++'''+ '\n'.join(rows)+ '\n\n'+ '\n'.join(findings)+f'''
++
++原始逐回合记录在 `episodes.jsonl`，逐种子/逐 suite 原始计数在 `results.csv`，成对差值在 `paired_deltas.csv`，布局与超训练边界误差分层在 `stratified_results.csv`。误差条仅为训练种子间样本标准差，不把 episode 数当成训练重复次数。E0 无偏置名义场景是确定性重复，不为它报告独立二项置信区间。
++
++## 管线证据
++
++- R0：既有 seed=42、100,000 transitions checkpoint，20 个原生固定场景共 1,900 次交互。候选位姿条件 0/20；原生没有成功检测器，故不填正式物理 SR。R0 与 B0 身份不同。
++- 原生重复抓取约束修复：32 环境曾有 63 个固定关节；新环境每环境只有一个。静态插座仅改 USD 在布局夹具中失败，改为原 CAD/SDF 的运动学刚体并用 PhysX 张量更新后通过。
++- 夹具验证：正确就位为成功，孔沿与悬空不成功，穿透为异常物理。不同布局也通过。原生控制器参数保持 400/800；未重新安装 Isaac，未训练高层 DiT。
++- 简单闭环控制在无误差名义验证场景 4/4 成功，约 2.625 秒完成；这不是 PPO 成功率。
++- 最终接触对照：自由下压约 2.86 mm，孔沿约 0.27 mm；相同 2 mm 命令的位置残差均值约 1.971 与 1.998 mm，差异仅约 27 微米。自由场景板接触力为 0，受阻峰值约 1.33–1.35 N。残差信号较弱且控制滞后占主导。
++- 64/256/512 环境检查均通过；512 环境预检共 98,304 次交互。坐标等变、尖端作用点、环境原点、真值不进入 Actor、异步 reset、时间戳检查和 checkpoint 重载/冻结归一化检查有真实记录。
++
++## 范围与限制
++
++B0/B1 比较的是坐标和动作表达的组合；B1/B2 比较显式执行残差特征。三组 Actor 与共享 Critic 都无力输入，本次仿真执行器也无 FT；独立真机代码仍有力反馈路径，本实验没有验证真机去力传感器。局部组保留共同全局插座朝向，不宣称完整 Actor 输入严格 SE(3) 不变。净接触力不等于六维腕部 wrench，力矩 unavailable。
++
++固定物理参数、CAD/阈值、预算及 SHA256 见 `frozen_protocol.yaml`、`frozen_hashes.json`。预算不足时只比较相同 transitions 快照；未达到推荐的每组每种子 500 万步时，不宣称充分收敛或完成完整确认。物理引擎非确定性和浮点环境原点误差仍存在。初态检查包括 IK、关节限位和保守插头间隙，没有穷尽整臂自碰撞检查。固定抓取不能评价真实掉落/滑移。
++
++后台决策与完成状态：`background_status.json`。当前记录的决策：{state.get('decision','尚未完成阶段决策')}。
++
++最值得做的一项后续工作：在冻结验证场景上检查强偏置下的接触残差可分性，并检验更长共同训练预算是否改善学习；只有现有对照出现可重复收益后才扩展传感或动力学模块。
++'''
++    (OUT/'report.md').write_text(report)
++    hashes={str(p.relative_to(OUT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (OUT/'checkpoints').glob('*.pth')}
++    (OUT/'checkpoint_hashes.json').write_text(json.dumps(hashes,indent=2)+'\n')
++    return {'completed_policies':len(by_policy),'test_episodes':len(episodes),'engineering_gate_met':qualifies,'conclusion':conclusion}
++if __name__=='__main__':print(json.dumps(summarize(),ensure_ascii=False))
+diff --git a/experiments/arch_min_insert/test_geometry.py b/experiments/arch_min_insert/test_geometry.py
+new file mode 100644
+index 0000000..da5f92e
+--- /dev/null
++++ b/experiments/arch_min_insert/test_geometry.py
+@@ -0,0 +1,35 @@
++"""Risk-focused checks independent of Isaac; physical detector validation is separate."""
++import json,torch
++from geometry import *
++torch.manual_seed(7)
++n=32;dtype=torch.float64
++pose=lambda:delta(torch.randn(n,6,dtype=dtype)*.1)
++ee,x,s,g,cmd=pose(),pose(),pose(),pose(),pose();v=torch.randn(n,6,dtype=dtype)
++valid=torch.ones(n,dtype=torch.bool);a=torch.randn(n,6,dtype=dtype);z=torch.zeros(n,6,dtype=dtype)
++obs=actor_features(ee,v,x,s,g,cmd,valid,True,True)
++y=pose();ee2=compose(y,ee);s2=compose(y,s);cmd2=compose(y,cmd)
++v2=torch.cat((rotate(y[:,3:],v[:,:3]),rotate(y[:,3:],v[:,3:])),dim=-1)
++obs2=actor_features(ee2,v2,x,s2,g,cmd2,valid,True,True)
++# Gravity is intentionally tied to world gravity; compare geometry/residual only.
++assert torch.allclose(obs[:,:12],obs2[:,:12],atol=1e-10)
++assert torch.allclose(obs[:,21:],obs2[:,21:],atol=1e-10)
++ec,pc=tip_command(ee,x,s,a,True);ec2,pc2=tip_command(ee2,x,s2,a,True)
++assert torch.allclose(compose(y,ec),ec2,atol=1e-10)
++a[:,:3]=0;ec,pc=tip_command(ee,x,s,a,True)
++assert torch.allclose(compose(ec,x)[:,:3],compose(ee,x)[:,:3],atol=1e-10)
++assert actor_features(ee,v,x,s,g,cmd,valid,True,False)[:,21:].count_nonzero()==0
++assert actor_features(ee,v,x,s,g,cmd,valid&False,True,True)[:,21:].count_nonzero()==0
++# Per-environment translation cancellation, no double subtraction.
++origin=torch.randn(n,3,dtype=dtype)*100
++te=ee.clone();ts=s.clone();tc=cmd.clone()
++for t in [te,ts,tc]:t[:,:3]+=origin;t[:,:3]-=origin
++assert torch.allclose(obs,actor_features(te,v,x,ts,g,tc,valid,True,True),atol=1e-10)
++# Geometry examples are algebraic fixtures, not proof of nonpenetrating dynamics.
++ident=torch.tensor([[0,0,0,1,0,0,0]],dtype=dtype)
++star=ident.clone();star[:,2]=.04436008
++root_tip=ident.clone();root_tip[:,2]=-.05
++root=compose(star,inverse(root_tip));met=true_metrics(root,root_tip,ident,star)
++assert met['candidate'].item()
++edge=root.clone();edge[:,0]+=.008;assert not true_metrics(edge,root_tip,ident,star)['candidate'].item()
++through=root.clone();through[:,2]+=.02;assert true_metrics(through,root_tip,ident,star)['invalid'].item()
++print(json.dumps({'algebra_tests':'passed','n':n,'dtype':str(dtype),'physical_detector':'requires simulator fixtures'}))
+diff --git a/multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py b/multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py
+index 8d2df4d..5e45172 100644
+--- a/multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py
++++ b/multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py
+@@ -1190,6 +1190,7 @@ class MyContinuousA2CBase(MyA2CBase):
+                     print('MAX FRAMES NUM!')
+                     should_exit = True
+ 
++                self.writer.flush()
+                 update_time = 0
+ 
+             if self.multi_gpu:
+diff --git a/multi-robot-assembly/multi_arm_assembly/train_rl.py b/multi-robot-assembly/multi_arm_assembly/train_rl.py
+index 4807d41..122cd85 100644
+--- a/multi-robot-assembly/multi_arm_assembly/train_rl.py
++++ b/multi-robot-assembly/multi_arm_assembly/train_rl.py
+@@ -100,6 +100,8 @@ def main():
+     print(f"[INFO] Logging experiment in directory: {log_root_path}")
+     # specify directory for logging runs
+     log_dir = agent_cfg["params"]["config"].get("full_experiment_name", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
++    if args_cli.prefix:
++        log_dir += "_" + args_cli.prefix
+     # set directory into agent config
+     # logging directory path: <train_dir>/<full_experiment_name>
+     agent_cfg["params"]["config"]["train_dir"] = log_root_path

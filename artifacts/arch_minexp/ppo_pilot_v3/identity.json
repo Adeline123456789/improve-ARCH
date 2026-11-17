@@ -1,0 +1,29 @@
+{
+  "group": "B0",
+  "seed": 999,
+  "mode": "train",
+  "command": [
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run.py",
+    "--mode",
+    "train",
+    "--group",
+    "B0",
+    "--num_envs",
+    "512",
+    "--seed",
+    "999",
+    "--transitions",
+    "51200",
+    "--headless",
+    "--output",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/ppo_pilot_v3"
+  ],
+  "started_unix": 1794911249.0739093,
+  "num_envs": 512,
+  "physics_dt": 0.008333333333333333,
+  "policy_dt": 0.041666666666666664,
+  "episode_steps": 96,
+  "checkpoint": null,
+  "checkpoint_sha256": null,
+  "manifest_sha256": null
+}

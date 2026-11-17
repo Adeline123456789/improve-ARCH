@@ -1,0 +1,26 @@
+diff --git a/source/apps/isaaclab.python.headless.rendering.kit b/source/apps/isaaclab.python.headless.rendering.kit
+index 8b31156..eecd5d4 100644
+--- a/source/apps/isaaclab.python.headless.rendering.kit
++++ b/source/apps/isaaclab.python.headless.rendering.kit
+@@ -17,7 +17,7 @@ keywords = ["experience", "app", "isaaclab", "python", "camera", "minimal"]
+ [dependencies]
+ # Isaac Lab minimal app
+ "isaaclab.python.headless" = {}
+-"omni.replicator.core" = {}
++"omni.replicator.core" = { version = "1.11.8", exact = true }
+ "omni.replicator.isaac" = {}
+ 
+ # Rendering
+diff --git a/source/apps/isaaclab.python.kit b/source/apps/isaaclab.python.kit
+index 6f11ae6..44ed0a5 100644
+--- a/source/apps/isaaclab.python.kit
++++ b/source/apps/isaaclab.python.kit
+@@ -89,7 +89,7 @@ keywords = ["experience", "app", "usd"]
+ "omni.physx.bundle" = {}
+ # "omni.physx.fabric" = {}
+ "omni.physx.tensors" = {}
+-"omni.replicator.core" = {}
++"omni.replicator.core" = { version = "1.11.8", exact = true }
+ "omni.replicator.replicator_yaml" = {}
+ "omni.resourcemonitor" = {}
+ "omni.rtx.settings.core" = {}

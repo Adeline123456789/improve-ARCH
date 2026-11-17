@@ -1,0 +1,30 @@
+{
+  "group": "B0",
+  "seed": 0,
+  "mode": "eval",
+  "command": [
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run.py",
+    "--mode",
+    "eval",
+    "--group",
+    "B0",
+    "--scripted",
+    "--num_envs",
+    "4",
+    "--manifest",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/baseline_cases.jsonl",
+    "--headless",
+    "--with_camera",
+    "--enable_cameras",
+    "--output",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp/scripted_nominal_v2"
+  ],
+  "started_unix": 1794910597.945114,
+  "num_envs": 4,
+  "physics_dt": 0.008333333333333333,
+  "policy_dt": 0.041666666666666664,
+  "episode_steps": 96,
+  "checkpoint": null,
+  "checkpoint_sha256": null,
+  "manifest_sha256": "9874257579cad40d162b738cdda82c07b415040c36b8b84de258a0e1cff0fa51"
+}

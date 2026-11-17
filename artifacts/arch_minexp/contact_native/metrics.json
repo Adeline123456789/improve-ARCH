@@ -1,0 +1,9 @@
+{
+  "mode": "contact",
+  "num_episodes": 2,
+  "transitions": 190,
+  "wall_time_s": 12.24386205105111,
+  "provisional_pose_successes": 0,
+  "physical_successes": null,
+  "finite": true
+}

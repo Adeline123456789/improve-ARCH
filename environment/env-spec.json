@@ -1,0 +1,123 @@
+{
+  "base": "Ubuntu 22.04 + isolated venv with avp_clean system-site-packages (PyTorch 2.3.0+cu121, torchvision 0.18.0)",
+  "system_pkgs": [
+    "git",
+    "cmake",
+    "build-essential"
+  ],
+  "pip_phases": [
+    [
+      "numpy==1.26.4",
+      "torch==2.3.0",
+      "torchvision==0.18.0",
+      "setuptools==75.8.0",
+      "pip==24.3.1"
+    ],
+    [
+      "isaacsim-app==4.0.0.0",
+      "isaacsim-benchmark==4.0.0.0",
+      "isaacsim-core==4.0.0.0",
+      "isaacsim-gui==4.0.0.0",
+      "isaacsim-kernel==4.0.0.0",
+      "isaacsim-replicator==4.0.0.0",
+      "isaacsim-rl==4.0.0.0",
+      "isaacsim-robot==4.0.0.0",
+      "isaacsim-robot-motion==4.0.0.0",
+      "isaacsim-sensor==4.0.0.0",
+      "isaacsim-storage==4.0.0.0",
+      "isaacsim-utils==4.0.0.0",
+      "omniverse-kit==106.0.0",
+      "isaacsim-extscache-physics==4.0.0.0"
+    ],
+    [
+      "rl-games==1.6.1",
+      "gymnasium==0.29.0",
+      "gym==0.23.1",
+      "pybullet==3.2.7",
+      "trimesh==4.4.4",
+      "wandb==0.12.21",
+      "zuko==1.2.0",
+      "dill==0.4.1",
+      "hydra-core==1.3.8",
+      "tensordict==0.4.0",
+      "moviepy==1.0.3",
+      "protobuf==3.20.3",
+      "opencv-python==4.10.0.84",
+      "icecream==2.1.3",
+      "toml==0.10.2",
+      "h5py==3.11.0",
+      "scipy==1.15.2",
+      "tensorboard==2.20.0",
+      "tensorboardX==2.6.5",
+      "matplotlib==3.7.5",
+      "gymnasium==0.29.0",
+      "toml==0.10.2",
+      "hidapi==0.15.0",
+      "prettytable==3.3.0",
+      "pyglet==1.5.29",
+      "boto3==1.37.10",
+      "osqp==0.6.7.post3",
+      "pyperclip==1.11.0",
+      "sympy==1.12",
+      "timm==0.9.16",
+      "huggingface-hub==0.23.0"
+    ]
+  ],
+  "source": {
+    "ARCH": "a6a224b79f57e0b6c149e5b0f9d51a9b56ca131e",
+    "IsaacLab": "454905bf08c374b6162e6c4c64a320aa6261fbe6",
+    "rsl_rl": "73fd7c621bf63104a8a7eb0c168df16c0ee65908"
+  },
+  "env": {
+    "OMNI_KIT_ACCEPT_EULA": "YES",
+    "OMP_NUM_THREADS": "8",
+    "OPENBLAS_NUM_THREADS": "8",
+    "MKL_NUM_THREADS": "8",
+    "WANDB_MODE": "disabled"
+  },
+  "smoke": {
+    "import_names": [
+      "torch",
+      "omni.isaac.lab"
+    ],
+    "gpu_tests": [
+      {
+        "cmd": "python -c 'import torch;torch.manual_seed(0);x=torch.randn(8,8,device=\"cuda\");y=x@x;assert torch.isfinite(y).all();print(\"WITNESS\",y.shape,torch.cuda.get_device_name())'",
+        "expect": "WITNESS torch.Size"
+      }
+    ],
+    "commands": [
+      "bash /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/scripts/run_sim.sh ../../scripts/sim_smoke.py --task AssemblyInsert-v0 --num_envs 2 --steps 120 --seed 42 --headless --enable_cameras --output /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/outputs/doc-smoke",
+      "OMP_NUM_THREADS=8 .venv-arch/bin/python scripts/policy_smoke.py"
+    ]
+  },
+  "notes": [
+    "PyTorch 2.3.0 matches the author-exported isaaclab.yml; IsaacLab v1.1.0 editable install uses --no-deps because its metadata pins 2.2.2.",
+    "Isaac extension cache wheels are optional; download missing runtime extensions on first launch."
+  ],
+  "runtime_extension_restores": {
+    "sdk": [
+      "omni.inspect",
+      "omni.rtx.shadercache.vulkan",
+      "omni.kit.window.toolbar",
+      "omni.kit.widget.toolbar",
+      "omni.kit.viewport.window"
+    ],
+    "kit": [
+      "omni.graph.ui",
+      "omni.replicator.core",
+      "omni.sensors.tiled"
+    ]
+  },
+  "patches": [
+    "environment/isaaclab-replicator.patch (pin omni.replicator.core==1.11.8)"
+  ],
+  "collector_gui": {
+    "experience": "IsaacLab/source/apps/isaaclab.python.headless.rendering.kit",
+    "enabled_extensions": [
+      "omni.kit.window.toolbar",
+      "omni.kit.viewport.window"
+    ],
+    "own_skill_panel": true
+  }
+}

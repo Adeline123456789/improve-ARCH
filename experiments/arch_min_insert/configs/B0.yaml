@@ -1,0 +1,6 @@
+group: B0
+geometry_action_frame: world
+tracking_residual: false
+force_inputs: false
+observation_dim: 27
+common_protocol: artifacts/arch_minexp/frozen_protocol.yaml

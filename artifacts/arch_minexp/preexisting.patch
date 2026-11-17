@@ -1,0 +1,25 @@
+diff --git a/multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py b/multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py
+index 8d2df4d..5e45172 100644
+--- a/multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py
++++ b/multi-robot-assembly/multi_arm_assembly/rl_components/my_agent.py
+@@ -1190,6 +1190,7 @@ class MyContinuousA2CBase(MyA2CBase):
+                     print('MAX FRAMES NUM!')
+                     should_exit = True
+ 
++                self.writer.flush()
+                 update_time = 0
+ 
+             if self.multi_gpu:
+diff --git a/multi-robot-assembly/multi_arm_assembly/train_rl.py b/multi-robot-assembly/multi_arm_assembly/train_rl.py
+index 4807d41..122cd85 100644
+--- a/multi-robot-assembly/multi_arm_assembly/train_rl.py
++++ b/multi-robot-assembly/multi_arm_assembly/train_rl.py
+@@ -100,6 +100,8 @@ def main():
+     print(f"[INFO] Logging experiment in directory: {log_root_path}")
+     # specify directory for logging runs
+     log_dir = agent_cfg["params"]["config"].get("full_experiment_name", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
++    if args_cli.prefix:
++        log_dir += "_" + args_cli.prefix
+     # set directory into agent config
+     # logging directory path: <train_dir>/<full_experiment_name>
+     agent_cfg["params"]["config"]["train_dir"] = log_root_path

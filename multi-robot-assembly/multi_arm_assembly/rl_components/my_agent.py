@@ -1190,6 +1190,7 @@ class MyContinuousA2CBase(MyA2CBase):
                     print('MAX FRAMES NUM!')
                     should_exit = True
 
+                self.writer.flush()
                 update_time = 0
 
             if self.multi_gpu:

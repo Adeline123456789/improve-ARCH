@@ -1,0 +1,106 @@
+geometry: FMB Medium_Short_Hexagon_Green
+physics_dt_s: 0.008333333333333333
+decimation: 5
+episode_steps: 96
+actor_dim: 27
+actor_fields:
+- position_error_3
+- rotation_log_error_3
+- tip_linear_velocity_3
+- angular_velocity_3
+- global_socket_orientation_columns_6
+- gravity_direction_3
+- tracking_residual_6
+critic: shared actor inputs; no privileged branch
+actor_force_input: false
+controller_force_input: false
+network:
+  rnn: lstm
+  layers: 2
+  units: 256
+  mlp:
+  - 256
+  - 128
+  - 64
+  sequence_length: 4
+optimizer:
+  algorithm: native MyA2CAgent PPO
+  learning_rate: 0.0003
+  horizon: 100
+  mini_epochs: 8
+  minibatch: 12800
+  num_envs: 512
+control:
+  type: incremental tip pose -> absolute tool0 IK target -> native implicit joint
+    drives
+  translation_norm_m: 0.05
+  rotation_norm_rad: 0.1
+  stiffness: 400
+  damping: 800
+  effort_limit: 100
+coordinate:
+  quaternion: wxyz
+  perturbation: right multiplication; translation in parent local coordinates and
+    SO3 exponential; not coupled SE3 exponential
+  socket_axis: +Z into aperture
+  tip: CAD root z=-0.05, rotated Rx(pi)
+  X_hat:
+  - 0
+  - 0
+  - 0.32
+  - 1
+  - 0
+  - 0
+  - 0
+distributions:
+  layout_xy_m: 0.02
+  layout_yaw_deg: 15
+  socket_bias_xy_m: 0.001
+  grasp_bias_xyz_m: 0.0005
+  bias_lifetime: episode
+  white_noise: false
+  approach_retreat_m: 0.06
+  socket_bias_rotvec_deg: 0.5
+  grasp_bias_rotvec_deg: 0.5
+success:
+  cad_side_clearance_m: 0.00149
+  lateral_tolerance_m: 0.00075
+  depth_offset_tolerance_m: 0.001
+  rotation_rad: 0.034906585
+  hold_steps: 5
+  symmetry: six yaw rotations
+  target_depth_m: 0.04436008
+  version: cad-hex-v1
+budget:
+  screening_transitions_per_group: 1996800
+  confirmation_transitions_per_group_seed: 4966400
+  max_total_transitions: 45000000
+  wall_gpu_hours: 6
+  partial_confirmation_rule: If 9 x 4,966,400 cannot fit 6 GPU hours, additional seeds
+    may use the same 1,996,800 snapshot; explicitly report shortened budget. Do not
+    extend based on final-test results.
+  measured_pilot_transitions_per_s: 1618
+evaluation:
+  validation_per_suite: 50
+  test_per_suite: 100
+  suites:
+  - E0
+  - E1
+  - E2
+  - E3
+  action: deterministic mean; frozen normalizers
+  num_envs: 100
+  training_scene_seed_range:
+  - 1000000
+  - 2147483646
+  manifest_validation: IK residual <0.1mm, rotation <0.001rad, joint limits, conservative
+    initial peg clearance >5mm; no exhaustive full-arm self-collision check
+status: frozen for seed-0 screening; common physics revision v3
+physics:
+  board_type: kinematic rigid body, original SDF collision
+  peg_mass_kg: 0.11556829512119293
+  friction_static: 0.5
+  friction_dynamic: 0.5
+  restitution: 0.0
+  reset_advance_physics: false
+  grasp_constraints_per_env: 1
