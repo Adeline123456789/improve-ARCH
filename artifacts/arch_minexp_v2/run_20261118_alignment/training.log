@@ -35791,3 +35791,24 @@ RunningMeanStd:  (27,)
 => loading checkpoint '/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment/g3_train_b16_f5939200/runner/run/nn/last_apa_impedance_ep_464_rew_-53.10518.pth'
 MINEXP_COMPLETE eval B0 /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment/g3_mild_b16
 [33.593s] Simulation App Shutting Down
+fatal: 无法访问 'https://github.com/Adeline123456789/improve-ARCH.git/'：Failed to connect to github.com port 443 after 132504 ms: 连接超时
+Traceback (most recent call last):
+  File "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/publish_v2.py", line 67, in <module>
+    publish(args.output.resolve(),args.message)
+  File "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/publish_v2.py", line 57, in publish
+    run('git','-c','credential.helper=','-c','credential.helper=!gh auth git-credential','push',TARGET,BRANCH)
+  File "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/publish_v2.py", line 12, in run
+    return subprocess.check_output(args,cwd=ROOT,env=env,text=True).strip()
+  File "/home/midea/miniconda3/envs/avp_clean/lib/python3.10/subprocess.py", line 421, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/home/midea/miniconda3/envs/avp_clean/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '('git', '-c', 'credential.helper=', '-c', 'credential.helper=!gh auth git-credential', 'push', 'https://github.com/Adeline123456789/improve-ARCH.git', 'refs/heads/codex/arch-v2-evidence')' returned non-zero exit status 128.
+Traceback (most recent call last):
+  File "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/finish_v2.py", line 26, in <module>
+    execute('publish_v2.py',out,'--message',message)
+  File "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/finish_v2.py", line 18, in execute
+    subprocess.run([sys.executable,'-u',str(HERE/name),*map(str,args)],check=True)
+  File "/home/midea/miniconda3/envs/avp_clean/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/.venv-arch/bin/python', '-u', '/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/publish_v2.py', '/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment', '--message', 'Record ARCH v2 evidence for G2 PASS, G3 FAIL and G4 NOT_RUN']' returned non-zero exit status 1.
