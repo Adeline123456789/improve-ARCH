@@ -71,6 +71,8 @@ true_metrics = assembly_errors
 
 def reward_terms(metrics, cfg):
     position = metrics['position_error'].norm(dim=-1) / cfg['position_scale']
+    if 'lateral_scale' in cfg:
+        position = metrics['depth_error'].abs()/cfg['position_scale'] + metrics['lateral']/cfg['lateral_scale']
     orientation = metrics['rotation'] / cfg['angle_scale']
     return (-cfg['position_weight'] * position.clamp(max=cfg['cap']),
             -cfg['angle_weight'] * orientation.clamp(max=cfg['cap']))

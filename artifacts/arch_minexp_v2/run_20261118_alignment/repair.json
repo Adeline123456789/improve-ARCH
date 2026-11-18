@@ -1,0 +1,31 @@
+{
+  "hypothesis": "Near the opening a depth-dominated Euclidean cost weakly distinguishes lateral corrections. Broad exploration produces target-offset saturation and multi-mm lateral drift.",
+  "comparison": "run_20261118/gate_report.json",
+  "control_evidence": "run_20261118/diagnostics/g0_free_response.csv",
+  "first_config_interactions": 1436800,
+  "last_two_peak_depth_mm": [
+    1.846,
+    1.649
+  ],
+  "last_two_final_orientation_deg": [
+    10.117,
+    10.534
+  ],
+  "changes": {
+    "Gaussian_initial_sigma": [
+      1,
+      0.25
+    ],
+    "position_cost": "abs(depth_error)/0.06 + lateral/0.012, original cap and angular term"
+  },
+  "basis": "At the opening, correcting a 0.75 mm lateral offset at 44.36 mm depth shortfall improves old dense reward by 0.000106. The new cost gives 0.0625. Initial translational one-axis offset std is 12.5 mm at the unchanged 50 mm cap.",
+  "attribution": "One combined alignment repair; this run cannot isolate its two adjustments.",
+  "unchanged": [
+    "six actions",
+    "normal preinsertion start",
+    "geometry and stable terminal criterion",
+    "actuator and PPO architecture",
+    "diagnostic seed 101"
+  ],
+  "first_config_BC_used_to_initialize": false
+}

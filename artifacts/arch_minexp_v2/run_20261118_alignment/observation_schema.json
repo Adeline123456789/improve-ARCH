@@ -1,0 +1,272 @@
+[
+  {
+    "index": 0,
+    "name": "position_error_x",
+    "unit": "m",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "estimated goal minus measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 1,
+    "name": "position_error_y",
+    "unit": "m",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "estimated goal minus measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 2,
+    "name": "position_error_z",
+    "unit": "m",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "estimated goal minus measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 3,
+    "name": "orientation_error_x",
+    "unit": "rad",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "estimated goal and measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 4,
+    "name": "orientation_error_y",
+    "unit": "rad",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "estimated goal and measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 5,
+    "name": "orientation_error_z",
+    "unit": "rad",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "estimated goal and measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 6,
+    "name": "tip_velocity_x",
+    "unit": "m/s",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "tool twist and calibrated grasp",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 7,
+    "name": "tip_velocity_y",
+    "unit": "m/s",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "tool twist and calibrated grasp",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 8,
+    "name": "tip_velocity_z",
+    "unit": "m/s",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "tool twist and calibrated grasp",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 9,
+    "name": "angular_velocity_x",
+    "unit": "rad/s",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "measured tool twist",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 10,
+    "name": "angular_velocity_y",
+    "unit": "rad/s",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "measured tool twist",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 11,
+    "name": "angular_velocity_z",
+    "unit": "rad/s",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "measured tool twist",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 12,
+    "name": "socket_orientation_columns_x_0",
+    "unit": "1",
+    "frame": "world",
+    "time": "reset",
+    "source": "estimated socket rotation, first two columns",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 13,
+    "name": "socket_orientation_columns_y_0",
+    "unit": "1",
+    "frame": "world",
+    "time": "reset",
+    "source": "estimated socket rotation, first two columns",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 14,
+    "name": "socket_orientation_columns_z_0",
+    "unit": "1",
+    "frame": "world",
+    "time": "reset",
+    "source": "estimated socket rotation, first two columns",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 15,
+    "name": "socket_orientation_columns_x_1",
+    "unit": "1",
+    "frame": "world",
+    "time": "reset",
+    "source": "estimated socket rotation, first two columns",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 16,
+    "name": "socket_orientation_columns_y_1",
+    "unit": "1",
+    "frame": "world",
+    "time": "reset",
+    "source": "estimated socket rotation, first two columns",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 17,
+    "name": "socket_orientation_columns_z_1",
+    "unit": "1",
+    "frame": "world",
+    "time": "reset",
+    "source": "estimated socket rotation, first two columns",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 18,
+    "name": "gravity_direction_x",
+    "unit": "1",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "world gravity direction",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 19,
+    "name": "gravity_direction_y",
+    "unit": "1",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "world gravity direction",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 20,
+    "name": "gravity_direction_z",
+    "unit": "1",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t",
+    "source": "world gravity direction",
+    "normalization": "shared clipping then running mean/std",
+    "mask": null
+  },
+  {
+    "index": 21,
+    "name": "position_residual_x",
+    "unit": "m",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t-1 to t",
+    "source": "previously issued command minus measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": "zero B0/B1, zero at reset"
+  },
+  {
+    "index": 22,
+    "name": "position_residual_y",
+    "unit": "m",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t-1 to t",
+    "source": "previously issued command minus measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": "zero B0/B1, zero at reset"
+  },
+  {
+    "index": 23,
+    "name": "position_residual_z",
+    "unit": "m",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t-1 to t",
+    "source": "previously issued command minus measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": "zero B0/B1, zero at reset"
+  },
+  {
+    "index": 24,
+    "name": "rotation_residual_x",
+    "unit": "rad",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t-1 to t",
+    "source": "previously issued command and measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": "zero B0/B1, zero at reset"
+  },
+  {
+    "index": 25,
+    "name": "rotation_residual_y",
+    "unit": "rad",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t-1 to t",
+    "source": "previously issued command and measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": "zero B0/B1, zero at reset"
+  },
+  {
+    "index": 26,
+    "name": "rotation_residual_z",
+    "unit": "rad",
+    "frame": "world B0, estimated socket B1/B2",
+    "time": "t-1 to t",
+    "source": "previously issued command and measured tip",
+    "normalization": "shared clipping then running mean/std",
+    "mask": "zero B0/B1, zero at reset"
+  }
+]

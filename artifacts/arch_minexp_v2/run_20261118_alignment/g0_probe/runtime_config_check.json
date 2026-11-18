@@ -1,0 +1,64 @@
+{
+  "upstream_before_protocol": {
+    "physics_dt": 0.008333333333333333,
+    "decimation": 5,
+    "episode_length_s": 4,
+    "is_finite_horizon": false,
+    "arm": {
+      "stiffness": 400.0,
+      "damping": 800.0,
+      "effort_limit": 100
+    }
+  },
+  "physics_dt": 0.008333333333333333,
+  "step_dt": 0.041666666666666664,
+  "episode_steps": 96,
+  "num_envs": 4,
+  "hold_steps": 5,
+  "env_origins": [
+    [
+      2.0,
+      -2.0,
+      0.0
+    ],
+    [
+      2.0,
+      2.0,
+      0.0
+    ],
+    [
+      -2.0,
+      -2.0,
+      0.0
+    ],
+    [
+      -2.0,
+      2.0,
+      0.0
+    ]
+  ],
+  "stiffness": [
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    400.0
+  ],
+  "damping": [
+    800.0,
+    800.0,
+    800.0,
+    800.0,
+    800.0,
+    800.0
+  ],
+  "effort_limit": [
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+  ]
+}

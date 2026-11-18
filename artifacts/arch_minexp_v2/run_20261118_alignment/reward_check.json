@@ -1,0 +1,6 @@
+{
+  "entrance_lateral_correction_m": 0.00075,
+  "reward_gain": 0.0625,
+  "both_outside_success_depth": true,
+  "unchanged_orientation_weight": 0.2
+}

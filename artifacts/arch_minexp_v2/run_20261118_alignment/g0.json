@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "scripted_successes": 20,
+  "episodes": 20,
+  "offline_matches": true,
+  "edge_peak_force_N": 1.3502055406570435,
+  "fixed_target_range_m": 1.1920928955078125e-07,
+  "hold_tracking_error_final_m": 0.0024934830144047737,
+  "probe_trace": "g0_probe/trajectories.npz",
+  "scripted_trace": "g0_scripted/trajectories.npz"
+}

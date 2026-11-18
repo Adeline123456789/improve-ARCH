@@ -49,7 +49,7 @@ class MinInsertEnv(native.InsertEnv):
         self.root_tip=self.ident.clone();self.root_tip[:,2]=-.05;self.root_tip[:,3:]=torch.tensor([0,1,0,0.],device=d)
         self.valid=torch.zeros(n,device=d,dtype=torch.bool);self.just_reset=~self.valid.clone()
         self.first_substep=self.just_reset.clone();self.hold=torch.zeros(n,device=d,dtype=torch.long)
-        self.ever_success=self.valid.clone();self.bad=self.valid.clone();self.case_info=[None]*n
+        self.ever_success=self.valid.clone();self.lost_after_reach=self.valid.clone();self.bad=self.valid.clone();self.case_info=[None]*n
         self.board_peak=torch.zeros(n,device=d);self.depth_history=torch.zeros(n,24,device=d);self.peak=torch.zeros(n,device=d);self.residual_sq=torch.zeros(n,device=d);self.saturation=torch.zeros(n,device=d)
         self.first_success=torch.full((n,),float("nan"),device=d);self.returns=torch.zeros(n,device=d);self.started=np.zeros(n);self.episode_serial=0
         if self.output:self.output.mkdir(parents=True,exist_ok=True)
@@ -125,7 +125,7 @@ class MinInsertEnv(native.InsertEnv):
         self.scene['peg'].write_root_state_to_sim(roots,env_ids=ids)
         self.scene['hole'].write_root_state_to_sim(boards,env_ids=ids)
         self.command[ids]=self.reset_ee[ids];self.valid[ids]=False;self.just_reset[ids]=True;self.first_substep[ids]=True
-        self.hold[ids]=0;self.ever_success[ids]=False;self.first_success[ids]=float('nan')
+        self.hold[ids]=0;self.ever_success[ids]=False;self.lost_after_reach[ids]=False;self.first_success[ids]=float('nan')
         initroot=roots[:,:7].clone();initroot[:,:3]-=self.scene.env_origins[ids]
         self.bad[ids]=assembly_errors(initroot,self.root_tip[ids],self.socket_true[ids],self.star[ids],**self.protocol['geometry'])['invalid']
         for x in [self.peak,self.board_peak,self.residual_sq,self.saturation,self.returns]:x[ids]=0
@@ -179,6 +179,7 @@ class MinInsertEnv(native.InsertEnv):
         self.hold=torch.where(metrics['candidate'],self.hold+1,0)
         newly=(self.hold>=self.hold_steps)&~self.ever_success
         self.first_success[newly]=self.episode_length_buf[newly]*self.step_dt
+        self.lost_after_reach|=self.ever_success & ~metrics['candidate']
         self.ever_success|=self.hold>=self.hold_steps;self.bad|=metrics['invalid']
     def _get_dones(self):
         self._update_geometry()
@@ -220,7 +221,7 @@ class MinInsertEnv(native.InsertEnv):
                 elif n>=24 and self.board_peak[i]>.5 and self.depth_history[i].max()-self.depth_history[i].min()<.001:
                     reason='contact_no_progress'
             row={'group':getattr(self,'report_group',self.group),'policy_kind':getattr(self,'policy_kind','diagnostic'),'checkpoint_id':getattr(self,'checkpoint_id',None),'training_seed':self.training_seed,'case_id':case['case_id'],'suite':case['suite'],'num_steps':n,
-             'success':success,'valid':not bool(self.bad[i]),'ever_reached':bool(self.ever_success[i]),'lost_after_reach':bool(self.ever_success[i] and not stable[i]),'first_reach_time':float(self.first_success[i]) if self.ever_success[i] else None,'final_depth_error_m':float(met['depth_error'][i]),'final_hold_steps':int(self.hold[i]),'termination_reason':reason,'completion_time_s':float(self.first_success[i]) if success else None,'final_depth_m':float(met['depth'][i]),
+             'success':success,'valid':not bool(self.bad[i]),'ever_reached':bool(self.ever_success[i]),'lost_after_reach':bool(self.lost_after_reach[i]),'first_reach_time':float(self.first_success[i]) if self.ever_success[i] else None,'final_depth_error_m':float(met['depth_error'][i]),'final_hold_steps':int(self.hold[i]),'termination_reason':reason,'completion_time_s':float(self.first_success[i]) if success else None,'final_depth_m':float(met['depth'][i]),
              'final_lateral_error_m':float(met['lateral'][i]),'final_rotation_error_rad':float(met['rotation'][i]),
              'peak_contact_measure':float(self.peak[i]),'peak_board_contact_force_N':float(self.board_peak[i]),'contact_measure_type':'net force on peg, world, N; torque unavailable',
              'tracking_residual_rms':float((self.residual_sq[i]/n).sqrt()),'action_saturation_rate':float(self.saturation[i]/n),
