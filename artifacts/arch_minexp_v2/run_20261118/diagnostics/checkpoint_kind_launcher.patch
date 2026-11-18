@@ -1,0 +1,11 @@
+--- run.py
++++ run.py
+@@ -101,6 +101,8 @@
+         save('fixed_joints.json',[{'path':str(prim.GetPath()),'body0':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody0Rel().GetTargets()], 'body1':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody1Rel().GetTargets()]} for prim in stage.Traverse() if prim.IsA(UsdPhysics.FixedJoint) and 'Assembler' in str(prim.GetPath())])
+         env.report_group='scripted-'+a.group if a.scripted else a.group
+         env.policy_kind='scripted feedback' if a.scripted else 'trained PPO' if a.checkpoint else 'PPO training' if a.mode=='train' else 'zero-action diagnostic'
++        if a.checkpoint and a.mode=='eval':
++            env.policy_kind=torch.load(a.checkpoint,map_location='cpu').get('policy_kind','trained PPO')
+         env.checkpoint_id=hashlib.sha256(a.checkpoint.read_bytes()).hexdigest() if a.checkpoint else None
+         torch.manual_seed(a.seed);env.seed(a.seed)
+         model_builder.register_network('my_network',MyNetworkBuilder)

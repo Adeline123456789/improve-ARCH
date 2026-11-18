@@ -1,6 +1,7 @@
 """Account completed simulator invocations from saved run outputs and Kit logs."""
 import argparse
 import json
+import os
 import re
 import subprocess
 import time
@@ -53,9 +54,9 @@ def budget(roots):
     for left,right in spans:
         union+=max(0,right-max(left,end))
         end=max(end,right)
-    return dict(jobs=jobs,completed_training_steps=sum(j['new_training_steps'] or 0 for j in jobs),
-                recorded_training_steps_lower_bound=sum(j.get('last_recorded_training_step') or 0 for j in jobs),
-                measured_evaluation_and_probe_steps=sum(j.get('evaluation_steps') or 0 for j in jobs),
+    return dict(jobs=jobs,completed_training_steps=sum(j['new_training_steps'] for j in jobs if j['new_training_steps'] is not None),
+                recorded_training_steps_lower_bound=sum(j['last_recorded_training_step'] for j in jobs if j.get('last_recorded_training_step') is not None),
+                measured_evaluation_and_probe_steps=sum(j['evaluation_steps'] for j in jobs if j.get('evaluation_steps') is not None),
                 simulator_process_seconds=sum(j['simulator_wall_seconds'] for j in jobs),
                 gpu_wall_seconds_union_estimate=union,elapsed_first_to_last_simulator_seconds=end-spans[0][0],
                 diagnostic_step_limit=5400000,total_step_limit=30000000,gpu_wall_limit_seconds=21600)
@@ -65,5 +66,5 @@ if __name__=='__main__':
     p.add_argument('roots',nargs='+',type=Path)
     paths=p.parse_args().roots
     measured=budget(paths)
-    (paths[0]/'budget_ledger.json').write_text(json.dumps(measured,indent=2)+'\n')
+    (Path(os.path.commonpath(paths))/'budget_ledger.json').write_text(json.dumps(measured,indent=2)+'\n')
     print(json.dumps({k:v for k,v in measured.items() if k!='jobs'}))

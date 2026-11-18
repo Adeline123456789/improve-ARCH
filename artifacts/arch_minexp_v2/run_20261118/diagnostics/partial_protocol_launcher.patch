@@ -1,0 +1,22 @@
+--- run.py
++++ run.py
+@@ -84,16 +84,16 @@
+             assert a.num_envs==4
+             cases=[]
+             for i,kind in enumerate(['seated','edge','penetrating','free']):
+-                c=make_case(20000+i,'E2' if a.layout_fixture else 'E0','fixture',protocol['scene'])
++                c=make_case(20000+i,'E2' if a.layout_fixture else 'E0','fixture')
+                 if a.layout_fixture:
+                     c['socket_estimated']=c['socket_true'];c['X_true']=c['X_hat'];c['socket_bias']=[0]*6;c['grasp_bias']=[0]*6
+                 star=torch.tensor(c['T_SP_star']);pre=star.clone()
+                 if kind=='edge':pre[0]=.008;pre[2]=-.0003
+                 if kind=='penetrating':pre[2]+=.02
+-                if kind=='free':pre[2]-=protocol['scene']['retreat_m']
++                if kind=='free':pre[2]-=.06
+                 if a.contact_pair or a.response_probe:
+                     kind='edge' if i%2 else 'free'
+-                    pre=star.clone();pre[2]=-.0003 if i%2 else star[2]-protocol['scene']['retreat_m']
++                    pre=star.clone();pre[2]=-.0003 if i%2 else star[2]-.06
+                     if i%2:pre[0]=.008
+                 c['ee_start']=compose(compose(torch.tensor(c['socket_estimated']),pre),inverse(torch.tensor(c['X_hat']))).tolist()
+                 c['case_id']='fixture-'+kind+'-'+str(i);cases.append(c)

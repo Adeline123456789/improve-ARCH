@@ -1,0 +1,28 @@
+{
+  "initial": {
+    "replay_max_error": 9.5367431640625e-07,
+    "translation_saturation_by_rollout": [
+      0.8043749928474426,
+      0.8081249594688416
+    ],
+    "rotation_saturation_by_rollout": [
+      0.8125,
+      0.8018749952316284
+    ],
+    "optimizer_steps": 64,
+    "max_actor_command_disagreement": 0.0
+  },
+  "repair": {
+    "replay_max_error": 1.9073486328125e-06,
+    "translation_saturation_by_rollout": [
+      0.0024999999441206455,
+      0.0012499999720603228
+    ],
+    "rotation_saturation_by_rollout": [
+      0.0012499999720603228,
+      0.0037499999161809683
+    ],
+    "optimizer_steps": 64,
+    "max_actor_command_disagreement": 0.0
+  }
+}

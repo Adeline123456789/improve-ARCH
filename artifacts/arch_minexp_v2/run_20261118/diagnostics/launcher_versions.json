@@ -1,0 +1,8 @@
+{
+  "legacy_regression": "improve/task-base (2e4cc7a)",
+  "g0_probe, g0_scripted": "a0564d7 then apply g0_scripted_launcher.patch",
+  "g1": "a0564d7 then apply g1_launcher.patch",
+  "g1_reload, g2_nominal, g2_eval_204800..614400": "a0564d7",
+  "bc_replay, g2_eval_819200, g2_eval_1024000": "a0564d7 then apply checkpoint_kind_launcher.patch (checkpoint label only)",
+  "g2_eval_1228800, g2_eval_1433600": "32a3615 then apply partial_protocol_launcher.patch (full protocol values equal to training config)"
+}

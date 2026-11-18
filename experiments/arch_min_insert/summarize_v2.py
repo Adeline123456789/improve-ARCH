@@ -21,13 +21,15 @@ def collect(out):
                         assert not completed
                         break
                     episode=json.loads(line)
+                    if '--response_probe' in identity['command'] or '--contact_pair' in identity['command']:
+                        episode['policy_kind']='physical control response probe'
                     episode.update(run=directory.name,run_mode=identity['mode'],protocol_sha256=identity['protocol_sha256'])
                     dest.write(json.dumps(episode,separators=(',',':'))+'\n')
                     groups.setdefault(episode['suite'],[]).append(episode)
             for suite,episodes in groups.items():
                 count=len(episodes)
                 row=dict(run=directory.name,mode=identity['mode'],group=episodes[0]['group'],
-                         seed=identity['seed'],suite=suite,checkpoint=identity['checkpoint_sha256'],
+                         policy_kind=episodes[0]['policy_kind'],seed=identity['seed'],suite=suite,checkpoint=identity['checkpoint_sha256'],
                          run_complete=completed,recorded=count,successes=sum(e['success'] for e in episodes),
                          valid=sum(e['valid'] for e in episodes) if 'valid' in episodes[0] else None)
                 row['success_rate']=row['successes']/count

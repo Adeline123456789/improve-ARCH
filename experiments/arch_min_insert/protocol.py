@@ -1,4 +1,5 @@
 """Resolve the v2 defaults, protocol file and explicit run overrides."""
+import hashlib
 import math
 from pathlib import Path
 
@@ -34,3 +35,14 @@ def load_protocol(path=DEFAULT,*,num_envs=None):
     if cfg['ppo']['horizon_length']%cfg['ppo']['seq_length']:
         raise ValueError('rollout horizon must contain whole recurrent sequences')
     return cfg
+
+def evidence_binding(protocol):
+    here=DEFAULT.parent.parent
+    root=here.parents[1]
+    native=root/'multi-robot-assembly/multi_arm_assembly'
+    assets=root/'multi-robot-assembly/taskboard/fmb_example'
+    files=[here/name for name in ('run.py','protocol.py','min_env.py','geometry.py','scenarios.py','ppo_audit.py')]
+    files += [native/'direct_isaac_lab_position.py',native/'assembly_insert_env_cfg.yaml',*sorted((native/'rl_components').glob('*.py'))]
+    files += [assets/'Medium_Board_DarkBlue_Updated.usd',assets/'Medium_Short_Hexagon_Green_Updated.usd',DEFAULT]
+    return {'protocol_sha256': hashlib.sha256(Path(protocol).read_bytes()).hexdigest(),
+            'files': {str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in files}}

@@ -1,0 +1,43 @@
+{
+  "effective_config_sha256": "a25b324f8cf4ff9ff0a13e55c26e04917759d5f6d8b7044b6c9044c168530421",
+  "protocol_defaults_sha256": "1de43e3bbbc19347b61d832c254e2977d20145703d4e483a9d3527023de0e252",
+  "group": "B0",
+  "seed": 101,
+  "mode": "eval",
+  "command": [
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run.py",
+    "--protocol",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/configs/protocol_v2_alignment.yaml",
+    "--group",
+    "B0",
+    "--seed",
+    "101",
+    "--mode",
+    "eval",
+    "--headless",
+    "--output",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment/g2_eval_614400",
+    "--num_envs",
+    "20",
+    "--checkpoint",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment/g2_nominal/runner/run/nn/last_apa_impedance_ep_48_rew_-102.31201.pth",
+    "--manifest",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment/manifests/validation_nominal.jsonl"
+  ],
+  "started_unix": 1794973363.6411827,
+  "num_envs": 20,
+  "physics_dt": 0.008333333333333333,
+  "policy_dt": 0.041666666666666664,
+  "episode_steps": 96,
+  "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment/g2_nominal/runner/run/nn/last_apa_impedance_ep_48_rew_-102.31201.pth",
+  "checkpoint_sha256": "af4b11daac28847790aee8a9d9fd53dea0f8f0e736b5c2664eaa6d9701017aab",
+  "protocol_sha256": "5d0ece51ba3148f19b0754c16134f632c76cf18005fa0f6c91c5895f8c7a8459",
+  "source_sha256": {
+    "run.py": "2b50f6c5aab773fa28aa73fe2de62fedf3882a503d169fdc530bb9ffa2b99c20",
+    "protocol.py": "9cc3edf72a96641544b784dd4bebb07d6c0e733f31de0333ae0292852ee19584",
+    "min_env.py": "e1b65624c9f1bb643dab12f331ebaf1f308867ee9c03e53605d5197eddf866b0",
+    "geometry.py": "25d6fafb01e2f22fe0ae138a82c59404acfe4407c3896256f175593234f999ae",
+    "scenarios.py": "9f20ff85ce4c9d876eff4bdb986d89e45116133bb06880e8031db39416853e6a"
+  },
+  "manifest_sha256": "d6c9148781d462b572a407f5fb6087570edc603e78e3a7b7d6d96d731279ae5e"
+}

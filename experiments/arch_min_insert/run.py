@@ -103,9 +103,13 @@ try:
         save('fixed_joints.json',[{'path':str(prim.GetPath()),'body0':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody0Rel().GetTargets()], 'body1':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody1Rel().GetTargets()]} for prim in stage.Traverse() if prim.IsA(UsdPhysics.FixedJoint) and 'Assembler' in str(prim.GetPath())])
         env.report_group='scripted-'+a.group if a.scripted else a.group
         env.policy_kind='scripted feedback' if a.scripted else 'trained PPO' if a.checkpoint else 'PPO training' if a.mode=='train' else 'zero-action diagnostic'
+        if a.response_probe or a.contact_pair:
+            env.policy_kind='physical control response probe'
+        if a.mode=='train':
+            env.policy_kind='PPO training'
         if a.checkpoint and a.mode=='eval':
             env.policy_kind=torch.load(a.checkpoint,map_location='cpu').get('policy_kind','trained PPO')
-        env.checkpoint_id=hashlib.sha256(a.checkpoint.read_bytes()).hexdigest() if a.checkpoint else None
+        env.checkpoint_id=hashlib.sha256(a.checkpoint.read_bytes()).hexdigest() if a.checkpoint and a.mode=='eval' else None
         torch.manual_seed(a.seed);env.seed(a.seed)
         model_builder.register_network('my_network',MyNetworkBuilder)
         model_builder.register_model('my_actor_model',lambda network,**kw:MyA2CContinuousLogStd(network))
@@ -163,6 +167,8 @@ try:
             runner=Runner(IsaacAlgoObserver())
             if a.ppo_audit:
                 from ppo_audit import AuditAgent as MyA2CAgent
+            elif a.checkpoint:
+                from ppo_audit import ResumeAgent as MyA2CAgent
             runner.algo_factory.register_builder('my_agent',lambda **kw:MyA2CAgent(**kw))
             runner.player_factory.register_builder('my_agent',lambda **kw:MyPpoPlayerContinuous(**kw))
             runner.load(params);runner.reset()
@@ -281,7 +287,7 @@ try:
               'successes':sum(r['success'] for r in env.completed),'wall_time_s':time.monotonic()-start,'observation_dim':obs['policy'].shape[-1],
               'actor_force_fields':[],'controller_uses_ft':False,'finite':True})
             if a.mode=='fixtures':
-                save('fixture_result.json',{'cases':cases,'episodes':env.completed,'expected':[True,False,False,False],
+                save('fixture_result.json',{'cases':cases,'episodes':env.completed,'expected':None if a.response_probe or a.contact_pair else [True,False,False,False],
                    'warning':'physical validation requires inspecting traces for stable seating / collision response'})
     print('MINEXP_COMPLETE',a.mode,a.group,a.output,flush=True)
 except Exception:

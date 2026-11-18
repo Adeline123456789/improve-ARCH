@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import yaml
-from geometry import assembly_errors
+from geometry import assembly_errors,normclip
 
 def diagnose(directory):
     config=yaml.safe_load((directory/'effective_config.yaml').read_text())
@@ -36,7 +36,18 @@ def diagnose(directory):
         entry_lateral=met['lateral'].gather(0,entering.long().argmax(0)[None])[0,covered]
         dist=met['position_error'].norm(dim=-1)
         med=lambda x:float(x.quantile(.5)) if x.numel() else None
-        return dict(episodes=len(episodes),successes=int(success.sum()),reached_opening_plane=int(covered.sum()),
+        obs=cut('actor_observation')
+        u=cut('action')
+        pos_action=normclip(u[...,:3],1)
+        # The first three deployed features and translation action use the same frame.
+        # A negative dot product commands motion away from the estimated goal.
+        away=((pos_action*obs[...,:3]).sum(-1)<0)
+        gain=20/config['control']['translation_limit']
+        scripted=normclip((gain*obs[...,:3]).clamp(-1,1),1)
+        translation_rmse=float((pos_action-scripted).square().mean().sqrt())
+        return dict(fraction_translation_commands_away_from_estimated_goal=float(away.float().mean()),
+                    translation_action_rmse_vs_script_on_same_states=translation_rmse,
+                    episodes=len(episodes),successes=int(success.sum()),reached_opening_plane=int(covered.sum()),
                     median_lateral_at_first_opening_plane_mm=med(entry_lateral*1000),
                     median_peak_depth_mm=med(met['depth'].max(0).values*1000),
                     median_closest_tip_position_error_mm=med(dist.min(0).values*1000),
@@ -44,6 +55,9 @@ def diagnose(directory):
                     median_final_lateral_mm=med(met['lateral'][-1]*1000),
                     median_final_depth_error_mm=med(met['depth_error'][-1]*1000),
                     median_final_tilt_and_yaw_symmetry_error_deg=med(met['rotation'][-1].rad2deg()),
+                    terminal_lateral_within_tolerance=int((met['lateral'][-1]<=config['geometry']['lateral_m']).sum()),
+                    terminal_depth_within_tolerance=int((met['depth_error'][-1].abs()<=config['geometry']['depth_m']).sum()),
+                    terminal_orientation_within_tolerance=int((met['rotation'][-1]<=config['geometry']['angle_rad']).sum()),
                     ever_met_geometry=int(met['candidate'].any(0).sum()),
                     invalid_physics=int(met['invalid'].any(0).sum()),
                     median_peak_board_contact_N=med(cut('diagnostic_board_contact_force_world_N').norm(dim=-1).max(0).values),

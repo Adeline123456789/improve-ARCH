@@ -71,3 +71,23 @@ class AuditAgent(MyA2CAgent):
         self.stats.update(optimizer_steps=self.stats['optimizer_steps']+1,gradient_norm=norm,
                           max_clip_fraction=max(cf,self.stats['max_clip_fraction']))
         return result
+
+class ResumeAgent(MyA2CAgent):
+    """Check the real runner immediately after its normal restore hook."""
+    def restore(self,fn,set_epoch=True):
+        super().restore(fn,set_epoch=set_epoch)
+        saved=torch.load(fn,map_location='cpu')
+        weights=self.model.state_dict()
+        assert all(torch.equal(weights[k].cpu(),v) for k,v in saved['model'].items())
+        current=self.optimizer.state_dict()
+        assert current['param_groups']==saved['optimizer']['param_groups']
+        steps=[]
+        for key,values in saved['optimizer']['state'].items():
+            actual=current['state'][key]
+            assert all(torch.equal(actual[k].cpu(),v) if torch.is_tensor(v) else actual[k]==v for k,v in values.items())
+            steps.append(int(values['step']))
+        assert steps and (self.epoch_num,self.frame)==(saved['epoch'],saved['frame'])
+        output=Path(self.config['train_dir']).parent
+        (output/'resume_check.json').write_text(json.dumps(dict(source=fn,restored_frame=self.frame,
+            restored_epoch=self.epoch_num,optimizer_states=len(steps),optimizer_step_range=[min(steps),max(steps)],
+            model_and_statistics_equal=True,optimizer_equal=True,new_episode_at_resume=True),indent=2)+'\n')
