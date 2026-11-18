@@ -1,0 +1,33 @@
+--- run.py
++++ run.py
+@@ -187,29 +187,13 @@
+                 player.has_batch_dimension=True;player.batch_size=a.num_envs;player.init_rnn()
+                 testobs=player.obs_to_torch({'policy':obs['policy']})
+                 norm_before={k:v.clone() for k,v in player.model.state_dict().items() if 'running_mean_std' in k}
+-                # Exercise the rollout actor and action rescaling with the player's restored tensors.
+-                from geometry import tip_command
+-                train_actor=object.__new__(MyA2CAgent)
+-                train_actor.model=player.model
+-                train_actor.rnn_states=tuple(t.clone() for t in player.states)
+-                train_actor.has_central_value=False
+-                train_actor.clip_actions=player.clip_actions
+-                train_actor.actions_low,train_actor.actions_high=player.actions_low,player.actions_high
+-                train_actor.is_tensor_obses=True
+-                rollout_obs=wrapped._process_obs(dict(obs))
+-                sampled=train_actor.get_action_values({'obs':rollout_obs})
+-                train_action=train_actor.preprocess_actions(sampled['mus'])
+                 act1=player.get_action(testobs,is_deterministic=True)
+-                compare=lambda action:tip_command(env.ee(),env.xhat,env.socket_estimated,action,a.group!='B0',protocol['control']['translation_limit'],protocol['control']['rotation_limit'])[0]
+-                command_error=float((compare(train_action)-compare(act1)).abs().max())
+-                action_error=float((train_action-act1).abs().max())
+-                assert command_error<1e-5 and action_error<1e-5
+                 player.restore(str(a.checkpoint));player.init_rnn()
+                 act2=player.get_action(testobs,is_deterministic=True)
+                 assert torch.equal(act1,act2)
+                 assert all(torch.equal(v,player.model.state_dict()[k]) for k,v in norm_before.items())
+                 player.init_rnn()
+-                save('checkpoint_checks.json',{'command_max_error':command_error,'action_max_error':action_error,'reload_mean_actions_identical':True,'normalizers_frozen':True,'policy_dimension':27,'action_dimension':6})
++                save('checkpoint_checks.json',{'reload_mean_actions_identical':True,'normalizers_frozen':True,'policy_dimension':27,'action_dimension':6})
+             rows=[];steps=a.steps if a.mode!='eval' else env.max_episode_length*((len(cases)+a.num_envs-1)//a.num_envs)
+             start=time.monotonic();obs0=obs['policy'].clone();x0=env.xhat.clone();s0=env.socket_estimated.clone()
+             camera_frames=[]

@@ -1,0 +1,9 @@
+{
+  "checkpoint_frames": 204800,
+  "checkpoint_sha256": "4c6dd586437ce59d401107f1bc6eab13587e60b53fcd4694004b1093ba1e3f56",
+  "nominal_successes": 0,
+  "nominal_episodes": 20,
+  "median_final_lateral_mm": 6.0853511095047,
+  "median_final_depth_error_mm": -81.40720427036285,
+  "stage_status": "IN_PROGRESS"
+}
