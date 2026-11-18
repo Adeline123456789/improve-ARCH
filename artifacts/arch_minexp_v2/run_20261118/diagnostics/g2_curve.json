@@ -1,0 +1,149 @@
+[
+  {
+    "frame": 204800,
+    "episodes": 20,
+    "successes": 0,
+    "reached_opening_plane": 0,
+    "median_lateral_at_first_opening_plane_mm": null,
+    "median_peak_depth_mm": -0.3243589190690087,
+    "median_closest_tip_position_error_mm": 45.38320643781087,
+    "median_final_tip_position_error_mm": 81.63528662970953,
+    "median_final_lateral_mm": 6.085353102492367,
+    "median_final_depth_error_mm": -81.40720706073309,
+    "median_final_tilt_and_yaw_symmetry_error_deg": 2.221341658445209,
+    "ever_met_geometry": 0,
+    "invalid_physics": 0,
+    "median_peak_board_contact_N": 23.86842918395996,
+    "mean_reward_terms": {
+      "position_reward": -1.0060333013534546,
+      "rotation_reward": -0.06673348695039749,
+      "terminal_reward": 0.0
+    }
+  },
+  {
+    "frame": 409600,
+    "episodes": 20,
+    "successes": 0,
+    "reached_opening_plane": 0,
+    "median_lateral_at_first_opening_plane_mm": null,
+    "median_peak_depth_mm": -7.450817360550428,
+    "median_closest_tip_position_error_mm": 53.50185807200459,
+    "median_final_tip_position_error_mm": 113.08280333413059,
+    "median_final_lateral_mm": 24.908979634884062,
+    "median_final_depth_error_mm": -110.30928944797505,
+    "median_final_tilt_and_yaw_symmetry_error_deg": 6.8632631476402235,
+    "ever_met_geometry": 0,
+    "invalid_physics": 0,
+    "median_peak_board_contact_N": 0.0,
+    "mean_reward_terms": {
+      "position_reward": -1.3047300577163696,
+      "rotation_reward": -0.10727096349000931,
+      "terminal_reward": 0.0
+    }
+  },
+  {
+    "frame": 614400,
+    "episodes": 20,
+    "successes": 0,
+    "reached_opening_plane": 0,
+    "median_lateral_at_first_opening_plane_mm": null,
+    "median_peak_depth_mm": -0.6443125650646766,
+    "median_closest_tip_position_error_mm": 48.944386004010425,
+    "median_final_tip_position_error_mm": 90.10922676110654,
+    "median_final_lateral_mm": 22.912939913662093,
+    "median_final_depth_error_mm": -87.14794960580107,
+    "median_final_tilt_and_yaw_symmetry_error_deg": 10.768032544330776,
+    "ever_met_geometry": 0,
+    "invalid_physics": 0,
+    "median_peak_board_contact_N": 24.9566650390625,
+    "mean_reward_terms": {
+      "position_reward": -1.007552981376648,
+      "rotation_reward": -0.1993902623653412,
+      "terminal_reward": 0.0
+    }
+  },
+  {
+    "frame": 819200,
+    "episodes": 20,
+    "successes": 0,
+    "reached_opening_plane": 0,
+    "median_lateral_at_first_opening_plane_mm": null,
+    "median_peak_depth_mm": -0.32804894634311244,
+    "median_closest_tip_position_error_mm": 45.52821316212897,
+    "median_final_tip_position_error_mm": 73.00522831773509,
+    "median_final_lateral_mm": 28.537628449815287,
+    "median_final_depth_error_mm": -67.13595260056992,
+    "median_final_tilt_and_yaw_symmetry_error_deg": 8.696589821544382,
+    "ever_met_geometry": 0,
+    "invalid_physics": 0,
+    "median_peak_board_contact_N": 23.48609161376953,
+    "mean_reward_terms": {
+      "position_reward": -0.8824602365493774,
+      "rotation_reward": -0.1911749541759491,
+      "terminal_reward": 0.0
+    }
+  },
+  {
+    "frame": 1024000,
+    "episodes": 20,
+    "successes": 0,
+    "reached_opening_plane": 0,
+    "median_lateral_at_first_opening_plane_mm": null,
+    "median_peak_depth_mm": -0.5928131866351598,
+    "median_closest_tip_position_error_mm": 46.296492740089995,
+    "median_final_tip_position_error_mm": 71.63427453086425,
+    "median_final_lateral_mm": 21.3754163860934,
+    "median_final_depth_error_mm": -68.41560552166064,
+    "median_final_tilt_and_yaw_symmetry_error_deg": 7.303121845364746,
+    "ever_met_geometry": 0,
+    "invalid_physics": 0,
+    "median_peak_board_contact_N": 28.27011489868164,
+    "mean_reward_terms": {
+      "position_reward": -0.8636260628700256,
+      "rotation_reward": -0.1976678967475891,
+      "terminal_reward": 0.0
+    }
+  },
+  {
+    "frame": 1228800,
+    "episodes": 20,
+    "successes": 0,
+    "reached_opening_plane": 20,
+    "median_lateral_at_first_opening_plane_mm": 0.6311595549693143,
+    "median_peak_depth_mm": 1.8461426920908588,
+    "median_closest_tip_position_error_mm": 42.5802313913416,
+    "median_final_tip_position_error_mm": 43.963936924006646,
+    "median_final_lateral_mm": 3.6729328456290586,
+    "median_final_depth_error_mm": -43.813102756110965,
+    "median_final_tilt_and_yaw_symmetry_error_deg": 10.117431501708339,
+    "ever_met_geometry": 0,
+    "invalid_physics": 0,
+    "median_peak_board_contact_N": 80.46849060058594,
+    "mean_reward_terms": {
+      "position_reward": -0.7910519242286682,
+      "rotation_reward": -0.21036387979984283,
+      "terminal_reward": 0.0
+    }
+  },
+  {
+    "frame": 1433600,
+    "episodes": 20,
+    "successes": 0,
+    "reached_opening_plane": 20,
+    "median_lateral_at_first_opening_plane_mm": 2.937695866932004,
+    "median_peak_depth_mm": 1.6489112517155124,
+    "median_closest_tip_position_error_mm": 42.79285972966238,
+    "median_final_tip_position_error_mm": 44.699146170429046,
+    "median_final_lateral_mm": 5.354814915043351,
+    "median_final_depth_error_mm": -44.39909358007015,
+    "median_final_tilt_and_yaw_symmetry_error_deg": 10.533704920027791,
+    "ever_met_geometry": 0,
+    "invalid_physics": 0,
+    "median_peak_board_contact_N": 76.65264892578125,
+    "mean_reward_terms": {
+      "position_reward": -0.7897586226463318,
+      "rotation_reward": -0.20780082046985626,
+      "terminal_reward": 0.0
+    }
+  }
+]

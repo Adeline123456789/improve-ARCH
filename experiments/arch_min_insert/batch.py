@@ -36,7 +36,10 @@ try:
             cmd=['bash',str(ROOT/'experiments/arch_min_insert/run_train.sh'),'--group',group,'--seed',str(seed),'--num_envs',str(a.num_envs),
                  '--transitions',str(a.transitions),'--headless','--output',str(directory)]
             run(cmd,OUT/'logs'/f'{name}.log')
-            candidates=list((directory/'runner/run/nn').glob(f'*_ep_{a.transitions//(a.num_envs*100)}_*.pth'))
+            cfg=json.loads((directory/'agent_config.json').read_text())['params']['config']
+            rollout=cfg['num_actors']*cfg['horizon_length']
+            assert a.transitions%rollout==0
+            candidates=list((directory/'runner/run/nn').glob(f'*_ep_{a.transitions//rollout}_*.pth'))
             assert len(candidates)==1,candidates
             checkpoint=candidates[0];state=torch.load(checkpoint,map_location='cpu')
             assert state['frame']==a.transitions,(state['frame'],a.transitions)

@@ -22,10 +22,22 @@ def verify(run):
         torch.testing.assert_close(a,b,atol=1e-6,rtol=1e-5)
     expected=torch.tensor([c['socket_true'] for c in cases],dtype=root.dtype)
     torch.testing.assert_close(expected[:,:3],sock[0,:,:3],atol=2e-6,rtol=0)
+    # Quaternions q and -q describe the same socket orientation.
+    torch.testing.assert_close((expected[:,3:]*sock[0,:,3:]).sum(-1).abs(),torch.ones_like(expected[:,0]),atol=1e-6,rtol=0)
     assert (m['depth'][0]<0).all()
     cfg=json.loads((d/'runtime_config_check.json').read_text())
     success=m['candidate'][-cfg['hold_steps']:].all(0)&~m['invalid'].any(0)
     assert success.tolist()==[r['success'] for r in rows] and len(rows)==20 and success.sum()>=19
+    held=torch.zeros_like(success,dtype=torch.long)
+    for tick,candidate in enumerate(m['candidate']):
+        held=torch.where(candidate,held+1,0)
+        assert held.tolist()==t['hold'][tick].tolist()
+    # Replay an earlier successful hold followed by a final lateral departure.
+    departed=root[-1].clone()
+    departed[:,0]+=.005
+    last=assembly_errors(departed,rt[-1],sock[-1],target[-1],**p['geometry'])
+    assert success.any() and not last['candidate'][success].any()
+    assert not torch.where(last['candidate'],held+1,0)[success].any()
     joints=json.loads((d/'fixed_joints.json').read_text())
     assert len(joints)==20
     for i in range(20):

@@ -2,8 +2,9 @@
 import argparse,json,hashlib,time,sys,math,yaml
 from pathlib import Path
 from omni.isaac.lab.app import AppLauncher
+from protocol import DEFAULT,load_protocol
 p=argparse.ArgumentParser()
-p.add_argument('--protocol',type=Path,default=Path(__file__).with_name('configs')/'protocol_v2.yaml')
+p.add_argument('--protocol',type=Path,default=DEFAULT)
 p.add_argument('--ppo_audit',action='store_true')
 p.add_argument('--response_probe',action='store_true')
 p.add_argument('--mode',choices=['smoke','train','eval','fixtures','manifest'],required=True)
@@ -14,10 +15,8 @@ p.add_argument('--contact_pair',action='store_true');p.add_argument('--scripted'
 p.add_argument('--checkpoint',type=Path);p.add_argument('--manifest',type=Path)
 p.add_argument('--output',type=Path,required=True)
 AppLauncher.add_app_launcher_args(p);a=p.parse_args()
-protocol=yaml.safe_load(a.protocol.read_text())
-a.num_envs=a.num_envs if a.num_envs is not None else protocol['num_envs']
-protocol['num_envs']=a.num_envs
-assert protocol['control']['mode']=='measured_delta'
+protocol=load_protocol(a.protocol,num_envs=a.num_envs)
+a.num_envs=protocol['num_envs']
 assert not (a.scripted and a.checkpoint)
 a.output.mkdir(parents=True,exist_ok=False)
 (a.output/'effective_config.yaml').write_text(yaml.safe_dump(protocol))
@@ -53,6 +52,9 @@ try:
     cfg.initial_cfg.USE_FT_SENSOR=False;cfg.num_observations=27;cfg.num_actions=6
     cfg.parts[0].spawn.activate_contact_sensors=True
     configure_board(cfg)
+    before_override={'physics_dt':cfg.sim.dt,'decimation':cfg.decimation,
+                     'episode_length_s':cfg.episode_length_s,'is_finite_horizon':cfg.is_finite_horizon,
+                     'arm':{k:getattr(cfg.robot1.actuators['arm'],k) for k in ('stiffness','damping','effort_limit')}}
     cfg.sim.dt=protocol['physics_dt']
     cfg.decimation=protocol['decimation']
     cfg.episode_length_s=protocol['episode_steps']*(cfg.sim.dt*cfg.decimation)
@@ -82,16 +84,16 @@ try:
             assert a.num_envs==4
             cases=[]
             for i,kind in enumerate(['seated','edge','penetrating','free']):
-                c=make_case(20000+i,'E2' if a.layout_fixture else 'E0','fixture')
+                c=make_case(20000+i,'E2' if a.layout_fixture else 'E0','fixture',protocol['scene'])
                 if a.layout_fixture:
                     c['socket_estimated']=c['socket_true'];c['X_true']=c['X_hat'];c['socket_bias']=[0]*6;c['grasp_bias']=[0]*6
                 star=torch.tensor(c['T_SP_star']);pre=star.clone()
                 if kind=='edge':pre[0]=.008;pre[2]=-.0003
                 if kind=='penetrating':pre[2]+=.02
-                if kind=='free':pre[2]-=.06
+                if kind=='free':pre[2]-=protocol['scene']['retreat_m']
                 if a.contact_pair or a.response_probe:
                     kind='edge' if i%2 else 'free'
-                    pre=star.clone();pre[2]=-.0003 if i%2 else star[2]-.06
+                    pre=star.clone();pre[2]=-.0003 if i%2 else star[2]-protocol['scene']['retreat_m']
                     if i%2:pre[0]=.008
                 c['ee_start']=compose(compose(torch.tensor(c['socket_estimated']),pre),inverse(torch.tensor(c['X_hat']))).tolist()
                 c['case_id']='fixture-'+kind+'-'+str(i);cases.append(c)
@@ -101,6 +103,8 @@ try:
         save('fixed_joints.json',[{'path':str(prim.GetPath()),'body0':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody0Rel().GetTargets()], 'body1':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody1Rel().GetTargets()]} for prim in stage.Traverse() if prim.IsA(UsdPhysics.FixedJoint) and 'Assembler' in str(prim.GetPath())])
         env.report_group='scripted-'+a.group if a.scripted else a.group
         env.policy_kind='scripted feedback' if a.scripted else 'trained PPO' if a.checkpoint else 'PPO training' if a.mode=='train' else 'zero-action diagnostic'
+        if a.checkpoint and a.mode=='eval':
+            env.policy_kind=torch.load(a.checkpoint,map_location='cpu').get('policy_kind','trained PPO')
         env.checkpoint_id=hashlib.sha256(a.checkpoint.read_bytes()).hexdigest() if a.checkpoint else None
         torch.manual_seed(a.seed);env.seed(a.seed)
         model_builder.register_network('my_network',MyNetworkBuilder)
@@ -118,12 +122,18 @@ try:
             train_dir=str(a.output/'runner'),full_experiment_name='run',max_epochs=a.transitions//(rollout),
             save_frequency=max(1,round(protocol['evaluation']['interval']/rollout)),zero_rnn_on_done=True)
         save('agent_config.json',params)
-        identity={'group':a.group,'seed':a.seed,'mode':a.mode,'command':sys.argv,'started_unix':time.time(),
+        effective=dict(protocol,run={'mode':a.mode,'group':a.group,'seed':a.seed,'num_envs':a.num_envs,
+            'manifest':str(a.manifest) if a.manifest else None,'checkpoint':str(a.checkpoint) if a.checkpoint else None,
+            'transitions_target':a.transitions if a.mode=='train' else None,'rollout_size':rollout,
+            'agent_settings':'agent_config.json'})
+        (a.output/'effective_config.yaml').write_text(yaml.safe_dump(effective))
+        identity={'effective_config_sha256':hashlib.sha256((a.output/'effective_config.yaml').read_bytes()).hexdigest(),
+          'protocol_defaults_sha256':hashlib.sha256(DEFAULT.read_bytes()).hexdigest(),'group':a.group,'seed':a.seed,'mode':a.mode,'command':sys.argv,'started_unix':time.time(),
           'num_envs':a.num_envs,'physics_dt':env.physics_dt,'policy_dt':env.step_dt,'episode_steps':env.max_episode_length,
           'checkpoint':str(a.checkpoint) if a.checkpoint else None,
           'checkpoint_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest() if a.checkpoint else None,
           'protocol_sha256':hashlib.sha256(a.protocol.read_bytes()).hexdigest(),
-          'source_sha256':{name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest() for name in ['run.py','min_env.py','geometry.py','scenarios.py']},
+          'source_sha256':{name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest() for name in ['run.py','protocol.py','min_env.py','geometry.py','scenarios.py']},
           'manifest_sha256':hashlib.sha256(a.manifest.read_bytes()).hexdigest() if a.manifest else None}
         save('identity.json',identity)
         save('physics_snapshot.json',{'peg_mass_kg':tolist(env.scene['peg'].root_physx_view.get_masses()[0]),
@@ -134,7 +144,7 @@ try:
             'board_type':'kinematic rigid body with original CAD SDF collision','physics_dt':env.physics_dt})
         robot=env.robots['robot1']
         joint_ids=env._joint_ids['robot1']
-        runtime={'physics_dt':env.physics_dt,'step_dt':env.step_dt,'episode_steps':env.max_episode_length,'num_envs':env.num_envs,'hold_steps':env.hold_steps,'env_origins':tolist(env.scene.env_origins)}
+        runtime={'upstream_before_protocol':before_override,'physics_dt':env.physics_dt,'step_dt':env.step_dt,'episode_steps':env.max_episode_length,'num_envs':env.num_envs,'hold_steps':env.hold_steps,'env_origins':tolist(env.scene.env_origins)}
         view=robot.root_physx_view
         for key,values in [('stiffness',view.get_dof_stiffnesses()),('damping',view.get_dof_dampings()),('effort_limit',view.get_dof_max_forces())]:
             arm=values[:,joint_ids]

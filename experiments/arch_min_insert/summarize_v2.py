@@ -37,6 +37,36 @@ def collect(out):
     merged.replace(out/'episodes.jsonl')
     with (out/'results.csv').open('w') as f:
         writer=csv.DictWriter(f,fieldnames=summary[0]);writer.writeheader();writer.writerows(summary)
+    curve=[]
+    from trajectory_diagnosis import diagnose
+    for directory in out.glob('g2_eval_*'):
+        if not (directory/'completion.json').is_file():
+            continue
+        measured=diagnose(directory)
+        (directory/'trajectory_diagnosis.json').write_text(json.dumps(measured,indent=2)+'\n')
+        curve.append(dict(frame=int(directory.name.split('_')[-1]),**measured))
+    if curve:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        curve.sort(key=lambda row:row['frame'])
+        diagrams=out/'diagnostics'
+        diagrams.mkdir(exist_ok=True)
+        (diagrams/'g2_curve.json').write_text(json.dumps(curve,indent=2)+'\n')
+        fig,axes=plt.subplots(1,3,figsize=(11,3.4))
+        xs=[r['frame']/1e6 for r in curve]
+        for ax,key,label in zip(axes,['successes','median_final_lateral_mm','median_final_depth_error_mm'],
+                                ['Terminal successes / 20','Median lateral error (mm)','Median signed depth error (mm)']):
+            ax.plot(xs,[r[key] for r in curve],marker='o',color='#24617b')
+            ax.set(xlabel='Training steps (millions)',ylabel=label)
+            ax.grid(axis='y',alpha=.25)
+        axes[0].set_ylim(-1,21)
+        axes[0].axhline(19,ls=':',c='#635667')
+        axes[1].axhline(.75,ls=':',c='#635667')
+        axes[2].axhspan(-1,1,color='#635667',alpha=.15)
+        fig.tight_layout()
+        fig.savefig(diagrams/'g2_curve.png',dpi=150)
+        plt.close(fig)
     manifest_info={}
     for path in sorted((out/'manifests').glob('*.jsonl')):
         rows=[json.loads(line) for line in path.read_text().splitlines()]

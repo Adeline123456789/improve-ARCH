@@ -1,0 +1,43 @@
+{
+  "effective_config_sha256": "2d131d4205a4b3cbdb8a82e708e09700a338bc596e37ab063cda1923ccf26f43",
+  "protocol_defaults_sha256": "1de43e3bbbc19347b61d832c254e2977d20145703d4e483a9d3527023de0e252",
+  "group": "B0",
+  "seed": 101,
+  "mode": "eval",
+  "command": [
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run.py",
+    "--protocol",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/configs/protocol_v2.yaml",
+    "--group",
+    "B0",
+    "--seed",
+    "101",
+    "--mode",
+    "eval",
+    "--headless",
+    "--output",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118/g2_eval_1228800",
+    "--num_envs",
+    "20",
+    "--checkpoint",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118/g2_nominal/runner/run/nn/last_apa_impedance_ep_96_rew_-96.10101.pth",
+    "--manifest",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118/manifests/validation_nominal.jsonl"
+  ],
+  "started_unix": 1794971957.4872754,
+  "num_envs": 20,
+  "physics_dt": 0.008333333333333333,
+  "policy_dt": 0.041666666666666664,
+  "episode_steps": 96,
+  "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118/g2_nominal/runner/run/nn/last_apa_impedance_ep_96_rew_-96.10101.pth",
+  "checkpoint_sha256": "40cd750412643ad7d0ab94823f6eaa177a6de9749407cba6138714931df119f6",
+  "protocol_sha256": "1de43e3bbbc19347b61d832c254e2977d20145703d4e483a9d3527023de0e252",
+  "source_sha256": {
+    "run.py": "c4caff12862dcb7a71f9cc26dfd39fc2732326970fc486446363e47185707fed",
+    "protocol.py": "9cc3edf72a96641544b784dd4bebb07d6c0e733f31de0333ae0292852ee19584",
+    "min_env.py": "f14a5fdc0c039d58e471fdeb3b0b4952c15e6fd4dfb30171dd415d471568db71",
+    "geometry.py": "5d482e700fdd755d1f565c082ac400acbcde57bb9b63097d1b153573efd5cca4",
+    "scenarios.py": "9f20ff85ce4c9d876eff4bdb986d89e45116133bb06880e8031db39416853e6a"
+  },
+  "manifest_sha256": "d6c9148781d462b572a407f5fb6087570edc603e78e3a7b7d6d96d731279ae5e"
+}

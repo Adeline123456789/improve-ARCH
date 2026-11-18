@@ -1,0 +1,20 @@
+{
+  "episodes": 20,
+  "successes": 0,
+  "reached_opening_plane": 0,
+  "median_lateral_at_first_opening_plane_mm": null,
+  "median_peak_depth_mm": -0.6443125650646766,
+  "median_closest_tip_position_error_mm": 48.944386004010425,
+  "median_final_tip_position_error_mm": 90.10922676110654,
+  "median_final_lateral_mm": 22.912939913662093,
+  "median_final_depth_error_mm": -87.14794960580107,
+  "median_final_tilt_and_yaw_symmetry_error_deg": 10.768032544330776,
+  "ever_met_geometry": 0,
+  "invalid_physics": 0,
+  "median_peak_board_contact_N": 24.9566650390625,
+  "mean_reward_terms": {
+    "position_reward": -1.007552981376648,
+    "rotation_reward": -0.1993902623653412,
+    "terminal_reward": 0.0
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "group": "B0",
+  "seed": 101,
+  "mode": "eval",
+  "command": [
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/experiments/arch_min_insert/run.py",
+    "--mode",
+    "eval",
+    "--num_envs",
+    "20",
+    "--seed",
+    "101",
+    "--checkpoint",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118/diagnostics/bc/bc_diagnostic.pth",
+    "--manifest",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118/manifests/validation_nominal.jsonl",
+    "--headless",
+    "--output",
+    "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118/bc_replay"
+  ],
+  "started_unix": 1794971194.2563794,
+  "num_envs": 20,
+  "physics_dt": 0.008333333333333333,
+  "policy_dt": 0.041666666666666664,
+  "episode_steps": 96,
+  "checkpoint": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118/diagnostics/bc/bc_diagnostic.pth",
+  "checkpoint_sha256": "74a0bf5df6bd26c48834f53f74b9cb6665b9fd6c87fe3445cf72542c4df0473d",
+  "protocol_sha256": "1de43e3bbbc19347b61d832c254e2977d20145703d4e483a9d3527023de0e252",
+  "source_sha256": {
+    "run.py": "073c6635b5b2623628c4012ee9a893616a800ef348e7035f152bd0806a7422a7",
+    "min_env.py": "f14a5fdc0c039d58e471fdeb3b0b4952c15e6fd4dfb30171dd415d471568db71",
+    "geometry.py": "5d482e700fdd755d1f565c082ac400acbcde57bb9b63097d1b153573efd5cca4",
+    "scenarios.py": "9f20ff85ce4c9d876eff4bdb986d89e45116133bb06880e8031db39416853e6a"
+  },
+  "manifest_sha256": "d6c9148781d462b572a407f5fb6087570edc603e78e3a7b7d6d96d731279ae5e"
+}

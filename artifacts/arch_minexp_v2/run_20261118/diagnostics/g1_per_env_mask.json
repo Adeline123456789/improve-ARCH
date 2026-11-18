@@ -1,0 +1,18 @@
+{
+  "source": "g1/rollout_2.pt: normalized inputs and nonzero recurrent state; restored epoch-2 actor",
+  "done_mask": [
+    [
+      false,
+      false,
+      true,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false
+    ]
+  ],
+  "masked_batch_vs_serial_mu_max_error": 3.725290298461914e-08
+}

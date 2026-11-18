@@ -6,9 +6,9 @@ import shlex
 import subprocess
 import time
 from pathlib import Path
-import yaml
 import torch
 from verify_g0 import verify
+from protocol import load_protocol
 
 HERE=Path(__file__).resolve().parent
 p=argparse.ArgumentParser()
@@ -17,7 +17,7 @@ p.add_argument('--protocol',type=Path,default=HERE/'configs/protocol_v2.yaml')
 a=p.parse_args()
 out=a.output.resolve()
 protocol=a.protocol.resolve()
-cfg=yaml.safe_load(protocol.read_text())
+cfg=load_protocol(protocol)
 def load(path):
     return json.loads((out/path).read_text())
 def save(path,data):

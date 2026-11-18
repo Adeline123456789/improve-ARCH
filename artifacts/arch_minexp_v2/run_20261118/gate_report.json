@@ -23,7 +23,7 @@
     }
   },
   "G2": {
-    "status": "RUNNING",
+    "status": "FAIL",
     "seed": 101,
     "planned_checkpoints": [
       204800,
@@ -34,12 +34,278 @@
       1228800,
       1433600
     ],
-    "curve": []
+    "curve": [
+      {
+        "frame": 204800,
+        "successes": 0,
+        "episodes": 20,
+        "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_16_rew_-83.44089.pth",
+        "sha256": "4c6dd586437ce59d401107f1bc6eab13587e60b53fcd4694004b1093ba1e3f56",
+        "evaluation": "g2_eval_204800"
+      },
+      {
+        "frame": 409600,
+        "successes": 0,
+        "episodes": 20,
+        "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_32_rew_-106.60603.pth",
+        "sha256": "6c82699c8acbd265c9d206d770b9a13b219e3150bd2b07381fa9a7a75b1e67dc",
+        "evaluation": "g2_eval_409600"
+      },
+      {
+        "frame": 614400,
+        "successes": 0,
+        "episodes": 20,
+        "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_48_rew_-98.12348.pth",
+        "sha256": "8afbd587d820c08337de03d9d565187c6142be04b36a92342ecf231fe8b40321",
+        "evaluation": "g2_eval_614400"
+      },
+      {
+        "frame": 819200,
+        "successes": 0,
+        "episodes": 20,
+        "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_64_rew_-95.37359.pth",
+        "sha256": "d3b32f9d4f720cb94e79d289eede84ef2a1fd4186b06d682d8be6e1bdd0f8d93",
+        "evaluation": "g2_eval_819200"
+      },
+      {
+        "frame": 1024000,
+        "successes": 0,
+        "episodes": 20,
+        "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_80_rew_-95.80967.pth",
+        "sha256": "b3dcde9125dd22ffaebaaacb6521438f2be98deeb620b9eaeb173822a56b59c3",
+        "evaluation": "g2_eval_1024000"
+      },
+      {
+        "frame": 1228800,
+        "successes": 0,
+        "episodes": 20,
+        "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_96_rew_-96.10101.pth",
+        "sha256": "40cd750412643ad7d0ab94823f6eaa177a6de9749407cba6138714931df119f6",
+        "evaluation": "g2_eval_1228800"
+      },
+      {
+        "frame": 1433600,
+        "successes": 0,
+        "episodes": 20,
+        "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_112_rew_-95.721725.pth",
+        "sha256": "060f4e8257d152fe3a156422a56dbd67f0b0f2647b0b0bf0743cd107690b8382",
+        "evaluation": "g2_eval_1433600"
+      }
+    ],
+    "failure_reason": "All seven scheduled evaluations were 0/20. At the last two checkpoints median peak depths were 1.85 and 1.65 mm vs 44.36 mm required."
   },
   "G3": {
     "status": "NOT_RUN"
   },
   "G4": {
     "status": "NOT_RUN"
-  }
+  },
+  "budget": {
+    "jobs": [
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/bc_replay",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794971185,
+        "simulator_wall_seconds": 45.054,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g0_probe",
+        "mode": "fixtures",
+        "group": "B0",
+        "seed": 0,
+        "run_complete": true,
+        "start_unix": 1794969958,
+        "simulator_wall_seconds": 20.278,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 384
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g0_scripted",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 0,
+        "run_complete": true,
+        "start_unix": 1794969979,
+        "simulator_wall_seconds": 20.526,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": 3200,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g1",
+        "mode": "train",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794970091,
+        "simulator_wall_seconds": 32.51,
+        "source": "Kit shutdown log",
+        "new_training_steps": 3200,
+        "evaluation_steps": null
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g1_reload",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794970151,
+        "simulator_wall_seconds": 20.444,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g2_eval_1024000",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794971660,
+        "simulator_wall_seconds": 44.706,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g2_eval_1228800",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794971948,
+        "simulator_wall_seconds": 44.833,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g2_eval_1433600",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794972232,
+        "simulator_wall_seconds": 21.203,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g2_eval_204800",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794970514,
+        "simulator_wall_seconds": 44.054,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g2_eval_409600",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794970789,
+        "simulator_wall_seconds": 42.252,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g2_eval_614400",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794971070,
+        "simulator_wall_seconds": 44.443,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g2_eval_819200",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794971369,
+        "simulator_wall_seconds": 44.31,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 1920
+      },
+      {
+        "last_recorded_training_step": 1433600,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g2_nominal",
+        "mode": "train",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": true,
+        "start_unix": 1794970239,
+        "simulator_wall_seconds": 1992.591,
+        "source": "Kit shutdown log",
+        "new_training_steps": 1433600,
+        "evaluation_steps": null
+      },
+      {
+        "last_recorded_training_step": null,
+        "directory": "artifacts/arch_minexp_v2/run_20261118/legacy_regression",
+        "mode": "eval",
+        "group": "B0",
+        "seed": 0,
+        "run_complete": true,
+        "start_unix": 1794969850,
+        "simulator_wall_seconds": 20.03,
+        "source": "Kit shutdown log",
+        "new_training_steps": null,
+        "evaluation_steps": 384
+      },
+      {
+        "directory": "artifacts/arch_minexp_v2/run_20261118/g2_init_abort_512",
+        "mode": "train",
+        "group": "B0",
+        "seed": 101,
+        "run_complete": false,
+        "start_unix": 1794970195,
+        "simulator_wall_seconds": 8.0,
+        "source": "last PhysX log at 7.508 s, rounded estimate",
+        "new_training_steps": 0,
+        "reason": "SIGABRT during scene replication before first rollout"
+      }
+    ],
+    "completed_training_steps": 1436800,
+    "recorded_training_steps_lower_bound": 1436800,
+    "measured_evaluation_and_probe_steps": 19968,
+    "simulator_process_seconds": 2445.234,
+    "gpu_wall_seconds_union_estimate": 2135.5820002555847,
+    "elapsed_first_to_last_simulator_seconds": 2403.2030000686646,
+    "diagnostic_step_limit": 5400000,
+    "total_step_limit": 30000000,
+    "gpu_wall_limit_seconds": 21600
+  },
+  "attempt_status": "first nominal configuration exhausted"
 }
