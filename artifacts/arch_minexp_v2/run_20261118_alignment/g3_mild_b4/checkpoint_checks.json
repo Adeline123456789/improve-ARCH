@@ -1,0 +1,8 @@
+{
+  "command_max_error": 0.0,
+  "action_max_error": 0.0,
+  "reload_mean_actions_identical": true,
+  "normalizers_frozen": true,
+  "policy_dimension": 27,
+  "action_dimension": 6
+}

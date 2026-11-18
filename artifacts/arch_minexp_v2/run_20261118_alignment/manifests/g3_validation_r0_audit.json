@@ -1,0 +1,16 @@
+{
+  "scene": {
+    "train_suite": "E1",
+    "retreat_m": 0.06,
+    "layout_xy_m": 0.005,
+    "yaw_deg": 3.75,
+    "socket_xy_m": 0.00025,
+    "grasp_xyz_m": 0.000125,
+    "bias_deg": 0.125
+  },
+  "realized_unique": 100,
+  "sha256": "997cc34c611067e618aeb4bd4d33f6f464f812c770bbbd77399227dd2a51f85c",
+  "ideal_estimated_goal_outside_true_geometry": 0,
+  "median_ideal_goal_lateral_mm": 0.2002903615904192,
+  "p90_ideal_goal_lateral_mm": 0.3584458024822011
+}

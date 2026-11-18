@@ -1,4 +1,52 @@
 {
+  "g3_train_b1.jsonl": {
+    "sha256": "79188571d70063f86bc266c6b516186000679fb5f22aa9030c79796f36ec4d0f",
+    "cases": 2176,
+    "unique_ids": 2176,
+    "unique_physical_cases": 1633
+  },
+  "g3_train_b2.jsonl": {
+    "sha256": "d1dd69fad8f6dae3daa38800749700a34df7a7d3baa116915f4207e5aeba3bbc",
+    "cases": 2176,
+    "unique_ids": 2176,
+    "unique_physical_cases": 1633
+  },
+  "g3_train_b3.jsonl": {
+    "sha256": "80db6c51a8ad196ddfc778e412d3b45918d4eb3b78b0597b3a308ae2a600f44b",
+    "cases": 2176,
+    "unique_ids": 2176,
+    "unique_physical_cases": 1633
+  },
+  "g3_train_b4.jsonl": {
+    "sha256": "ecf9b6029eb7bd9c139ce8a1604ac9b0e09379fc2194c74f2ee18670a84e756b",
+    "cases": 2176,
+    "unique_ids": 2176,
+    "unique_physical_cases": 1633
+  },
+  "g3_train_b5.jsonl": {
+    "sha256": "79b927c6faf963b92d244e03e090eb73f9c550b64b9fd9f72ff054c8d731426d",
+    "cases": 2176,
+    "unique_ids": 2176,
+    "unique_physical_cases": 1633
+  },
+  "g3_train_b6.jsonl": {
+    "sha256": "a3cc951de46ed38a4d76d406c6e8ca853d526bdbf094a45eeffc7a4946b808ea",
+    "cases": 2176,
+    "unique_ids": 2176,
+    "unique_physical_cases": 1633
+  },
+  "g3_validation_r0.jsonl": {
+    "sha256": "997cc34c611067e618aeb4bd4d33f6f464f812c770bbbd77399227dd2a51f85c",
+    "cases": 100,
+    "unique_ids": 100,
+    "unique_physical_cases": 100
+  },
+  "g3_validation_r1.jsonl": {
+    "sha256": "9b3bc4f86b067cacb5a8bbb2f47f12e22608b53ac40607c7e946209e20d56491",
+    "cases": 100,
+    "unique_ids": 100,
+    "unique_physical_cases": 100
+  },
   "train_nominal.jsonl": {
     "sha256": "620959e7b02914d307b034fe25e6c8d2a999103879960adb0d92c5d336717340",
     "cases": 20,

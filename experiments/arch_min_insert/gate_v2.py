@@ -56,6 +56,9 @@ if stale:
         save('budget_start.json',json.loads((parent/'budget_start.json').read_text()))
     a.extend_nominal_checks=0
 save('evidence_binding.json',binding)
+if (out/'gate_report.json').exists() and load('gate_report.json')['G2']['status']=='PASS':
+    print('G2 already passed on this source and protocol. Resume with curriculum_v2.py.',flush=True)
+    raise SystemExit(0)
 seed=cfg['evaluation']['diagnostic_seed']
 # Count elapsed time conservatively, including initialization and gaps between commands.
 clock=out/'budget_start.json'
@@ -78,7 +81,7 @@ def run(mode,name,*args,run_seed=None):
         for flag in ['--manifest','--checkpoint','--scripted','--ppo_audit','--response_probe','--transitions']:
             old=ident['command']
             assert (flag in cmd)==(flag in old)
-            if flag in cmd and flag not in ('--scripted','--ppo_audit','--response_probe'):
+            if flag=='--transitions' and flag in cmd:
                 assert cmd[cmd.index(flag)+1]==old[old.index(flag)+1]
         return
     print(time.strftime('%F %T'),shlex.join(cmd),flush=True)
@@ -137,6 +140,9 @@ if prior+g1_frames+target>min(cfg['budget']['diagnostic'],cfg['budget']['total']
     raise ValueError('requested target exceeds cumulative training budget')
 if extra and not (out/'g2_nominal/completion.json').exists():
     raise RuntimeError('complete the initial nominal screen before requesting extra checks')
+completed_targets=[int(d.name.rsplit('_',1)[1]) for d in out.glob('g2_continue_to_*') if (d/'completion.json').exists()]
+if completed_targets and max(completed_targets)>target:
+    raise SystemExit('A later nominal segment already exists. Use its cumulative --extend-nominal-checks value or a new output directory.')
 steps=list(range(interval,target+1,interval))
 report={'G0':g0,'G1':{'status':'PASS','updates':'g1/ppo_updates.jsonl','reload':reload},
         'G2':{'status':'RUNNING','seed':seed,'planned_checkpoints':steps,'curve':[]},

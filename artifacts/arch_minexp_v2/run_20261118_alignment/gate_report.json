@@ -23,7 +23,7 @@
     }
   },
   "G2": {
-    "status": "RUNNING",
+    "status": "PASS",
     "seed": 101,
     "planned_checkpoints": [
       204800,
@@ -128,6 +128,22 @@
         "checkpoint": "g2_continue_to_2252800/runner/run/nn/last_apa_impedance_ep_176_rew_-19.127636.pth",
         "sha256": "e2214ef4dd44e73573a0650de9c061527b466e8dfeb8d4713330d355af967bd3",
         "evaluation": "g2_eval_2252800"
+      },
+      {
+        "frame": 2457600,
+        "successes": 20,
+        "episodes": 20,
+        "checkpoint": "g2_continue_to_2662400/runner/run/nn/last_apa_impedance_ep_192_rew_-18.43908.pth",
+        "sha256": "25ce57aa609b3fd6f2f7e92cb35c6733a612f36ecc04feaea395a803fa5113e4",
+        "evaluation": "g2_eval_2457600"
+      },
+      {
+        "frame": 2662400,
+        "successes": 20,
+        "episodes": 20,
+        "checkpoint": "g2_continue_to_2662400/runner/run/nn/last_apa_impedance_ep_208_rew_-20.332565.pth",
+        "sha256": "e6024a89e5f3482975fa62eb8af16e6492e4365d9a924ce9f835b1638bfe6ab4",
+        "evaluation": "g2_eval_2662400"
       }
     ]
   },
@@ -138,9 +154,86 @@
     "diagnostic_limit": 5400000
   },
   "G3": {
-    "status": "NOT_RUN"
+    "status": "FAIL",
+    "curve": [
+      {
+        "frame": 2867200,
+        "new_steps": 204800,
+        "diagnostic_total": 4307200,
+        "scale": 0.25,
+        "nominal_successes": 19,
+        "mild_successes": 47,
+        "nominal_episodes": 20,
+        "mild_episodes": 100,
+        "checkpoint": "g3_train_b1_f2867200/runner/run/nn/last_apa_impedance_ep_224_rew_-52.905247.pth",
+        "sha256": "71a144d93301847882a9a2e1ab1b64f89d508d7d772f24f79667c3b201a9b940"
+      },
+      {
+        "frame": 3072000,
+        "new_steps": 204800,
+        "diagnostic_total": 4512000,
+        "scale": 0.25,
+        "nominal_successes": 20,
+        "mild_successes": 48,
+        "nominal_episodes": 20,
+        "mild_episodes": 100,
+        "checkpoint": "g3_train_b2_f3072000/runner/run/nn/last_apa_impedance_ep_240_rew_-54.368065.pth",
+        "sha256": "9ac2f3f284c70a7401a00224c992fc6864978ca7a6959eaaea5483633e12e3f3"
+      },
+      {
+        "frame": 3276800,
+        "new_steps": 204800,
+        "diagnostic_total": 4716800,
+        "scale": 0.25,
+        "nominal_successes": 17,
+        "mild_successes": 45,
+        "nominal_episodes": 20,
+        "mild_episodes": 100,
+        "checkpoint": "g3_train_b3_f3276800/runner/run/nn/last_apa_impedance_ep_256_rew_-51.009155.pth",
+        "sha256": "c90b4fa4189b3ff4097ac2bb9d512f796c4091413481595074cd158238591bee"
+      },
+      {
+        "frame": 3481600,
+        "new_steps": 204800,
+        "diagnostic_total": 4921600,
+        "scale": 0.25,
+        "nominal_successes": 20,
+        "mild_successes": 47,
+        "nominal_episodes": 20,
+        "mild_episodes": 100,
+        "checkpoint": "g3_train_b4_f3481600/runner/run/nn/last_apa_impedance_ep_272_rew_-43.208817.pth",
+        "sha256": "4599135f3bc47f42ac2c2a43b63ff563859bc8a50c25ed10c24bef737ada3c59"
+      },
+      {
+        "frame": 3686400,
+        "new_steps": 204800,
+        "diagnostic_total": 5126400,
+        "scale": 0.25,
+        "nominal_successes": 20,
+        "mild_successes": 59,
+        "nominal_episodes": 20,
+        "mild_episodes": 100,
+        "checkpoint": "g3_train_b5_f3686400/runner/run/nn/last_apa_impedance_ep_288_rew_-43.394516.pth",
+        "sha256": "4778015d259482ae61905f0da7f519d36a9d8e367e1fc5bb7230a81245440b12"
+      },
+      {
+        "frame": 3891200,
+        "new_steps": 204800,
+        "diagnostic_total": 5331200,
+        "scale": 0.5,
+        "nominal_successes": 18,
+        "mild_successes": 34,
+        "nominal_episodes": 20,
+        "mild_episodes": 100,
+        "checkpoint": "g3_train_b6_f3891200/runner/run/nn/last_apa_impedance_ep_304_rew_-48.117786.pth",
+        "sha256": "791c8b6cd698eb2d5f53c706d8b43dac40e01e7e46726114ede933f9d11e7bdf"
+      }
+    ],
+    "starting_frame": 2662400,
+    "reason": "shared diagnostic budget reached before consecutive checks"
   },
   "G4": {
     "status": "NOT_RUN"
-  }
+  },
+  "overall_status": "BUDGET_BLOCKED"
 }

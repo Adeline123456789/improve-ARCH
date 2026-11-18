@@ -33,10 +33,8 @@ def publish(out,message):
                 selected.add(p)
     report=json.loads((out/'gate_report.json').read_text())
     curve=report['G2'].get('curve',[])
-    if curve:
-        selected.add(out/curve[-1]['checkpoint'])
-        best=max(curve,key=lambda x:x['successes'])
-        selected.add(out/best['checkpoint'])
+    # Gate resumption checks the hashes and frames of all scheduled models.
+    selected.update(out/row['checkpoint'] for row in curve)
     for row in report['G3'].get('curve',[])+report['G4'].get('runs',[]):
         selected.add(out/row['checkpoint'])
     # A single JSONL is convenient locally. Very long formal runs remain

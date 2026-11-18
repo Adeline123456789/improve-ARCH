@@ -1,0 +1,80 @@
+budget:
+  diagnostic: 5400000
+  formal_each: 4096000
+  nominal_first: 1500000
+  total: 30000000
+  wall_seconds: 21600
+clip_obs: 5.0
+control:
+  damping: 800
+  effort_limit: 100
+  mode: measured_delta
+  rotation_limit: 0.1
+  stiffness: 400
+  translation_limit: 0.05
+curriculum:
+  mild_fraction: 0.25
+  nominal_train_fraction: 0.25
+  train_manifest_pattern: manifests/g3_train_b{block}.jsonl
+  validation_manifest: manifests/g3_validation_r0.jsonl
+decimation: 5
+episode_steps: 96
+evaluation:
+  diagnostic_seed: 101
+  formal_seeds:
+  - 0
+  - 1
+  interval: 200000
+  mild_count: 100
+  nominal_count: 20
+geometry:
+  angle_rad: 0.03490658503988659
+  depth_m: 0.001
+  lateral_m: 0.00075
+  overshoot_m: 0.003
+hold_duration_s: 0.2
+network:
+  initial_log_sigma: -1.3862943611198906
+  layers: 2
+  mlp:
+  - 256
+  - 128
+  - 64
+  rnn_units: 256
+num_envs: 20
+physics_dt: 0.008333333333333333
+ppo:
+  horizon_length: 100
+  learning_rate: 0.0003
+  mini_epochs: 8
+  normalize_input: true
+  normalize_value: true
+  seq_length: 4
+  value_bootstrap: false
+reward:
+  angle_scale: 0.1
+  angle_weight: 0.2
+  cap: 5.0
+  lateral_scale: 0.012
+  position_scale: 0.06
+  position_weight: 1.0
+  terminal_bonus: 20.0
+run:
+  agent_settings: agent_config.json
+  checkpoint: /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment/g3_train_b2_f3072000/runner/run/nn/last_apa_impedance_ep_240_rew_-54.368065.pth
+  group: B0
+  manifest: /media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment/manifests/validation_nominal.jsonl
+  mode: eval
+  num_envs: 20
+  rollout_size: 2000
+  seed: 101
+  transitions_target: null
+scene:
+  bias_deg: 0.125
+  grasp_xyz_m: 0.000125
+  layout_xy_m: 0.005
+  retreat_m: 0.06
+  socket_xy_m: 0.00025
+  train_suite: E1
+  yaw_deg: 3.75
+version: 2

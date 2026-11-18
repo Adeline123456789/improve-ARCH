@@ -1,0 +1,41 @@
+{
+  "offline_replay": {
+    "fraction_translation_commands_away_from_estimated_goal": 0.020520834252238274,
+    "translation_action_rmse_vs_script_on_same_states": 0.33413758873939514,
+    "episodes": 100,
+    "successes": 48,
+    "reached_opening_plane": 71,
+    "median_lateral_at_first_opening_plane_mm": 0.7140131518569713,
+    "median_peak_depth_mm": 43.902631466200376,
+    "median_closest_tip_position_error_mm": 0.6702262060264434,
+    "median_final_tip_position_error_mm": 0.7545504365315918,
+    "median_final_lateral_mm": 0.5813596840507873,
+    "median_final_depth_error_mm": -0.5945865901417837,
+    "median_final_tilt_and_yaw_symmetry_error_deg": 1.5745483870430135,
+    "terminal_lateral_within_tolerance": 60,
+    "terminal_depth_within_tolerance": 67,
+    "terminal_orientation_within_tolerance": 88,
+    "ever_met_geometry": 64,
+    "invalid_physics": 0,
+    "median_peak_board_contact_N": 28.446556091308594,
+    "mean_reward_terms": {
+      "position_reward": -0.6695915460586548,
+      "rotation_reward": -0.04438695311546326,
+      "terminal_reward": 0.10000000149011612
+    }
+  },
+  "first_step_translation_mm": {
+    "slope": 0.9991794410568907,
+    "median_error": 0.0014901522044646392,
+    "rms_requested": 0.07130070424897254
+  },
+  "first_step_rotation_deg": {
+    "slope": 1.0000223280896279,
+    "median_error": 0.0003421663897671087,
+    "rms_requested": 0.07167428609876589
+  },
+  "max_board_position_error_mm": 0.0011315564016824804,
+  "max_board_orientation_error_deg": 3.7437283878838247e-06,
+  "first_step_max_board_force_N": 0.0,
+  "all_initial_IK_valid": true
+}

@@ -11,10 +11,13 @@ def verify(directory):
         expected=torch.tensor(t['diagnostic_X_true'][0],dtype=torch.float64)
         # First simulated control interval, before board contact.
         observed=torch.tensor(t['diagnostic_X_measured'][0],dtype=torch.float64)
+        board_socket=torch.tensor(t['diagnostic_socket_true'][0],dtype=torch.float64)
         ids=t['case_id'][0]
         force=np.linalg.norm(t['diagnostic_board_contact_force_world_N'][0],axis=-1)
     manifest={r['case_id']:r for r in map(json.loads,(directory/'realized_manifest.jsonl').read_text().splitlines())}
     nominal=torch.tensor([manifest[k]['X_hat'] for k in ids],dtype=torch.float64)
+    target_socket=torch.tensor([manifest[k]['socket_true'] for k in ids],dtype=torch.float64)
+    board_error=compose(inverse(target_socket),board_socket)
     requested=compose(inverse(nominal),expected)
     measured=compose(inverse(nominal),observed)
     def stats(requested,measured,unit):
@@ -26,10 +29,14 @@ def verify(directory):
     translation=stats(requested[:,:3],measured[:,:3],1000)
     rotation=stats(log(requested[:,3:]),log(measured[:,3:]),180/np.pi)
     result=dict(offline_replay=replay,first_step_translation_mm=translation,first_step_rotation_deg=rotation,
+                max_board_position_error_mm=float(board_error[:,:3].norm(dim=-1).max()*1000),
+                max_board_orientation_error_deg=float(log(board_error[:,3:]).norm(dim=-1).max().rad2deg()),
                 first_step_max_board_force_N=float(force.max()),
                 all_initial_IK_valid=all(manifest[k]['validity']['status']=='valid' for k in ids))
     (directory/'grasp_verification.json').write_text(json.dumps(result,indent=2)+'\n')
     # Scaling below half or above 1.5 signifies a material loss/distortion of the specified perturbation.
     if not all(.5<s['slope']<1.5 for s in (translation,rotation)):
         raise RuntimeError('Measured grasp failed to reproduce applied perturbations. See '+str(directory/'grasp_verification.json'))
+    if result['max_board_position_error_mm']>.1 or result['max_board_orientation_error_deg']>.1:
+        raise RuntimeError('Actual socket pose differs from the realized scene manifest. See '+str(directory/'grasp_verification.json'))
     return result

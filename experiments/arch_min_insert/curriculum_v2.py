@@ -50,6 +50,7 @@ budget_roots=[prior,out] if (out/'repair.json').exists() and prior!=out else [ou
 def remaining_wall():
     return cfg['budget']['wall_seconds']-budget(budget_roots)['gpu_wall_seconds_union_estimate']
 g3=report['G3']={'status':'RUNNING','curve':[],'starting_frame':frame}
+write(out/'gate_report.json',report)
 def execute(mode,name,*args):
     directory=out/name
     if not (directory/'completion.json').exists():
@@ -73,6 +74,8 @@ def manifest(path,source):
 def eval_model(name,manifest,count):
     r=execute('eval',name,'--checkpoint',checkpoint,'--manifest',manifest,'--num_envs',count)
     assert r['num_complete_episodes']==count
+    actual=[json.loads(line)['case_id'] for line in (out/name/'episodes.jsonl').read_text().splitlines()]
+    assert actual==[json.loads(line)['case_id'] for line in manifest.read_text().splitlines()]
     return r['successes']
 
 nominal=out/'manifests/validation_nominal.jsonl'

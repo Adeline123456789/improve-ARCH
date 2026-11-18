@@ -1,6 +1,6 @@
 # ARCH v2 插入实验
 
-总状态 **IN_PROGRESS**。G0 PASS，G1 PASS，G2 RUNNING，G3 NOT_RUN，G4 NOT_RUN。
+总状态 **BUDGET_BLOCKED**。G0 PASS，G1 PASS，G2 PASS，G3 FAIL，G4 NOT_RUN。
 
 ## 控制链与学习链
 
@@ -16,9 +16,9 @@
 
 第二配置各预定检查点的累计名义环境步与成功数如下。
 
-204,800 → 0/20, 409,600 → 0/20, 614,400 → 0/20, 819,200 → 0/20, 1,024,000 → 0/20, 1,228,800 → 0/20, 1,433,600 → 0/20, 1,638,400 → 20/20, 1,843,200 → 18/20, 2,048,000 → 20/20, 2,252,800 → 16/20。
+204,800 → 0/20, 409,600 → 0/20, 614,400 → 0/20, 819,200 → 0/20, 1,024,000 → 0/20, 1,228,800 → 0/20, 1,433,600 → 0/20, 1,638,400 → 20/20, 1,843,200 → 18/20, 2,048,000 → 20/20, 2,252,800 → 16/20, 2,457,600 → 20/20, 2,662,400 → 20/20。
 
-连续两个检查点至少 19/20 加独立重载的门槛尚未通过。
+在 2,662,400 步满足连续两个检查点至少 19/20，选定模型在独立进程重载后达到 20/20。模型 SHA-256 为 `e6024a89e5f3482975fa62eb8af16e6492e4365d9a924ce9f835b1638bfe6ab4`。
 
 20 个名义回合是相同语义任务的工程回归。逐回合结果含失败、到位后失稳、误差和饱和率。[第二配置结果](run_20261118_alignment/results.csv) · [名义曲线](run_20261118_alignment/diagnostics/g2_curve.png)
 
@@ -26,7 +26,23 @@
 
 预定完整范围为板布局 X、Y 各 ±20 mm、偏航 ±15°，socket 估计 X、Y 各 ±1 mm，grasp 平移三轴各 ±0.5 mm，两者三轴旋转估计各 ±0.5°。横向误差容限为 0.75 mm，完整估计偏差可以跨越这一容限。课程分 0.25、0.5、1.0 倍。
 
-尚无通过物理核验的轻扰动开发分数。
+- 2,867,200 步，倍率 0.25，名义 19/20，独立轻扰动 47/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b1/grasp_verification.json)
+
+- 3,072,000 步，倍率 0.25，名义 20/20，独立轻扰动 48/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b2/grasp_verification.json)
+
+- 3,276,800 步，倍率 0.25，名义 17/20，独立轻扰动 45/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b3/grasp_verification.json)
+
+- 3,481,600 步，倍率 0.25，名义 20/20，独立轻扰动 47/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b4/grasp_verification.json)
+
+- 3,686,400 步，倍率 0.25，名义 20/20，独立轻扰动 59/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b5/grasp_verification.json)
+
+- 3,891,200 步，倍率 0.5，名义 18/20，独立轻扰动 34/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b6/grasp_verification.json)
+
+g3_validation_r0_audit 中按估计值准确到达时，有 0/100 个场景仍超出真实几何条件，横向误差第 90 百分位为 0.358 mm。
+
+g3_validation_r1_audit 中按估计值准确到达时，有 3/100 个场景仍超出真实几何条件，横向误差第 90 百分位为 0.666 mm。
+
+G3 停止原因为 shared diagnostic budget reached before consecutive checks。
 
 ## 正式比较
 
@@ -44,7 +60,7 @@ B1−B0 同时改变观测与动作坐标；B2−B1 才能检验因果残差的�
 
 ## 资源与复现
 
-已完成的在线训练共 3,692,800 环境步。GPU 占用区间取并集约 1.572 小时，含初始化及验证。首个仿真至最后一次记录约 1.727 小时。未结束任务的步数下界和各进程计时来源见账本。[预算](budget_ledger.json) · [软件与资产](environment_provenance.json)
+已完成的在线训练共 5,331,200 环境步。GPU 占用区间取并集约 2.274 小时，含初始化及验证。首个仿真至最后一次记录约 2.437 小时。未结束任务的步数下界和各进程计时来源见账本。[预算](budget_ledger.json) · [软件与资产](environment_provenance.json)
 
 若名义姿态在 2° 边界附近反复失稳，可对已保存的成功和失败轨迹比较首次到位后的角误差与真实控制响应。若名义持续合格而轻扰动欠佳，按真实布局与 socket/grasp 估计偏差分层检查首次进入、末段保持与实际抓取变换。
 
@@ -61,10 +77,10 @@ tail -F "$o/training.log"
 ```bash
 bash experiments/arch_min_insert/launch.sh --mode eval --group B0 --seed 101 --num_envs 20 --headless \
   --protocol "$proto" --manifest "$o/manifests/validation_nominal.jsonl" \
-  --checkpoint "$o/g2_continue_to_2252800/runner/run/nn/last_apa_impedance_ep_176_rew_-19.127636.pth" --output "$o/replay_2252800_$(date +%s)"
+  --checkpoint "$o/g2_continue_to_2662400/runner/run/nn/last_apa_impedance_ep_208_rew_-20.332565.pth" --output "$o/replay_2662400_$(date +%s)"
 ```
 
-本机 128 环境名义训练吞吐约 715 环境步/s，续训一个 204,800 步区间的纯训练约 4.8 分钟，另计启动、独立评估。
+本机 128 环境名义训练吞吐约 711 环境步/s，续训一个 204,800 步区间的纯训练约 4.8 分钟，另计启动、独立评估。
 
 以下顺序复现第二配置已完成的名义续训段。新输出目录会从头执行 G0/G1。G3、G4 的入口分别验证上游门槛。
 
@@ -75,9 +91,10 @@ gate=experiments/arch_min_insert/gate_v2.py
 $py -u "$gate" --protocol "$proto" --output "$new"
 $py -u "$gate" --protocol "$proto" --output "$new" --extend-nominal-checks 2
 $py -u "$gate" --protocol "$proto" --output "$new" --extend-nominal-checks 4
+$py -u "$gate" --protocol "$proto" --output "$new" --extend-nominal-checks 6
 $py -u experiments/arch_min_insert/curriculum_v2.py --protocol "$proto" --output "$new"
 $py -u experiments/arch_min_insert/formal_v2.py --protocol "$proto" --output "$new"
 ```
 
-正式固定课程 B 与轻扰动吞吐尚未同时获得。六个模型仅重训到第二配置最近完成的名义步数，纯训练估计至少 5.25 GPU 小时，轻度课程与测试另计。
+正式固定课程 B 与轻扰动吞吐尚未同时获得。六个模型仅重训到第二配置最近完成的名义步数，纯训练估计至少 6.24 GPU 小时，轻度课程与测试另计。
 

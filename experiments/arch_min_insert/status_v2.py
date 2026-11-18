@@ -7,7 +7,12 @@ from pathlib import Path
 def show(out):
     report=json.loads((out/'gate_report.json').read_text())
     print(' '.join(f"{k}={report[k]['status']}" for k in ('G0','G1','G2','G3','G4')),flush=True)
-    for row in report['G2'].get('curve',[])[-2:]:
+    checkpoints={r['frame']:r for r in report['G2'].get('curve',[])}
+    for path in out.glob('g2_eval_*/completion.json'):
+        frame=int(path.parent.name.rsplit('_',1)[1])
+        data=json.loads(path.read_text())
+        checkpoints[frame]=dict(frame=frame,successes=data['successes'],episodes=data['num_complete_episodes'])
+    for row in sorted(checkpoints.values(),key=lambda r:r['frame'])[-2:]:
         print(f"G2  {row['frame']:,}  nominal {row['successes']}/{row['episodes']}")
     for row in report['G3'].get('curve',[])[-2:]:
         print(f"G3  {row['frame']:,}  scale {row['scale']}  nominal {row['nominal_successes']}/20  mild {row['mild_successes']}/100")

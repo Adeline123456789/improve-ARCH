@@ -1,0 +1,13 @@
+{
+  "source": "/media/midea/61500ece-df8d-46ce-be73-e04b2378079c/ARCH/artifacts/arch_minexp_v2/run_20261118_alignment/g3_train_b3_f3276800/runner/run/nn/last_apa_impedance_ep_256_rew_-51.009155.pth",
+  "restored_frame": 3276800,
+  "restored_epoch": 256,
+  "optimizer_states": 19,
+  "optimizer_step_range": [
+    8192,
+    8192
+  ],
+  "model_and_statistics_equal": true,
+  "optimizer_equal": true,
+  "new_episode_at_resume": true
+}
