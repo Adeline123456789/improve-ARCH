@@ -1,0 +1,14 @@
+{
+  "train_nominal.jsonl": {
+    "sha256": "620959e7b02914d307b034fe25e6c8d2a999103879960adb0d92c5d336717340",
+    "cases": 20,
+    "unique_ids": 20,
+    "unique_physical_cases": 1
+  },
+  "validation_nominal.jsonl": {
+    "sha256": "d6c9148781d462b572a407f5fb6087570edc603e78e3a7b7d6d96d731279ae5e",
+    "cases": 20,
+    "unique_ids": 20,
+    "unique_physical_cases": 1
+  }
+}

@@ -34,7 +34,11 @@
       1228800,
       1433600,
       1638400,
-      1843200
+      1843200,
+      2048000,
+      2252800,
+      2457600,
+      2662400
     ],
     "curve": [
       {
@@ -92,13 +96,45 @@
         "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_112_rew_-41.695545.pth",
         "sha256": "be26ac0ed30fbe84f7561adbd77de7604f92fc3c9a80acf2c5743b56ab2a8cbe",
         "evaluation": "g2_eval_1433600"
+      },
+      {
+        "frame": 1638400,
+        "successes": 20,
+        "episodes": 20,
+        "checkpoint": "g2_continue_to_1843200/runner/run/nn/last_apa_impedance_ep_128_rew_-26.018456.pth",
+        "sha256": "931f50124882a5448183c7a1ce7e042bed0a433263e1dbfb5f728c90bd564725",
+        "evaluation": "g2_eval_1638400"
+      },
+      {
+        "frame": 1843200,
+        "successes": 18,
+        "episodes": 20,
+        "checkpoint": "g2_continue_to_1843200/runner/run/nn/last_apa_impedance_ep_144_rew_-21.268896.pth",
+        "sha256": "5d290cf9a982ad9e389046e2fe490659e300b012c3c4f7cd13ace463a50a7ce1",
+        "evaluation": "g2_eval_1843200"
+      },
+      {
+        "frame": 2048000,
+        "successes": 20,
+        "episodes": 20,
+        "checkpoint": "g2_continue_to_2252800/runner/run/nn/last_apa_impedance_ep_160_rew_-20.50932.pth",
+        "sha256": "9714a9c01a90d02d9b201abab57afc8ae6e914eea49acd08fb96168ac3cb4502",
+        "evaluation": "g2_eval_2048000"
+      },
+      {
+        "frame": 2252800,
+        "successes": 16,
+        "episodes": 20,
+        "checkpoint": "g2_continue_to_2252800/runner/run/nn/last_apa_impedance_ep_176_rew_-19.127636.pth",
+        "sha256": "e2214ef4dd44e73573a0650de9c061527b466e8dfeb8d4713330d355af967bd3",
+        "evaluation": "g2_eval_2252800"
       }
     ]
   },
   "budget": {
     "prior_training_steps": 1436800,
     "this_g1_steps": 3200,
-    "nominal_cumulative_target": 1843200,
+    "nominal_cumulative_target": 2662400,
     "diagnostic_limit": 5400000
   },
   "G3": {

@@ -1,0 +1,40 @@
+{
+  "assets": {
+    "multi-robot-assembly/taskboard/fmb_example/Robots/pls_updated_gripper_v4.usd": {
+      "sha256": "f37e33cfb7ec0f4c9ea727571cc4bded2eb67fa79fe41abe641f56889986fba1",
+      "git_blob": "9f6c28a8b6653f047842465c8ec87e0428f8dcc1"
+    },
+    "multi-robot-assembly/table_top_collision.usd": {
+      "sha256": "fb45a9681db1817c631caffd5a0f8691203762add22b7f5be78a4f343eb5a03f",
+      "git_blob": "f740350556d78cec9615930c144b0845d6327256"
+    },
+    "multi-robot-assembly/multi_arm_assembly/ur_description/urdf/ur10e.urdf": {
+      "sha256": "abbd7212e824700c127c201be63c2f7f31e082399cf351f05beceb0ef5759f1d",
+      "git_blob": "5e7b347a00866babe2e1ce5760466ef844e7545d"
+    }
+  },
+  "versions": {
+    "torch": {
+      "version": "2.3.0"
+    },
+    "rl-games": {
+      "version": "1.6.1"
+    },
+    "omni-isaac-lab": {
+      "version": "0.20.0",
+      "commit": "454905bf08c374b6162e6c4c64a320aa6261fbe6"
+    },
+    "omni-isaac-lab_tasks": {
+      "version": "0.7.10",
+      "commit": "454905bf08c374b6162e6c4c64a320aa6261fbe6"
+    },
+    "isaacsim": null,
+    "pybullet": {
+      "version": "3.2.7"
+    },
+    "numpy": {
+      "version": "1.26.4"
+    }
+  },
+  "gpu": "NVIDIA GeForce RTX 3090, 575.51.03, 24576 MiB"
+}

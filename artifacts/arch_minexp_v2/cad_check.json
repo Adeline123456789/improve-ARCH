@@ -1,0 +1,22 @@
+{
+  "Medium_Board_DarkBlue_Updated.usd": {
+    "blob": "2dd98fab2192c70355380d764f42137c33d95c6b",
+    "sha256": "e6564c2594ab4f5fce15fe36f98846c2377e10cbc9ed0aae0b7caaea8eb3465e",
+    "mesh": "artifacts/arch_minexp/Medium_Board_DarkBlue_Updated.usd.mesh.npz",
+    "bounds_z_m": [
+      -0.025639932602643967,
+      0.024360086768865585
+    ]
+  },
+  "Medium_Short_Hexagon_Green_Updated.usd": {
+    "blob": "8f41abeeb8c86c950e0c8de991db9202097dc148",
+    "sha256": "9f2117317828dd45b7b8b9c20dfb441ec406c3ead067efe696a095d721250fc1",
+    "mesh": "artifacts/arch_minexp/Medium_Short_Hexagon_Green_Updated.usd.mesh.npz",
+    "bounds_z_m": [
+      -0.05000000074505806,
+      0.05000000074505806
+    ]
+  },
+  "target_depth_m": 0.04436008676886559,
+  "definition": "Physical CAD bottom tip is 50 mm below peg root. The nominal seated bottom tip is at board-frame z=-20 mm, referenced from the aperture top plane."
+}

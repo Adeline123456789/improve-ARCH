@@ -7,8 +7,12 @@ import subprocess
 import time
 from pathlib import Path
 import torch
-from protocol import load_protocol
+import yaml
+from protocol import load_protocol,evidence_binding
+from budget_v2 import budget
+from verify_mild_v2 import verify as verify_mild
 from scenarios import make_case
+from geometry import compose,inverse,assembly_errors
 
 HERE=Path(__file__).resolve().parent
 p=argparse.ArgumentParser()
@@ -27,6 +31,7 @@ def write(path,data):
 report=read(out/'gate_report.json')
 if report['G2']['status']!='PASS':
     raise SystemExit('G3 requires a passed G2 nominal screen and independent reload.')
+assert read(out/'evidence_binding.json')==evidence_binding(protocol)
 chosen=report['G2']['curve'][-1]
 frame=chosen['frame']
 assert read(out/f'g2_reloaded_{frame}/completion.json')['successes']>=19
@@ -40,19 +45,22 @@ used=report.get('budget',{}).get('prior_training_steps',0)
 if (out/'repair.json').exists():used=read(out/'repair.json')['first_config_interactions']
 for name in ['g1','g2_nominal',*[p.name for p in out.glob('g2_continue_to_*')]]:
     used+=read(out/name/'completion.json')['actual_env_transitions']
-start=read(out/'budget_start.json')['unix']
+prior=out.parent/'run_20261118'
+budget_roots=[prior,out] if (out/'repair.json').exists() and prior!=out else [out]
+def remaining_wall():
+    return cfg['budget']['wall_seconds']-budget(budget_roots)['gpu_wall_seconds_union_estimate']
 g3=report['G3']={'status':'RUNNING','curve':[],'starting_frame':frame}
 def execute(mode,name,*args):
     directory=out/name
     if not (directory/'completion.json').exists():
-        cmd=['bash',str(HERE/'launch.sh'),'--mode',mode,'--protocol',str(protocol),'--group','B0',
+        cmd=['bash',str(HERE/'launch.sh'),'--mode',mode,'--protocol',str(active_protocol),'--group','B0',
              '--seed',str(seed),'--output',str(directory),'--headless',*map(str,args)]
         print(shlex.join(cmd),flush=True)
-        remaining=cfg['budget']['wall_seconds']-(time.time()-start)
+        remaining=remaining_wall()
         if remaining<=0:raise TimeoutError('shared wall budget exhausted')
         subprocess.run(cmd,check=True,timeout=remaining)
     ident=read(directory/'identity.json')
-    assert ident['mode']==mode and ident['protocol_sha256']==hashlib.sha256(protocol.read_bytes()).hexdigest()
+    assert ident['mode']==mode and ident['protocol_sha256']==hashlib.sha256(active_protocol.read_bytes()).hexdigest()
     for flag,key in [('--checkpoint','checkpoint_sha256'),('--manifest','manifest_sha256')]:
         assert ident[key]==hashlib.sha256(Path(args[args.index(flag)+1]).read_bytes()).hexdigest()
     return read(directory/'completion.json')
@@ -72,13 +80,31 @@ block=0
 for rung,scale in enumerate([.25,.5,1.]):
     scene=dict(cfg['scene'])
     for key in ['layout_xy_m','yaw_deg','socket_xy_m','grasp_xyz_m','bias_deg']:scene[key]*=scale
+    scene['train_suite']='E1'
+    active_protocol=out/f'g3_rung_{rung}.yaml'
+    settings=dict(cfg,scene=scene,curriculum={'mild_fraction':scale,'nominal_train_fraction':.25,
+                                             'train_manifest_pattern':'manifests/g3_train_b{block}.jsonl',
+                                             'validation_manifest':f'manifests/g3_validation_r{rung}.jsonl'})
+    active_protocol.write_text(yaml.safe_dump(settings))
     val=manifest(out/f'manifests/g3_validation_r{rung}.jsonl',
                  (make_case(570000+rung*1000+i,'E1','validation',scene) for i in range(100)))
-    distinct={json.dumps([r['board_true'],r['X_true'],r['socket_estimated']]) for r in map(json.loads,val.read_text().splitlines())}
-    assert len(distinct)==100
+    val_rows=[json.loads(line) for line in val.read_text().splitlines()]
+    distinct={json.dumps([r['board_true'],r['X_true'],r['socket_estimated']]) for r in val_rows}
+    assert len(distinct)==len(val_rows)==100
+    poses=lambda key:torch.tensor([r[key] for r in val_rows],dtype=torch.float64)
+    star=poses('T_SP_star')
+    ee_at_estimate=compose(compose(poses('socket_estimated'),star),inverse(poses('X_hat')))
+    actual_tip=compose(ee_at_estimate,poses('X_true'))
+    ident=star.new_tensor([0,0,0,1,0,0,0]).expand_as(star)
+    geometric=assembly_errors(actual_tip,ident,poses('socket_true'),star,**cfg['geometry'])
+    write(out/f'manifests/g3_validation_r{rung}_audit.json',dict(scene=scene,realized_unique=len(distinct),
+        sha256=hashlib.sha256(val.read_bytes()).hexdigest(),
+        ideal_estimated_goal_outside_true_geometry=int((~geometric['candidate']).sum()),
+        median_ideal_goal_lateral_mm=float(geometric['lateral'].median()*1000),
+        p90_ideal_goal_lateral_mm=float(geometric['lateral'].quantile(.9)*1000)))
     consecutive=0
     while consecutive < (2 if scale==1. else 1):
-        if used+interval>cfg['budget']['diagnostic'] or time.time()-start>=cfg['budget']['wall_seconds']:
+        if used+interval>cfg['budget']['diagnostic'] or remaining_wall()<=0:
             g3.update(status='FAIL',reason='shared diagnostic budget reached before consecutive checks')
             report['overall_status']='BUDGET_BLOCKED'
             write(out/'gate_report.json',report)
@@ -98,6 +124,13 @@ for rung,scale in enumerate([.25,.5,1.]):
         assert state['frame']==frame and 'optimizer' in state
         nom=eval_model(f'g3_nominal_b{block}',nominal,20)
         mild=eval_model(f'g3_mild_b{block}',val,100)
+        try:
+            verify_mild(out/f'g3_mild_b{block}')
+        except (AssertionError,RuntimeError) as exc:
+            g3.update(status='FAIL',reason=str(exc),failed_check=f'g3_mild_b{block}')
+            report['overall_status']='PIPELINE_BLOCKED'
+            write(out/'gate_report.json',report)
+            raise
         consecutive=consecutive+1 if nom>=18 and mild>=50 else 0
         g3['curve'].append(dict(frame=frame,new_steps=interval,diagnostic_total=used,scale=scale,
             nominal_successes=nom,mild_successes=mild,nominal_episodes=20,mild_episodes=100,

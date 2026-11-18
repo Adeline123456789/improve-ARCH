@@ -1,0 +1,243 @@
+{
+  "status": "IN_PROGRESS",
+  "first_attempt": "FAIL",
+  "current": {
+    "G0": {
+      "status": "PASS",
+      "scripted_successes": 20,
+      "episodes": 20,
+      "offline_matches": true,
+      "edge_peak_force_N": 1.3502055406570435,
+      "fixed_target_range_m": 1.1920928955078125e-07,
+      "hold_tracking_error_final_m": 0.0024934830144047737,
+      "probe_trace": "g0_probe/trajectories.npz",
+      "scripted_trace": "g0_scripted/trajectories.npz"
+    },
+    "G1": {
+      "status": "PASS",
+      "updates": "g1/ppo_updates.jsonl",
+      "reload": {
+        "command_max_error": 0.0,
+        "action_max_error": 0.0,
+        "reload_mean_actions_identical": true,
+        "normalizers_frozen": true,
+        "policy_dimension": 27,
+        "action_dimension": 6
+      }
+    },
+    "G2": {
+      "status": "RUNNING",
+      "seed": 101,
+      "planned_checkpoints": [
+        204800,
+        409600,
+        614400,
+        819200,
+        1024000,
+        1228800,
+        1433600,
+        1638400,
+        1843200,
+        2048000,
+        2252800,
+        2457600,
+        2662400
+      ],
+      "curve": [
+        {
+          "frame": 204800,
+          "successes": 0,
+          "episodes": 20,
+          "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_16_rew_-102.76567.pth",
+          "sha256": "71b9664b751038b0874255ef088188c6497db41da8e5eeb52089c942a6bdf091",
+          "evaluation": "g2_eval_204800"
+        },
+        {
+          "frame": 409600,
+          "successes": 0,
+          "episodes": 20,
+          "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_32_rew_-102.12605.pth",
+          "sha256": "6d0f5059388a86f49b3bb9fc2bc759069a199bba1feef01877cf787d474d7d92",
+          "evaluation": "g2_eval_409600"
+        },
+        {
+          "frame": 614400,
+          "successes": 0,
+          "episodes": 20,
+          "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_48_rew_-102.31201.pth",
+          "sha256": "af4b11daac28847790aee8a9d9fd53dea0f8f0e736b5c2664eaa6d9701017aab",
+          "evaluation": "g2_eval_614400"
+        },
+        {
+          "frame": 819200,
+          "successes": 0,
+          "episodes": 20,
+          "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_64_rew_-68.84955.pth",
+          "sha256": "9dbe7ee9e33ff85c7b1c994e692d78dabb8e6136afa4d967d956a7f5c4db7445",
+          "evaluation": "g2_eval_819200"
+        },
+        {
+          "frame": 1024000,
+          "successes": 0,
+          "episodes": 20,
+          "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_80_rew_-50.192406.pth",
+          "sha256": "4c41ce530f0f761002286b2c7c94f47fc5ba126a00a931e202fa3beae8d7ccd6",
+          "evaluation": "g2_eval_1024000"
+        },
+        {
+          "frame": 1228800,
+          "successes": 0,
+          "episodes": 20,
+          "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_96_rew_-45.055218.pth",
+          "sha256": "212724cae1af9323a2c6643451d64a576f7da2c7572536aae4868fec052173fa",
+          "evaluation": "g2_eval_1228800"
+        },
+        {
+          "frame": 1433600,
+          "successes": 0,
+          "episodes": 20,
+          "checkpoint": "g2_nominal/runner/run/nn/last_apa_impedance_ep_112_rew_-41.695545.pth",
+          "sha256": "be26ac0ed30fbe84f7561adbd77de7604f92fc3c9a80acf2c5743b56ab2a8cbe",
+          "evaluation": "g2_eval_1433600"
+        },
+        {
+          "frame": 1638400,
+          "successes": 20,
+          "episodes": 20,
+          "checkpoint": "g2_continue_to_1843200/runner/run/nn/last_apa_impedance_ep_128_rew_-26.018456.pth",
+          "sha256": "931f50124882a5448183c7a1ce7e042bed0a433263e1dbfb5f728c90bd564725",
+          "evaluation": "g2_eval_1638400"
+        },
+        {
+          "frame": 1843200,
+          "successes": 18,
+          "episodes": 20,
+          "checkpoint": "g2_continue_to_1843200/runner/run/nn/last_apa_impedance_ep_144_rew_-21.268896.pth",
+          "sha256": "5d290cf9a982ad9e389046e2fe490659e300b012c3c4f7cd13ace463a50a7ce1",
+          "evaluation": "g2_eval_1843200"
+        },
+        {
+          "frame": 2048000,
+          "successes": 20,
+          "episodes": 20,
+          "checkpoint": "g2_continue_to_2252800/runner/run/nn/last_apa_impedance_ep_160_rew_-20.50932.pth",
+          "sha256": "9714a9c01a90d02d9b201abab57afc8ae6e914eea49acd08fb96168ac3cb4502",
+          "evaluation": "g2_eval_2048000"
+        },
+        {
+          "frame": 2252800,
+          "successes": 16,
+          "episodes": 20,
+          "checkpoint": "g2_continue_to_2252800/runner/run/nn/last_apa_impedance_ep_176_rew_-19.127636.pth",
+          "sha256": "e2214ef4dd44e73573a0650de9c061527b466e8dfeb8d4713330d355af967bd3",
+          "evaluation": "g2_eval_2252800"
+        }
+      ]
+    },
+    "G3": {
+      "status": "NOT_RUN"
+    },
+    "G4": {
+      "status": "NOT_RUN"
+    }
+  },
+  "budget": {
+    "completed_training_steps": 3692800,
+    "recorded_training_steps_lower_bound": 3815680,
+    "measured_evaluation_and_probe_steps": 45312,
+    "simulator_process_seconds": 6325.593545408248,
+    "gpu_wall_seconds_union_estimate": 5660.798545837402,
+    "elapsed_first_to_last_simulator_seconds": 6216.498545408249,
+    "diagnostic_step_limit": 5400000,
+    "total_step_limit": 30000000,
+    "gpu_wall_limit_seconds": 21600
+  },
+  "formal": [
+    {
+      "seed": 0,
+      "group": "B0",
+      "status": "NOT_RUN",
+      "suites": {
+        "N": null,
+        "T_id": null,
+        "T_layout": null,
+        "T_bias": null
+      }
+    },
+    {
+      "seed": 0,
+      "group": "B1",
+      "status": "NOT_RUN",
+      "suites": {
+        "N": null,
+        "T_id": null,
+        "T_layout": null,
+        "T_bias": null
+      }
+    },
+    {
+      "seed": 0,
+      "group": "B2",
+      "status": "NOT_RUN",
+      "suites": {
+        "N": null,
+        "T_id": null,
+        "T_layout": null,
+        "T_bias": null
+      }
+    },
+    {
+      "seed": 1,
+      "group": "B0",
+      "status": "NOT_RUN",
+      "suites": {
+        "N": null,
+        "T_id": null,
+        "T_layout": null,
+        "T_bias": null
+      }
+    },
+    {
+      "seed": 1,
+      "group": "B1",
+      "status": "NOT_RUN",
+      "suites": {
+        "N": null,
+        "T_id": null,
+        "T_layout": null,
+        "T_bias": null
+      }
+    },
+    {
+      "seed": 1,
+      "group": "B2",
+      "status": "NOT_RUN",
+      "suites": {
+        "N": null,
+        "T_id": null,
+        "T_layout": null,
+        "T_bias": null
+      }
+    }
+  ],
+  "formal_differences_pp_in_N_Tid_Tlayout_Tbias_order": {
+    "B1-B0": {
+      "0": null,
+      "1": null,
+      "two_seed_mean_pp": null,
+      "engineering_signal": null
+    },
+    "B2-B1": {
+      "0": null,
+      "1": null,
+      "two_seed_mean_pp": null,
+      "engineering_signal": null
+    },
+    "B2-B0": {
+      "0": null,
+      "1": null,
+      "two_seed_mean_pp": null,
+      "engineering_signal": null
+    }
+  }
+}
