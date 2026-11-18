@@ -18,6 +18,8 @@ HERE=Path(__file__).resolve().parent
 p=argparse.ArgumentParser()
 p.add_argument('--protocol',type=Path,required=True)
 p.add_argument('--output',type=Path,required=True)
+p.add_argument('--diagnostic-limit',type=int,help='Explicitly authorized cumulative G1-G3 training limit')
+p.add_argument('--plan',action='store_true',help='Print the continuation and resource estimate without changing files or launching simulation')
 a=p.parse_args()
 out=a.output.resolve()
 protocol=a.protocol.resolve()
@@ -37,6 +39,9 @@ frame=chosen['frame']
 assert read(out/f'g2_reloaded_{frame}/completion.json')['successes']>=19
 checkpoint=out/chosen['checkpoint']
 assert hashlib.sha256(checkpoint.read_bytes()).hexdigest()==chosen['sha256']
+diagnostic_limit=cfg['budget']['diagnostic'] if a.diagnostic_limit is None else a.diagnostic_limit
+if diagnostic_limit>cfg['budget']['total']:
+    raise ValueError('Diagnostic allocation exceeds the total training budget')
 seed=cfg['evaluation']['diagnostic_seed']
 n=read(out/'g2_nominal/identity.json')['num_envs']
 rollout=n*cfg['ppo']['horizon_length']
@@ -49,6 +54,28 @@ prior=out.parent/'run_20261118'
 budget_roots=[prior,out] if (out/'repair.json').exists() and prior!=out else [out]
 def remaining_wall():
     return cfg['budget']['wall_seconds']-budget(budget_roots)['gpu_wall_seconds_union_estimate']
+existing=report['G3'].get('curve',[])
+if a.plan:
+    last=existing[-1] if existing else None
+    current_used=last['diagnostic_total'] if last else used
+    completed=[read(p/'completion.json') for p in out.glob('g3_train_b*_f*') if (p/'completion.json').exists()]
+    speed=sum(r['actual_env_transitions'] for r in completed)/sum(r['wall_time_s'] for r in completed) if completed else None
+    blocks=max(0,(diagnostic_limit-current_used)//interval)
+    print(json.dumps(dict(checkpoint=last['checkpoint'] if last else str(checkpoint.relative_to(out)),
+        restored_frame=last['frame'] if last else frame,stage_scale=last['scale'] if last else .25,
+        diagnostic_used=current_used,proposed_diagnostic_limit=diagnostic_limit,
+        interval=interval,available_new_blocks=blocks,new_steps=blocks*interval,
+        estimated_training_seconds=blocks*interval/speed if speed else None,
+        remaining_gpu_seconds=remaining_wall(),formal_each_limit=cfg['budget']['formal_each'],
+        action='plan only; no simulation started'),indent=2))
+    raise SystemExit(0)
+if report['G3']['status']=='PASS':
+    raise SystemExit('G3 already passed. Continue with formal_v2.py.')
+if a.diagnostic_limit is not None:
+    history=out/'diagnostics'/f'before_g3_limit_{diagnostic_limit}.json'
+    if not history.exists():write(history,report)
+report['budget']['diagnostic_limit']=diagnostic_limit
+report['overall_status']='IN_PROGRESS'
 g3=report['G3']={'status':'RUNNING','curve':[],'starting_frame':frame}
 write(out/'gate_report.json',report)
 def execute(mode,name,*args):
@@ -107,7 +134,7 @@ for rung,scale in enumerate([.25,.5,1.]):
         p90_ideal_goal_lateral_mm=float(geometric['lateral'].quantile(.9)*1000)))
     consecutive=0
     while consecutive < (2 if scale==1. else 1):
-        if used+interval>cfg['budget']['diagnostic'] or remaining_wall()<=0:
+        if used+interval>diagnostic_limit or remaining_wall()<=0:
             g3.update(status='FAIL',reason='shared diagnostic budget reached before consecutive checks')
             report['overall_status']='BUDGET_BLOCKED'
             write(out/'gate_report.json',report)

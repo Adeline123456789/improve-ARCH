@@ -1,0 +1,19 @@
+{
+  "observed_scale": 0.5,
+  "episodes": 100,
+  "successes": 34,
+  "contact_no_progress": 55,
+  "timeout": 11,
+  "ever_met_geometry": 56,
+  "final_lateral_pass": 43,
+  "final_depth_pass": 67,
+  "final_orientation_pass": 53,
+  "invalid_physics": 0,
+  "interpretation": "At this half-range checkpoint, both approaching the tolerance and terminal stability remain limiting. No evidence supports treating all contact_no_progress episodes as in-hole jamming.",
+  "resume_model": "g3_train_b6_f3891200/runner/run/nn/last_apa_impedance_ep_304_rew_-48.117786.pth",
+  "minimum_more_scheduled_blocks_to_pass": 3,
+  "conditional_minimum_common_formal_steps": 4505600,
+  "minimum_six_formal_training_hours_at_measured_g3_speed": 10.214580317492105,
+  "conditional_minimum_total_steps_including_completed_diagnostics": 32979200,
+  "caveat": "Lower bound assumes the next half-range check and both following full-range checks pass. Six formal runs remain conditional on G3 and require resource reallocation beyond the original per-run and total step caps."
+}

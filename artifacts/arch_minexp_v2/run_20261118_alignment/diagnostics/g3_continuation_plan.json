@@ -1,0 +1,14 @@
+{
+  "checkpoint": "g3_train_b6_f3891200/runner/run/nn/last_apa_impedance_ep_304_rew_-48.117786.pth",
+  "restored_frame": 3891200,
+  "stage_scale": 0.5,
+  "diagnostic_used": 5331200,
+  "proposed_diagnostic_limit": 7500000,
+  "interval": 204800,
+  "available_new_blocks": 10,
+  "new_steps": 2048000,
+  "estimated_training_seconds": 2785.7946320433016,
+  "remaining_gpu_seconds": 13413.29999923706,
+  "formal_each_limit": 4096000,
+  "action": "plan only; no simulation started"
+}
