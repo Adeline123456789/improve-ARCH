@@ -48,7 +48,13 @@ def main(out,protocol,additional_wall_seconds):
     ends=sorted({v for v in ends if v<frames}|{frames})
     stages=[(v,0.) for v in ends]+[(r['frame'],r['scale']) for r in curve]
     total=stages[-1][0]
-    assert total<=cfg['budget']['formal_each']
+    if total>cfg['budget']['formal_each']:
+        report['G4'].update(status='NOT_RUN',reason='The validated curriculum exceeds the authorized per-model training budget',
+                            required_training_steps_per_model=total,
+                            authorized_training_steps_per_model=cfg['budget']['formal_each'])
+        report['overall_status']='BUDGET_BLOCKED'
+        write(out/'gate_report.json',report)
+        return
     n=read(out/'g2_nominal/identity.json')['num_envs']
     rollout=n*cfg['ppo']['horizon_length']
     assert all(v%rollout==0 for v,_ in stages)

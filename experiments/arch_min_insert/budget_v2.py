@@ -9,7 +9,12 @@ from pathlib import Path
 
 def budget(roots):
     jobs=[]
+    diagnostic_limit=5400000
     for root in roots:
+        report=root/'gate_report.json'
+        if report.is_file():
+            allocation=json.loads(report.read_text()).get('budget',{})
+            diagnostic_limit=max(diagnostic_limit,allocation.get('diagnostic_limit',5400000))
         kit={}
         for log in root.rglob('*.log'):
             last=None
@@ -59,7 +64,7 @@ def budget(roots):
                 measured_evaluation_and_probe_steps=sum(j['evaluation_steps'] for j in jobs if j.get('evaluation_steps') is not None),
                 simulator_process_seconds=sum(j['simulator_wall_seconds'] for j in jobs),
                 gpu_wall_seconds_union_estimate=union,elapsed_first_to_last_simulator_seconds=end-spans[0][0],
-                diagnostic_step_limit=5400000,total_step_limit=30000000,gpu_wall_limit_seconds=21600)
+                diagnostic_step_limit=diagnostic_limit,total_step_limit=30000000,gpu_wall_limit_seconds=21600)
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)

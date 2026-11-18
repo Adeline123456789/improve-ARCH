@@ -38,6 +38,26 @@
 
 - 3,891,200 步，倍率 0.5，名义 18/20，独立轻扰动 34/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b6/grasp_verification.json)
 
+- 4,096,000 步，倍率 0.5，名义 20/20，独立轻扰动 41/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b7/grasp_verification.json)
+
+- 4,300,800 步，倍率 0.5，名义 20/20，独立轻扰动 37/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b8/grasp_verification.json)
+
+- 4,505,600 步，倍率 0.5，名义 20/20，独立轻扰动 39/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b9/grasp_verification.json)
+
+- 4,710,400 步，倍率 0.5，名义 20/20，独立轻扰动 48/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b10/grasp_verification.json)
+
+- 4,915,200 步，倍率 0.5，名义 20/20，独立轻扰动 40/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b11/grasp_verification.json)
+
+- 5,120,000 步，倍率 0.5，名义 20/20，独立轻扰动 47/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b12/grasp_verification.json)
+
+- 5,324,800 步，倍率 0.5，名义 9/20，独立轻扰动 37/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b13/grasp_verification.json)
+
+- 5,529,600 步，倍率 0.5，名义 12/20，独立轻扰动 35/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b14/grasp_verification.json)
+
+- 5,734,400 步，倍率 0.5，名义 0/20，独立轻扰动 27/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b15/grasp_verification.json)
+
+- 5,939,200 步，倍率 0.5，名义 0/20，独立轻扰动 26/100。[物理抓取与轨迹核对](run_20261118_alignment/g3_mild_b16/grasp_verification.json)
+
 g3_validation_r0_audit 中按估计值准确到达时，有 0/100 个场景仍超出真实几何条件，横向误差第 90 百分位为 0.358 mm。
 
 g3_validation_r1_audit 中按估计值准确到达时，有 3/100 个场景仍超出真实几何条件，横向误差第 90 百分位为 0.666 mm。
@@ -60,7 +80,7 @@ B1−B0 同时改变观测与动作坐标；B2−B1 才能检验因果残差的�
 
 ## 资源与复现
 
-已完成的在线训练共 5,331,200 环境步。GPU 占用区间取并集约 2.274 小时，含初始化及验证。首个仿真至最后一次记录约 2.437 小时。未结束任务的步数下界和各进程计时来源见账本。[预算](budget_ledger.json) · [软件与资产](environment_provenance.json)
+已完成的在线训练共 7,379,200 环境步。GPU 占用区间取并集约 3.296 小时，含初始化及验证。首个仿真至最后一次记录约 7.017 小时。未结束任务的步数下界和各进程计时来源见账本。[预算](budget_ledger.json) · [软件与资产](environment_provenance.json)
 
 若名义姿态在 2° 边界附近反复失稳，可对已保存的成功和失败轨迹比较首次到位后的角误差与真实控制响应。若名义持续合格而轻扰动欠佳，按真实布局与 socket/grasp 估计偏差分层检查首次进入、末段保持与实际抓取变换。
 
