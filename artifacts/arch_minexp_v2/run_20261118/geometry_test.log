@@ -1,0 +1,1 @@
+{"algebra_tests": "passed", "n": 32, "dtype": "torch.float64", "physical_detector": "requires simulator fixtures"}

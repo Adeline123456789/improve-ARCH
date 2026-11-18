@@ -33,3 +33,20 @@ assert met['candidate'].item()
 edge=root.clone();edge[:,0]+=.008;assert not true_metrics(edge,root_tip,ident,star)['candidate'].item()
 through=root.clone();through[:,2]+=.02;assert true_metrics(through,root_tip,ident,star)['invalid'].item()
 print(json.dumps({'algebra_tests':'passed','n':n,'dtype':str(dtype),'physical_detector':'requires simulator fixtures'}))
+# CAD hex rotations preserve axial symmetry, while tilt and depth remain observable.
+import yaml
+from pathlib import Path
+cfg=yaml.safe_load((Path(__file__).parent/'configs/protocol_v2.yaml').read_text())
+for k in range(6):
+    spin=torch.zeros(1,6,dtype=dtype)
+    spin[:,5]=k*torch.pi/3
+    equivalent=compose(compose(star,delta(spin)),inverse(root_tip))
+    assert assembly_errors(equivalent,root_tip,ident,star)['candidate'].item()
+for axis,offset in [(0,.002),(2,-.002),(3,.05)]:
+    correction=torch.zeros(1,6,dtype=dtype)
+    correction[:,axis]=offset
+    full=compose(compose(star,delta(correction)),inverse(root_tip))
+    half=compose(compose(star,delta(correction/2)),inverse(root_tip))
+    e1,e2=[assembly_errors(t,root_tip,ident,star) for t in [full,half]]
+    assert not e1['candidate'].item()
+    assert sum(reward_terms(e1,cfg['reward']))<sum(reward_terms(e2,cfg['reward']))

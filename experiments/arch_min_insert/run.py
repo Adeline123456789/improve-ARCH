@@ -1,17 +1,26 @@
 """Actual rl-games/MyA2CAgent training and deterministic fixed-case evaluation."""
-import argparse,json,hashlib,time,sys
+import argparse,json,hashlib,time,sys,math,yaml
 from pathlib import Path
 from omni.isaac.lab.app import AppLauncher
 p=argparse.ArgumentParser()
+p.add_argument('--protocol',type=Path,default=Path(__file__).with_name('configs')/'protocol_v2.yaml')
+p.add_argument('--ppo_audit',action='store_true')
+p.add_argument('--response_probe',action='store_true')
 p.add_argument('--mode',choices=['smoke','train','eval','fixtures','manifest'],required=True)
 p.add_argument('--group',choices=['B0','B1','B2'],default='B0')
-p.add_argument('--seed',type=int,default=0);p.add_argument('--num_envs',type=int,default=4)
+p.add_argument('--seed',type=int,default=0);p.add_argument('--num_envs',type=int)
 p.add_argument('--transitions',type=int,default=1996800);p.add_argument('--steps',type=int,default=192)
 p.add_argument('--contact_pair',action='store_true');p.add_argument('--scripted',action='store_true');p.add_argument('--with_camera',action='store_true');p.add_argument('--layout_fixture',action='store_true')
 p.add_argument('--checkpoint',type=Path);p.add_argument('--manifest',type=Path)
 p.add_argument('--output',type=Path,required=True)
 AppLauncher.add_app_launcher_args(p);a=p.parse_args()
+protocol=yaml.safe_load(a.protocol.read_text())
+a.num_envs=a.num_envs if a.num_envs is not None else protocol['num_envs']
+protocol['num_envs']=a.num_envs
+assert protocol['control']['mode']=='measured_delta'
+assert not (a.scripted and a.checkpoint)
 a.output.mkdir(parents=True,exist_ok=False)
+(a.output/'effective_config.yaml').write_text(yaml.safe_dump(protocol))
 app=AppLauncher(a).app
 import torch,numpy as np
 import gymnasium as gym
@@ -44,17 +53,25 @@ try:
     cfg.initial_cfg.USE_FT_SENSOR=False;cfg.num_observations=27;cfg.num_actions=6
     cfg.parts[0].spawn.activate_contact_sensors=True
     configure_board(cfg)
+    cfg.sim.dt=protocol['physics_dt']
+    cfg.decimation=protocol['decimation']
+    cfg.episode_length_s=protocol['episode_steps']*(cfg.sim.dt*cfg.decimation)
+    cfg.is_finite_horizon=True
+    for field in ('stiffness','damping','effort_limit'):
+        setattr(cfg.robot1.actuators['arm'],field,protocol['control'][field])
     # Native rendering assets/controller gains and physics dt remain unchanged.
     cases=None
     if a.manifest:
         cases=[json.loads(l) for l in a.manifest.read_text().splitlines()]
+    if a.mode=='train' and cases is not None:
+        assert cases and all(c['split']=='train' for c in cases), 'expected split=train'
     if a.mode=='manifest':
         ik=IK('ur_description/urdf/ur10e.urdf',cfg.robot1.init_state.pos,cfg.robot1.init_state.rot,cfg.joint_angles_list['robot1'])
         for split,base,count in [('validation',10000,50),('test',20000,100)]:
             rows=[]
             for si,suite in enumerate(['E0','E1','E2','E3']):
                 for i in range(count):
-                    c=make_case(base+si*1000+i,suite,split)
+                    c=make_case(base+si*1000+i,suite,split,protocol['scene'])
                     q,fk,check=ik.solve(c['ee_start']);c.update(robot_arm_joint_pos=q,ee_start_fk=fk,validity=check)
                     assert check['status']=='valid',c
                     rows.append(c)
@@ -72,13 +89,13 @@ try:
                 if kind=='edge':pre[0]=.008;pre[2]=-.0003
                 if kind=='penetrating':pre[2]+=.02
                 if kind=='free':pre[2]-=.06
-                if a.contact_pair:
+                if a.contact_pair or a.response_probe:
                     kind='edge' if i%2 else 'free'
                     pre=star.clone();pre[2]=-.0003 if i%2 else star[2]-.06
                     if i%2:pre[0]=.008
                 c['ee_start']=compose(compose(torch.tensor(c['socket_estimated']),pre),inverse(torch.tensor(c['X_hat']))).tolist()
                 c['case_id']='fixture-'+kind+'-'+str(i);cases.append(c)
-        env=MinInsertEnv(cfg,group=a.group,seed=a.seed,output=a.output,cases=cases)
+        env=MinInsertEnv(cfg,protocol,a.mode,group=a.group,seed=a.seed,output=a.output,cases=cases)
         from pxr import UsdPhysics
         stage=native.stage_utils.get_current_stage()
         save('fixed_joints.json',[{'path':str(prim.GetPath()),'body0':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody0Rel().GetTargets()], 'body1':[str(x) for x in UsdPhysics.FixedJoint(prim).GetBody1Rel().GetTargets()]} for prim in stage.Traverse() if prim.IsA(UsdPhysics.FixedJoint) and 'Assembler' in str(prim.GetPath())])
@@ -90,15 +107,22 @@ try:
         model_builder.register_model('my_actor_model',lambda network,**kw:MyA2CContinuousLogStd(network))
         params=load_cfg_from_registry('AssemblyInsert-v0','rl_games_cfg_entry_point')
         params['params']['seed']=a.seed
-        pc=params['params']['config'];pc.update(num_actors=a.num_envs,minibatch_size=a.num_envs*25,
-            train_dir=str(a.output/'runner'),full_experiment_name='run',max_epochs=a.transitions//(a.num_envs*100),
-            save_frequency=25,zero_rnn_on_done=True)
+        net=params['params']['network']
+        net['rnn'].update(units=protocol['network']['rnn_units'],layers=protocol['network']['layers'])
+        net['mlp']['units']=protocol['network']['mlp']
+        net['space']['continuous']['sigma_init']['val']=protocol['network']['initial_log_sigma']
+        pc=params['params']['config']
+        pc.update(protocol['ppo'])
+        rollout=a.num_envs*pc['horizon_length']
+        pc.update(num_actors=a.num_envs,minibatch_size=rollout//4,
+            train_dir=str(a.output/'runner'),full_experiment_name='run',max_epochs=a.transitions//(rollout),
+            save_frequency=max(1,round(protocol['evaluation']['interval']/rollout)),zero_rnn_on_done=True)
         save('agent_config.json',params)
         identity={'group':a.group,'seed':a.seed,'mode':a.mode,'command':sys.argv,'started_unix':time.time(),
           'num_envs':a.num_envs,'physics_dt':env.physics_dt,'policy_dt':env.step_dt,'episode_steps':env.max_episode_length,
           'checkpoint':str(a.checkpoint) if a.checkpoint else None,
           'checkpoint_sha256':hashlib.sha256(a.checkpoint.read_bytes()).hexdigest() if a.checkpoint else None,
-          'protocol_sha256':hashlib.sha256((Path(__file__).resolve().parents[2]/'artifacts/arch_minexp/frozen_protocol.yaml').read_bytes()).hexdigest(),
+          'protocol_sha256':hashlib.sha256(a.protocol.read_bytes()).hexdigest(),
           'source_sha256':{name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest() for name in ['run.py','min_env.py','geometry.py','scenarios.py']},
           'manifest_sha256':hashlib.sha256(a.manifest.read_bytes()).hexdigest() if a.manifest else None}
         save('identity.json',identity)
@@ -108,14 +132,27 @@ try:
             'robot_joint_stiffness':tolist(env.robots['robot1'].data.joint_stiffness[0]),
             'robot_joint_damping':tolist(env.robots['robot1'].data.joint_damping[0]),
             'board_type':'kinematic rigid body with original CAD SDF collision','physics_dt':env.physics_dt})
+        robot=env.robots['robot1']
+        joint_ids=env._joint_ids['robot1']
+        runtime={'physics_dt':env.physics_dt,'step_dt':env.step_dt,'episode_steps':env.max_episode_length,'num_envs':env.num_envs,'hold_steps':env.hold_steps,'env_origins':tolist(env.scene.env_origins)}
+        view=robot.root_physx_view
+        for key,values in [('stiffness',view.get_dof_stiffnesses()),('damping',view.get_dof_dampings()),('effort_limit',view.get_dof_max_forces())]:
+            arm=values[:,joint_ids]
+            runtime[key]=tolist(arm[0])
+            assert torch.allclose(arm,torch.full_like(arm,protocol['control'][key])),(key,arm)
+        save('runtime_config_check.json',runtime)
+        assert env.physics_dt==cfg.sim.dt and env.step_dt==cfg.sim.dt*cfg.decimation
+        assert env.num_envs==a.num_envs and env.max_episode_length==protocol['episode_steps']
         # Diagnostic RGB is not an actor modality.
         env.cnn=False
-        wrapped=MyRlGamesVecEnvWrapper(env,env.device,5.,1.)
+        wrapped=MyRlGamesVecEnvWrapper(env,env.device,protocol['clip_obs'],1.)
         if a.mode=='train':
-            assert a.transitions%(a.num_envs*100)==0,'Use equal complete PPO rollout budgets'
+            assert a.transitions%(rollout)==0,'Use equal complete PPO rollout budgets'
             vecenv.register('IsaacRlgWrapper',lambda config_name,num_actors,**kw:RlGamesGpuEnv(config_name,num_actors,**kw))
             env_configurations.register('rlgpu',{'vecenv_type':'IsaacRlgWrapper','env_creator':lambda **kw:wrapped})
             runner=Runner(IsaacAlgoObserver())
+            if a.ppo_audit:
+                from ppo_audit import AuditAgent as MyA2CAgent
             runner.algo_factory.register_builder('my_agent',lambda **kw:MyA2CAgent(**kw))
             runner.player_factory.register_builder('my_agent',lambda **kw:MyPpoPlayerContinuous(**kw))
             runner.load(params);runner.reset()
@@ -148,15 +185,31 @@ try:
                 params['params']['config']['env_info']=wrapped.get_env_info()
                 player=MyPpoPlayerContinuous(params['params']);player.restore(str(a.checkpoint))
                 player.has_batch_dimension=True;player.batch_size=a.num_envs;player.init_rnn()
-                testobs=player.obs_to_torch({'policy':obs['policy'].clamp(-5,5)})
+                testobs=player.obs_to_torch({'policy':obs['policy']})
                 norm_before={k:v.clone() for k,v in player.model.state_dict().items() if 'running_mean_std' in k}
+                # Exercise the rollout actor and action rescaling with the player's restored tensors.
+                from geometry import tip_command
+                train_actor=object.__new__(MyA2CAgent)
+                train_actor.model=player.model
+                train_actor.rnn_states=tuple(t.clone() for t in player.states)
+                train_actor.has_central_value=False
+                train_actor.clip_actions=player.clip_actions
+                train_actor.actions_low,train_actor.actions_high=player.actions_low,player.actions_high
+                train_actor.is_tensor_obses=True
+                rollout_obs=wrapped._process_obs(dict(obs))
+                sampled=train_actor.get_action_values({'obs':rollout_obs})
+                train_action=train_actor.preprocess_actions(sampled['mus'])
                 act1=player.get_action(testobs,is_deterministic=True)
+                compare=lambda action:tip_command(env.ee(),env.xhat,env.socket_estimated,action,a.group!='B0',protocol['control']['translation_limit'],protocol['control']['rotation_limit'])[0]
+                command_error=float((compare(train_action)-compare(act1)).abs().max())
+                action_error=float((train_action-act1).abs().max())
+                assert command_error<1e-5 and action_error<1e-5
                 player.restore(str(a.checkpoint));player.init_rnn()
                 act2=player.get_action(testobs,is_deterministic=True)
                 assert torch.equal(act1,act2)
                 assert all(torch.equal(v,player.model.state_dict()[k]) for k,v in norm_before.items())
                 player.init_rnn()
-                save('checkpoint_checks.json',{'reload_mean_actions_identical':True,'normalizers_frozen':True,'policy_dimension':27,'action_dimension':6})
+                save('checkpoint_checks.json',{'command_max_error':command_error,'action_max_error':action_error,'reload_mean_actions_identical':True,'normalizers_frozen':True,'policy_dimension':27,'action_dimension':6})
             rows=[];steps=a.steps if a.mode!='eval' else env.max_episode_length*((len(cases)+a.num_envs-1)//a.num_envs)
             start=time.monotonic();obs0=obs['policy'].clone();x0=env.xhat.clone();s0=env.socket_estimated.clone()
             camera_frames=[]
@@ -166,14 +219,27 @@ try:
                     if a.scripted:
                         from geometry import log,qmul,qinv,rotate
                         tip=compose(env.ee(),env.xhat);goal=compose(env.socket_estimated,env.star)
-                        dp=(goal[:,:3]-tip[:,:3])*20/.05
-                        dr=log(qmul(goal[:,3:],qinv(tip[:,3:])))*10/.1
+                        dp=(goal[:,:3]-tip[:,:3])*20/protocol['control']['translation_limit']
+                        dr=log(qmul(goal[:,3:],qinv(tip[:,3:])))*10/protocol['control']['rotation_limit']
                         if a.group!='B0':
                             dp=rotate(qinv(env.socket_estimated[:,3:]),dp);dr=rotate(qinv(env.socket_estimated[:,3:]),dr)
                         actions=torch.cat((dp,dr),-1)
                     if a.contact_pair:
-                        actions[:]=0;actions[:,2]=-.04 if a.group=='B0' else .04
-                    if player:actions=player.get_action(player.obs_to_torch({'policy':obs['policy'].clamp(-5,5)}),is_deterministic=True)
+                        actions[:]=0;actions[:,2]=(-.002 if a.group=='B0' else .002)/protocol['control']['translation_limit']
+                    if a.response_probe:
+                        from geometry import log,qmul,qinv
+                        ee=env.ee()
+                        if step==0:
+                            hold_target=compose(ee,env.xhat).clone()
+                            hold_target[2,0]+=.002
+                        sign=1 if (step//6)%2==0 else -1
+                        actions[:,2]=-.002/protocol['control']['translation_limit']
+                        actions[0,:]=0
+                        actions[0,(step//12)%6]=sign*(.002/protocol['control']['translation_limit'] if step<36 else .01/protocol['control']['rotation_limit'])
+                        tip=compose(ee,env.xhat)
+                        actions[2,:3]=(hold_target[2,:3]-tip[2,:3])/protocol['control']['translation_limit']
+                        actions[2,3:]=log(qmul(hold_target[2,3:],qinv(tip[2,3:])))/protocol['control']['rotation_limit']
+                    if player:actions=player.get_action(player.obs_to_torch({'policy':obs['policy']}),is_deterministic=True)
                     case_ids=[c['case_id'] for c in env.case_info]
                     obs,reward,term,trunc,_=env.step(actions)
                     if player and player.is_rnn:

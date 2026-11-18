@@ -1,0 +1,15 @@
+version: 2
+physics_dt: 0.008333333333333333
+decimation: 5
+episode_steps: 96
+num_envs: 4
+control: {mode: measured_delta, translation_limit: 0.05, rotation_limit: 0.1, stiffness: 400, damping: 800, effort_limit: 100}
+geometry: {lateral_m: 0.00075, depth_m: 0.001, angle_rad: 0.03490658503988659, overshoot_m: 0.003}
+hold_duration_s: 0.20
+reward: {position_scale: 0.06, angle_scale: 0.1, position_weight: 1.0, angle_weight: 0.2, cap: 5.0, terminal_bonus: 20.0}
+scene: {train_suite: E0, retreat_m: 0.06, layout_xy_m: 0.02, yaw_deg: 15, socket_xy_m: 0.001, grasp_xyz_m: 0.0005, bias_deg: 0.5}
+clip_obs: 5.0
+network: {rnn_units: 256, layers: 2, mlp: [256, 128, 64], initial_log_sigma: 0.0}
+ppo: {horizon_length: 100, normalize_input: true, normalize_value: true, learning_rate: 0.0003, mini_epochs: 8, seq_length: 4, value_bootstrap: false}
+budget: {wall_seconds: 21600, total: 30000000, diagnostic: 5400000, nominal_first: 1500000, formal_each: 4096000}
+evaluation: {interval: 200000, diagnostic_seed: 101, formal_seeds: [0, 1], nominal_count: 20, mild_count: 100}

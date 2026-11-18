@@ -1,0 +1,45 @@
+{
+  "G0": {
+    "status": "PASS",
+    "scripted_successes": 20,
+    "episodes": 20,
+    "offline_matches": true,
+    "edge_peak_force_N": 1.3502055406570435,
+    "fixed_target_range_m": 1.1920928955078125e-07,
+    "hold_tracking_error_final_m": 0.0024934830144047737,
+    "probe_trace": "g0_probe/trajectories.npz",
+    "scripted_trace": "g0_scripted/trajectories.npz"
+  },
+  "G1": {
+    "status": "PASS",
+    "updates": "g1/ppo_updates.jsonl",
+    "reload": {
+      "command_max_error": 0.0,
+      "action_max_error": 0.0,
+      "reload_mean_actions_identical": true,
+      "normalizers_frozen": true,
+      "policy_dimension": 27,
+      "action_dimension": 6
+    }
+  },
+  "G2": {
+    "status": "RUNNING",
+    "seed": 101,
+    "planned_checkpoints": [
+      204800,
+      409600,
+      614400,
+      819200,
+      1024000,
+      1228800,
+      1433600
+    ],
+    "curve": []
+  },
+  "G3": {
+    "status": "NOT_RUN"
+  },
+  "G4": {
+    "status": "NOT_RUN"
+  }
+}

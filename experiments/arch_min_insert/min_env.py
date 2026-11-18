@@ -1,7 +1,7 @@
 """Isolated INSERT research environment; reuses native PhysX assets, IK and actuators.
 Never calls native global-stepping reset or puts simulator truth in actor_features.
 """
-import json,time
+import json,time,math
 from pathlib import Path
 import numpy as np
 import torch
@@ -32,7 +32,11 @@ def configure_board(cfg):
 
 
 class MinInsertEnv(native.InsertEnv):
-    def __init__(self,cfg,group='B0',seed=0,output=None,cases=None,**kw):
+    def __init__(self,cfg,protocol,run_mode,group='B0',seed=0,output=None,cases=None,**kw):
+        self.protocol=protocol
+        self.run_mode=run_mode
+        self.hold_steps=math.ceil(protocol['hold_duration_s']/(cfg.sim.dt*cfg.decimation))
+        self.metric_step=-1
         self.group=group;self.training_seed=seed;self.output=Path(output) if output else None
         self.cases=cases;self.cursor=0;self.scene_rng=np.random.default_rng(seed);self.total_transitions=0
         self.completed=[];self.last_step=None;self.episode_records=[];self.record_trace=False;self.sampled_trace=[];self.sampled_episodes=0
@@ -83,7 +87,7 @@ class MinInsertEnv(native.InsertEnv):
         manifests=[];boards=torch.zeros(len(ids),13,device=self.device)
         for row,idx in enumerate(ids.cpu().tolist()):
             if self.cases is None:
-                case=make_case(int(self.scene_rng.integers(1000000,2**31)), 'E1')
+                case=make_case(int(self.scene_rng.integers(1000000,2**31)), self.protocol['scene']['train_suite'], scene=self.protocol['scene'])
             else:
                 # Padding repeats are explicitly excluded by evaluation driver.
                 case=dict(self.cases[self.cursor%len(self.cases)]);self.cursor+=1
@@ -123,7 +127,7 @@ class MinInsertEnv(native.InsertEnv):
         self.command[ids]=self.reset_ee[ids];self.valid[ids]=False;self.just_reset[ids]=True;self.first_substep[ids]=True
         self.hold[ids]=0;self.ever_success[ids]=False;self.first_success[ids]=float('nan')
         initroot=roots[:,:7].clone();initroot[:,:3]-=self.scene.env_origins[ids]
-        self.bad[ids]=true_metrics(initroot,self.root_tip[ids],self.socket_true[ids],self.star[ids])['invalid']
+        self.bad[ids]=assembly_errors(initroot,self.root_tip[ids],self.socket_true[ids],self.star[ids],**self.protocol['geometry'])['invalid']
         for x in [self.peak,self.board_peak,self.residual_sq,self.saturation,self.returns]:x[ids]=0
         self._ik_controllers['robot1'].reset(ids)
         if self.output and (self.cases is not None or self.sampled_episodes<3):
@@ -141,11 +145,11 @@ class MinInsertEnv(native.InsertEnv):
         if not hasattr(self,'xhat'):return super()._get_observations()
         obs=actor_features(self.ee(),self.velocity(),self.xhat,self.socket_estimated,self.star,self.command,self.valid,self.group!='B0',self.group=='B2')
         assert torch.isfinite(obs).all()
-        return {'policy':obs}
+        return {'policy':obs.clamp(-self.protocol['clip_obs'],self.protocol['clip_obs'])}
     def _pre_physics_step(self,actions):
         self.actions=actions.clamp(-1,1).clone()
         self.actor_before=self._get_observations()['policy'].clone()
-        ee=self.ee();self.command,self.tip_cmd=tip_command(ee,self.xhat,self.socket_estimated,self.actions,self.group!='B0')
+        ee=self.ee();self.command,self.tip_cmd=tip_command(ee,self.xhat,self.socket_estimated,self.actions,self.group!='B0',self.protocol['control']['translation_limit'],self.protocol['control']['rotation_limit'])
         self.saturation+=(self.actions[:,:3].norm(dim=-1)>1)|(self.actions[:,3:].norm(dim=-1)>1)
         self._ik_controllers['robot1'].set_command(self.command,ee[:,:3],ee[:,3:])
         self.valid[:]=True
@@ -166,35 +170,42 @@ class MinInsertEnv(native.InsertEnv):
         from scenarios import CENTER,TOP
         offset=torch.tensor([*CENTER,TOP,0,1,0,0.],device=self.device).expand_as(board)
         return compose(board,offset)
-    def _get_dones(self):
+    def _update_geometry(self):
+        if self.metric_step==self.common_step_counter:
+            return
+        self.metric_step=self.common_step_counter
         self.socket_true[:]=self.physical_socket()
-        metrics=true_metrics(self.peg_root(),self.root_tip,self.socket_true,self.star)
+        metrics=self.metrics=assembly_errors(self.peg_root(),self.root_tip,self.socket_true,self.star,**self.protocol["geometry"])
         self.hold=torch.where(metrics['candidate'],self.hold+1,0)
-        newly=(self.hold>=5)&~self.ever_success
+        newly=(self.hold>=self.hold_steps)&~self.ever_success
         self.first_success[newly]=self.episode_length_buf[newly]*self.step_dt
-        self.ever_success|=self.hold>=5;self.bad|=metrics['invalid']
+        self.ever_success|=self.hold>=self.hold_steps;self.bad|=metrics['invalid']
+    def _get_dones(self):
+        self._update_geometry()
         # Fixed duration preserves synchronous transitions; success still requires hold.
         timeout=self.episode_length_buf>=self.max_episode_length
         return torch.zeros_like(timeout),timeout
     def _get_rewards(self):
-        peg=self.peg_root();target=compose(compose(self.socket_true,self.star),inverse(self.root_tip))
-        # Preserve native reward structure, changing only target to actual board.
-        difference=compose(target,inverse(peg))
-        reward=-torch.cat((difference[:,:3],log(difference[:,3:])),dim=-1).norm(dim=-1).clamp(max=2)
+        self._update_geometry()
+        peg=self.peg_root()
+        met=self.metrics
+        stable=(self.hold>=self.hold_steps)&~self.bad
+        rp,ra=reward_terms(met,self.protocol['reward'])
+        terminal=(stable & self.reset_buf)*self.protocol['reward']['terminal_bonus']
+        reward=rp+ra+terminal
         self.returns+=reward;self.total_transitions+=self.num_envs
         measured=self.ee();tip=compose(measured,self.xhat);cmd=compose(self.command,self.xhat)
         residual=torch.cat((cmd[:,:3]-tip[:,:3],log(qmul(cmd[:,3:],qinv(tip[:,3:])))),-1)
         force=self.scene.sensors['peg_contact'].data.net_forces_w[:,0].clone()
         self.peak=torch.maximum(self.peak,force.norm(dim=-1));self.residual_sq+=(residual[:,:3]**2).sum(-1)
-        met=true_metrics(peg,self.root_tip,self.socket_true,self.star)
         board_force=self.scene.sensors['peg_contact'].data.force_matrix_w[:,0].sum(dim=1).clone()
         self.board_peak=torch.maximum(self.board_peak,board_force.norm(dim=-1))
         self.depth_history[:,(self.common_step_counter-1)%24]=met['depth']
-        self.last_step={'actor_observation':self.actor_before.clone(),'action':self.actions.clone(),'commanded_ee':self.command.clone(),
+        self.last_step={'position_reward':rp,'rotation_reward':ra,'terminal_reward':terminal,'hold':self.hold.clone(),'invalid':self.bad.clone(),'actor_observation':self.actor_before.clone(),'action':self.actions.clone(),'commanded_ee':self.command.clone(),
           'measured_ee':measured.clone(),'tracking_residual_world':residual,'diagnostic_peg_root':peg,'diagnostic_socket_true':self.socket_true.clone(),'diagnostic_X_true':self.xtrue.clone(),'diagnostic_X_measured':compose(inverse(measured),compose(peg,self.root_tip)),'diagnostic_contact_force_world_N':force,'diagnostic_board_contact_force_world_N':board_force,
           'reward':reward.clone(),'done':self.reset_buf.clone(),'episode_step':self.episode_length_buf.clone(),
           'time_s':self.episode_length_buf*self.step_dt,'command_time_s':(self.episode_length_buf-1)*self.step_dt}
-        if self.cases is None and self.output and self.sampled_episodes<3:
+        if self.run_mode=="train" and self.output and self.sampled_episodes<3:
             self.sampled_trace.append({k:v[0].detach().cpu().numpy() for k,v in self.last_step.items()})
             if self.reset_buf[0]:
                 np.savez_compressed(self.output/f'training_trace_{self.sampled_episodes}.npz',
@@ -202,14 +213,14 @@ class MinInsertEnv(native.InsertEnv):
                 self.sampled_trace=[];self.sampled_episodes+=1
         for i in self.reset_buf.nonzero(as_tuple=False).flatten().cpu().tolist():
             n=int(self.episode_length_buf[i]);case=self.case_info[i]
-            success=bool(self.ever_success[i]) and not bool(self.bad[i])
+            success=bool(stable[i])
             reason='success' if success else 'abnormal_physics' if self.bad[i] else 'timeout'
             if not success and not self.bad[i]:
                 if met['lateral'][i]>.15 or met['depth'][i]<-.15:reason='out_of_workspace'
                 elif n>=24 and self.board_peak[i]>.5 and self.depth_history[i].max()-self.depth_history[i].min()<.001:
                     reason='contact_no_progress'
             row={'group':getattr(self,'report_group',self.group),'policy_kind':getattr(self,'policy_kind','diagnostic'),'checkpoint_id':getattr(self,'checkpoint_id',None),'training_seed':self.training_seed,'case_id':case['case_id'],'suite':case['suite'],'num_steps':n,
-             'success':success,'termination_reason':reason,'completion_time_s':float(self.first_success[i]) if success else None,'final_depth_m':float(met['depth'][i]),
+             'success':success,'valid':not bool(self.bad[i]),'ever_reached':bool(self.ever_success[i]),'lost_after_reach':bool(self.ever_success[i] and not stable[i]),'first_reach_time':float(self.first_success[i]) if self.ever_success[i] else None,'final_depth_error_m':float(met['depth_error'][i]),'final_hold_steps':int(self.hold[i]),'termination_reason':reason,'completion_time_s':float(self.first_success[i]) if success else None,'final_depth_m':float(met['depth'][i]),
              'final_lateral_error_m':float(met['lateral'][i]),'final_rotation_error_rad':float(met['rotation'][i]),
              'peak_contact_measure':float(self.peak[i]),'peak_board_contact_force_N':float(self.board_peak[i]),'contact_measure_type':'net force on peg, world, N; torque unavailable',
              'tracking_residual_rms':float((self.residual_sq[i]/n).sqrt()),'action_saturation_rate':float(self.saturation[i]/n),

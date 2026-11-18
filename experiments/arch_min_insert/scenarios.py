@@ -8,9 +8,13 @@ CENTER=(-.0681832563,-.0885440744)
 TOP=.02436008
 
 def tensor(x):return torch.as_tensor(x,dtype=torch.float64)
-def make_case(seed,suite,split='train'):
+def make_case(seed,suite,split='train',scene=None):
+    if scene is None:
+        import yaml
+        from pathlib import Path
+        scene=yaml.safe_load(Path(__file__).with_name('configs').joinpath('protocol_v2.yaml').read_text())['scene']
     r=np.random.default_rng(seed)
-    layout=r.uniform(-.02,.02,2);yaw=r.uniform(-15,15)*np.pi/180
+    layout=r.uniform(-1,1,2)*scene['layout_xy_m'];yaw=r.uniform(-1,1)*scene['yaw_deg']*np.pi/180
     if suite=='E0':layout[:]=0;yaw=0
     stratum='id'
     if suite=='E2':
@@ -18,8 +22,8 @@ def make_case(seed,suite,split='train'):
             layout[0]=r.choice([-1,1])*r.uniform(.020001,.04);stratum='translation'
         else:yaw=r.choice([-1,1])*r.uniform(15.0001,30)*np.pi/180;stratum='yaw'
     scale=2 if suite=='E3' else 1
-    bs=r.uniform(-1,1,6)*[.001*scale,.001*scale,0,*([np.deg2rad(.5)*scale]*3)]
-    bg=r.uniform(-1,1,6)*([.0005*scale]*3+[np.deg2rad(.5)*scale]*3)
+    bs=r.uniform(-1,1,6)*[scene['socket_xy_m']*scale,scene['socket_xy_m']*scale,0,*([np.deg2rad(scene['bias_deg'])*scale]*3)]
+    bg=r.uniform(-1,1,6)*([scene['grasp_xyz_m']*scale]*3+[np.deg2rad(scene['bias_deg'])*scale]*3)
     if suite=='E0':bs[:]=0;bg[:]=0
     board=compose(tensor([layout[0],.18+layout[1],.025,0,0,0,1]),delta(tensor([0,0,0,0,0,yaw])))
     board_socket=tensor([*CENTER,TOP,0,1,0,0])
@@ -28,13 +32,13 @@ def make_case(seed,suite,split='train'):
     # E=tool0, CAD bottom tip P: +0.32 m along E's Z, same orientation.
     xhat=tensor([0,0,.32,1,0,0,0]);xtrue=compose(xhat,delta(tensor(bg)))
     star=tensor([0,0,TOP+.02,1,0,0,0])
-    pre=star.clone();pre[2]-=.06
+    pre=star.clone();pre[2]-=scene['retreat_m']
     start=compose(compose(estimated,pre),inverse(xhat))
     out={'case_id':f'{split}-{suite}-{seed:08d}','split':split,'suite':suite,'seed':int(seed),'stratum':stratum,
          'board_true':board.tolist(),'socket_true':socket.tolist(),'socket_estimated':estimated.tolist(),
          'X_true':xtrue.tolist(),'X_hat':xhat.tolist(),'T_SP_star':star.tolist(),'T_SP_pre':pre.tolist(),
          'ee_start':start.tolist(),'socket_bias':bs.tolist(),'grasp_bias':bg.tolist(),
-         'approach_retreat_m':.06,'physics':{'dt':1/120,'decimation':5,'stiffness':400,'damping':800,'effort_limit':100,'gravity_disabled_robot_peg':True},
+         'approach_retreat_m':scene['retreat_m'],'physics':{'dt':1/120,'decimation':5,'stiffness':400,'damping':800,'effort_limit':100,'gravity_disabled_robot_peg':True},
          'success_version':'cad-hex-v1','error_outside_training':bool(np.any(np.abs(bs)>[.001,.001,0,*([np.deg2rad(.5)]*3)]) or np.any(np.abs(bg)>[.0005]*3+[np.deg2rad(.5)]*3)),
          'validity':{'status':'pending_ik_and_initial_clearance'}}
     return out

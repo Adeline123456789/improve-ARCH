@@ -50,7 +50,7 @@ def actor_features(ee,ee_velocity,xhat,socket,star,previous_ee_command,valid,loc
     if not residual:res=torch.zeros_like(res)
     return torch.cat((pos,rot,vel,omega,orientation,grav,res),-1)
 
-def true_metrics(peg_root,root_tip,socket,star):
+def assembly_errors(peg_root,root_tip,socket,star,lateral_m=.00075,depth_m=.001,angle_rad=torch.pi/90,overshoot_m=.003):
     relative=compose(inverse(socket),compose(peg_root,root_tip))
     error=relative[...,:3]-star[...,:3]
     # Hexagon permits 6 in-plane rotations, evaluated in the socket frame.
@@ -62,7 +62,15 @@ def true_metrics(peg_root,root_tip,socket,star):
     lateral=error[...,:2].norm(dim=-1);depth=relative[...,2]
     finite=torch.isfinite(relative).all(-1)
     # Conservative tolerances: 0.75 mm < half the ~1.49 mm CAD side clearance.
-    candidate=(lateral<=.00075)&(error[...,2].abs()<=.001)&(angle<=torch.pi/90)&finite
-    invalid=(depth>star[...,2]+.003)|(~finite)
+    candidate=(lateral<=lateral_m)&(error[...,2].abs()<=depth_m)&(angle<=angle_rad)&finite
+    invalid=(depth>star[...,2]+overshoot_m)|(~finite)
     candidate &= ~invalid
-    return {'depth':depth,'lateral':lateral,'rotation':angle,'candidate':candidate,'invalid':invalid}
+    return {'position_error':error,'depth_error':error[...,2],'finite':finite,'depth':depth,'lateral':lateral,'rotation':angle,'candidate':candidate,'invalid':invalid}
+
+true_metrics = assembly_errors
+
+def reward_terms(metrics, cfg):
+    position = metrics['position_error'].norm(dim=-1) / cfg['position_scale']
+    orientation = metrics['rotation'] / cfg['angle_scale']
+    return (-cfg['position_weight'] * position.clamp(max=cfg['cap']),
+            -cfg['angle_weight'] * orientation.clamp(max=cfg['cap']))
